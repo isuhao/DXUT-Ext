@@ -19,3 +19,10 @@
 *.exe
 *.out
 *.app
+
+Media/*
+Binaries/*
+Intermediate/*
+Source/Source.sdf
+*.suo
+Source/Source.opensdf
