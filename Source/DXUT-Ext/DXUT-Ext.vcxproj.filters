@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ShaderManager">
+      <UniqueIdentifier>{a33efc03-f1cf-4fa3-893a-388caba19b25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{75fa322b-981f-44d0-b82e-debee4eec35b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Inc\ShaderManager.h">
+      <Filter>ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\DXUT-Ext.h" />
+    <ClInclude Include="Inc\SmartPtr.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Core.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
