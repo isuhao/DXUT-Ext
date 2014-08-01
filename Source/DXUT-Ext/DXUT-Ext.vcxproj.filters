@@ -7,6 +7,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{75fa322b-981f-44d0-b82e-debee4eec35b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application">
+      <UniqueIdentifier>{c8e32801-4563-42b7-8ec2-4bd00058fc25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\ShaderManager.h">
@@ -19,5 +22,16 @@
     <ClInclude Include="Inc\Core.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Shader.h">
+      <Filter>ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\GameApp.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\GameApp.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

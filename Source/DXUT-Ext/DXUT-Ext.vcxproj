@@ -67,10 +67,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Inc\GameApp.h" />
     <ClInclude Include="Inc\Core.h" />
     <ClInclude Include="Inc\DXUT-Ext.h" />
+    <ClInclude Include="Inc\Shader.h" />
     <ClInclude Include="Inc\ShaderManager.h" />
     <ClInclude Include="Inc\SmartPtr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\GameApp.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

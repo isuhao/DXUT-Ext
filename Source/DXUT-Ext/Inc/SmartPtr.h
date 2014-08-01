@@ -16,4 +16,7 @@ inline TSharedPtr<T> MakeCOMPtr(T* Ptr)
 	return Ptr ? TSharedPtr<T>(Ptr, std::mem_fn(&T::Release)) : TSharedPtr<T>();
 }
 
+
+#define CreateRHIResourcePtr( )
+
 #endif
