@@ -7,6 +7,7 @@ GameApp* g_pCurrGame = NULL;
 GameApp::GameApp()
 : m_bShouldRenderText(false)
 {	
+	g_pCurrGame = this;
 }
 
 /// ¸÷ÖÖCallBack
