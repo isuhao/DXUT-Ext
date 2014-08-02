@@ -42,8 +42,8 @@ public:
 	DeferredLightingApp() {}
 	~DeferredLightingApp() {}
 
-	void OnInit();
-	void OnDestroy();
+	virtual void OnInit();
+	virtual void OnDestroy();
 	HRESULT OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc);
 	HRESULT OnResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc) { return S_OK;  }
 	void OnTick(float DeltaSeconds);

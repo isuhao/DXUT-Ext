@@ -3,11 +3,23 @@
 // 当前游戏GameApp的全局指针
 GameApp* g_pCurrGame = NULL;
 
+// 各种全局变量
+CDXUTDialogResourceManager  g_DialogResourceManager;
+CD3DSettingsDlg             g_SettingsDlg;
+CDXUTTextHelper*            g_pTxtHelper = NULL;
+CDXUTDialog                 g_HUD;
+CDXUTDialog                 g_SampleUI;
+
 // 构造
 GameApp::GameApp()
 : m_bShouldRenderText(false)
 {	
 	g_pCurrGame = this;
+}
+
+GameApp::~GameApp()
+{
+	g_pCurrGame = NULL;
 }
 
 /// 各种CallBack
@@ -19,6 +31,7 @@ GameApp::GameApp()
 LRESULT CALLBACK GameApp::__MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing,
 	void* pUserContext)
 {
+	Check(g_pCurrGame);
 	return g_pCurrGame->MsgProc(hWnd, uMsg, wParam, lParam, pbNoFurtherProcessing, pUserContext);
 }
 
@@ -46,8 +59,8 @@ LRESULT GameApp::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, boo
 		return 0;
 
 	// Pass all remaining windows messages to camera so it can respond to user input
-	g_Camera.HandleMessages(hWnd, uMsg, wParam, lParam);
-	g_LightCamera.HandleMessages(hWnd, uMsg, wParam, lParam);
+	m_Camera.HandleMessages(hWnd, uMsg, wParam, lParam);
+	m_LightCamera.HandleMessages(hWnd, uMsg, wParam, lParam);
 
 	return 0;
 }
@@ -57,7 +70,10 @@ LRESULT GameApp::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, boo
 //--------------------------------------------------------------------------------------
 void CALLBACK GameApp::__OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext)
 {
-	g_pCurrGame->OnKeyboard(nChar, bKeyDown, bAltDown, pUserContext);
+	if (g_pCurrGame)
+	{
+		g_pCurrGame->OnKeyboard(nChar, bKeyDown, bAltDown, pUserContext);
+	}
 }
 
 //--------------------------------------------------------------------------------------
@@ -65,7 +81,10 @@ void CALLBACK GameApp::__OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, vo
 //--------------------------------------------------------------------------------------
 void CALLBACK GameApp::__OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext)
 {
-	g_pCurrGame->OnGUIEvent(nEvent, nControlID, pControl, pUserContext);
+	if (g_pCurrGame)
+	{
+		g_pCurrGame->OnGUIEvent(nEvent, nControlID, pControl, pUserContext);
+	}
 }
 
 //--------------------------------------------------------------------------------------
@@ -74,14 +93,17 @@ void CALLBACK GameApp::__OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* p
 //--------------------------------------------------------------------------------------
 void CALLBACK GameApp::__OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
-	g_pCurrGame->OnFrameMove(fTime, fElapsedTime, pUserContext);
+	if (g_pCurrGame)
+	{
+		g_pCurrGame->OnFrameMove(fTime, fElapsedTime, pUserContext);
+	}
 }
 
 void GameApp::OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
 	// Update the camera's position based on user input 
-	g_Camera.FrameMove(fElapsedTime);
-	g_LightCamera.FrameMove(fElapsedTime);
+	m_Camera.FrameMove(fElapsedTime);
+	m_LightCamera.FrameMove(fElapsedTime);
 
 	OnTick(fElapsedTime);
 }
@@ -89,7 +111,20 @@ void GameApp::OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 HRESULT CALLBACK GameApp::__OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc,
 	void* pUserContext)
 {
-	return g_pCurrGame->OnCreateDevice(pd3dDevice, pBackBufferSurfaceDesc);
+	Check(g_pCurrGame);
+	return g_pCurrGame->OnD3D11CreateDevice(pd3dDevice, pBackBufferSurfaceDesc, pUserContext);
+}
+
+HRESULT GameApp::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc,
+	void* pUserContext)
+{
+	HRESULT hr;
+
+	ID3D11DeviceContext* pDeviceContext = DXUTGetD3D11DeviceContext();
+	V_RETURN(g_DialogResourceManager.OnD3D11CreateDevice(pd3dDevice, pDeviceContext));
+	V_RETURN(g_SettingsDlg.OnD3D11CreateDevice(pd3dDevice));
+
+	return OnCreateDevice(pd3dDevice, pBackBufferSurfaceDesc);
 }
 
 //--------------------------------------------------------------------------------------
@@ -97,7 +132,10 @@ HRESULT CALLBACK GameApp::__OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const 
 //--------------------------------------------------------------------------------------
 void CALLBACK GameApp::__OnD3D11ReleasingSwapChain(void* pUserContext)
 {
-	g_pCurrGame->OnD3D11ReleasingSwapChain(pUserContext);
+	if (g_pCurrGame)
+	{
+		g_pCurrGame->OnD3D11ReleasingSwapChain(pUserContext);
+	}
 }
 
 void GameApp::OnD3D11ReleasingSwapChain(void* pUserContext)
@@ -112,6 +150,7 @@ void GameApp::OnD3D11ReleasingSwapChain(void* pUserContext)
 HRESULT CALLBACK GameApp::__OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain,
 	const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
 {
+	Check(g_pCurrGame);
 	return g_pCurrGame->OnResizedSwapChain(pd3dDevice, pSwapChain, pBackBufferSurfaceDesc);
 }
 
@@ -124,33 +163,32 @@ HRESULT GameApp::OnResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pS
 
 	// Setup the camera's projection parameters
 	float fAspectRatio = pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
-	g_Camera.SetProjParams(D3DX_PI / 4, fAspectRatio, 0.1f, 1000.0f);
-	g_Camera.SetWindow(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
+	m_Camera.SetProjParams(D3DX_PI / 4, fAspectRatio, 0.1f, 1000.0f);
+	m_Camera.SetWindow(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
 
-	g_LightCamera.SetProjParams(D3DX_PI / 4, 1.0f, 0.1f, 1000.0f);
-	//g_Camera.SetButtonMasks( MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_MIDDLE_BUTTON );
+	m_LightCamera.SetProjParams(D3DX_PI / 4, 1.0f, 0.1f, 1000.0f);
+	//m_Camera.SetButtonMasks( MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_MIDDLE_BUTTON );
 
 	g_HUD.SetLocation(pBackBufferSurfaceDesc->Width - 170, 0);
 	g_HUD.SetSize(170, 170);
 	g_SampleUI.SetLocation(pBackBufferSurfaceDesc->Width - 170, pBackBufferSurfaceDesc->Height - 300);
 	g_SampleUI.SetSize(170, 300);
+	
+	OnResize(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height);
 
 	return S_OK;
 }
 
 void CALLBACK GameApp::__OnD3D11DestroyDevice(void* pUserContext)
 {
-	g_pCurrGame->OnD3D11DestroyDevice(pUserContext);
+	if (g_pCurrGame)
+	{
+		g_pCurrGame->OnDestroy();
+	}
 }
 
 void GameApp::OnD3D11DestroyDevice(void* pUserContext)
-{
-	g_DialogResourceManager.OnD3D11DestroyDevice();
-	g_SettingsDlg.OnD3D11DestroyDevice();
-	DXUTGetGlobalResourceCache().OnDestroyDevice();
-	SAFE_DELETE(g_pTxtHelper);
-
-	OnDestroy();
+{	
 }
 
 //--------------------------------------------------------------------------------------
@@ -211,6 +249,7 @@ int GameApp::Run()
 	DXUTSetCallbackD3D11DeviceDestroyed(__OnD3D11DestroyDevice);
 	DXUTSetCallbackD3D11FrameRender(__OnD3D11FrameRender);
 
+	// 初始化App
 	InitApp();
 
 	DXUTInit(true, true, NULL); // Parse the command line, show msgboxes on error, no extra command line params
@@ -220,6 +259,9 @@ int GameApp::Run()
 	DXUTCreateDevice(D3D_FEATURE_LEVEL_11_0, true, 640, 480);
 
 	DXUTMainLoop(); // Enter into the DXUT render loop
+
+	// 销毁App
+	DestroyApp();
 
 	return DXUTGetExitCode();
 }
@@ -234,4 +276,16 @@ void GameApp::InitApp()
 	g_SampleUI.SetCallback(__OnGUIEvent);
 
 	OnInit();
+}
+
+void GameApp::DestroyApp()
+{
+	// 销毁之前创建的对象
+	OnDestroy();
+
+	g_DialogResourceManager.OnD3D11ReleasingSwapChain();
+	g_DialogResourceManager.OnD3D11DestroyDevice();
+	g_SettingsDlg.OnD3D11DestroyDevice();
+	DXUTGetGlobalResourceCache().OnDestroyDevice();
+	SAFE_DELETE(g_pTxtHelper);
 }

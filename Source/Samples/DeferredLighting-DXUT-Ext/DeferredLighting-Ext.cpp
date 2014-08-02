@@ -26,12 +26,6 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 {
 	HRESULT hr;
 
-	ID3D11DeviceContext* pDeviceContext = DXUTGetD3D11DeviceContext();
-	V_RETURN(g_DialogResourceManager.OnD3D11CreateDevice(pd3dDevice, pDeviceContext));
-	V_RETURN(g_SettingsDlg.OnD3D11CreateDevice(pd3dDevice));
-
-	//////////////////////////////////////////////////////////////////////////
-
 	// DL Init
 	DLInitResource(pd3dDevice, pBackBufferSurfaceDesc);
 
@@ -168,14 +162,10 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 }
 
 //--------------------------------------------------------------------------------------
-// Handle updates to the scene.  This is called regardless of which D3D API is used
-// 相当于Tick
+// Tick
 //--------------------------------------------------------------------------------------
 void DeferredLightingApp::OnTick(float DeltaSeconds)
 {
-	//// Update the camera's position based on user input 
-	//g_Camera.FrameMove(fElapsedTime);
-	//g_LightCamera.FrameMove(fElapsedTime);
 }
 
 //--------------------------------------------------------------------------------------
@@ -246,13 +236,6 @@ void DeferredLightingApp::DLInitResource(ID3D11Device* pd3dDevice, const DXGI_SU
 //--------------------------------------------------------------------------------------
 void DeferredLightingApp::OnRender(float fDeltaSeconds)
 {
-	// If the settings dialog is being shown, then render it instead of rendering the app's scene
-	//if (g_SettingsDlg.IsActive())
-	//{
-	//	g_SettingsDlg.OnRender(fDeltaSeconds);
-	//	return;
-	//}
-
 	ID3D11Device* pd3dDevice = DXUTGetD3D11Device();
 	ID3D11DeviceContext* pd3dImmediateContext = DXUTGetD3D11DeviceContext();
 
@@ -263,10 +246,9 @@ void DeferredLightingApp::OnRender(float fDeltaSeconds)
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
 	pd3dImmediateContext->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0, 0);
 
+	// 分3个Pass进行渲染
 	RenderGPass(pd3dDevice, pd3dImmediateContext);
-
 	RenderDeferredLight(pd3dDevice, pd3dImmediateContext);
-
 	RenderScene(pd3dDevice, pd3dImmediateContext);
 }
 
@@ -275,19 +257,19 @@ void DeferredLightingApp::OnRender(float fDeltaSeconds)
 //--------------------------------------------------------------------------------------
 void DeferredLightingApp::OnInit()
 {
-	//g_Camera.SetRotateButtons( true, false, false );
-	g_Camera.SetButtonMasks(MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_MIDDLE_BUTTON);
-	g_LightCamera.SetButtonMasks(MOUSE_RIGHT_BUTTON, 0, 0);
+	//m_Camera.SetRotateButtons( true, false, false );
+	m_Camera.SetButtonMasks(MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_MIDDLE_BUTTON);
+	m_LightCamera.SetButtonMasks(MOUSE_RIGHT_BUTTON, 0, 0);
 
 	// Setup the camera's view parameters
 	D3DXVECTOR3 vecEye(7.0f, 7.0f, -7.0f);
 	D3DXVECTOR3 vecAt(0.0f, 0.0f, 0.0f);
-	g_Camera.SetViewParams(&vecEye, &vecAt);
+	m_Camera.SetViewParams(&vecEye, &vecAt);
 
 	// Setup light camera's view parameters
 	D3DXVECTOR3 vecEyeLight(9.0f, 15.0f, 9.0f);
 	D3DXVECTOR3 vecAtLight(0.0f, 0.0f, 0.0f);
-	g_LightCamera.SetViewParams(&vecEyeLight, &vecAtLight);
+	m_LightCamera.SetViewParams(&vecEyeLight, &vecAtLight);
 }
 
 
@@ -297,9 +279,9 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	D3DXMATRIXA16 mWVP, mWorld;
 
-	mWVP = *g_Camera.GetWorldMatrix() * *g_Camera.GetViewMatrix() * *g_Camera.GetProjMatrix();
+	mWVP = *m_Camera.GetWorldMatrix() * *m_Camera.GetViewMatrix() * *m_Camera.GetProjMatrix();
 	D3DXMatrixTranspose(&mWVP, &mWVP);
-	mWorld = *g_Camera.GetWorldMatrix();
+	mWorld = *m_Camera.GetWorldMatrix();
 	D3DXMatrixTranspose(&mWorld, &mWorld);
 
 	// 设置CB的值
@@ -357,7 +339,7 @@ void DeferredLightingApp::RenderDeferredLight(ID3D11Device* pd3dDevice, ID3D11De
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	
-	//D3DXVECTOR3 LightVec = *g_LightCamera.GetEyePt() - *g_LightCamera.GetLookAtPt();
+	//D3DXVECTOR3 LightVec = *m_LightCamera.GetEyePt() - *m_LightCamera.GetLookAtPt();
 	D3DXVECTOR3 LightVec = D3DXVECTOR3(1.0, 1.0, -1.0);
 
 	// 设置CB的值
@@ -393,7 +375,7 @@ void DeferredLightingApp::RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	D3DXMATRIXA16 mWVP;
 
-	mWVP = *g_Camera.GetWorldMatrix() * *g_Camera.GetViewMatrix() * *g_Camera.GetProjMatrix();
+	mWVP = *m_Camera.GetWorldMatrix() * *m_Camera.GetViewMatrix() * *m_Camera.GetProjMatrix();
 	D3DXMatrixTranspose(&mWVP, &mWVP);
 
 	// 设置CB的值
