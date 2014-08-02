@@ -17,6 +17,4 @@ inline TSharedPtr<T> MakeCOMPtr(T* Ptr)
 }
 
 
-#define CreateRHIResourcePtr( )
-
 #endif

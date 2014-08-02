@@ -21,7 +21,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	DXUTSetCallbackFrameMove(OnFrameMove);
 	DXUTSetCallbackDeviceChanging(ModifyDeviceSettings);
 
-	DXUTSetCallbackD3D11DeviceAcceptable(IsD3D11DeviceAcceptable);
+	//DXUTSetCallbackD3D11DeviceAcceptable(IsD3D11DeviceAcceptable);
 	DXUTSetCallbackD3D11DeviceCreated(OnD3D11CreateDevice);
 	DXUTSetCallbackD3D11SwapChainResized(OnD3D11ResizedSwapChain);
 	DXUTSetCallbackD3D11SwapChainReleasing(OnD3D11ReleasingSwapChain);
@@ -448,6 +448,7 @@ void InitApp()
 //--------------------------------------------------------------------------------------
 void RenderText()
 {
+
 }
 
 void RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext)

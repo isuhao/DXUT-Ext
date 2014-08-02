@@ -28,10 +28,16 @@
     <ClInclude Include="Inc\GameApp.h">
       <Filter>Application</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Build.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GameApp.cpp">
       <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ShaderManager.cpp">
+      <Filter>ShaderManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

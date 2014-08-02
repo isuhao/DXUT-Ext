@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeferredLighting", "Samples\DeferredLighting\DeferredLighting.vcxproj", "{8741255E-434B-46D1-95AF-28358D4B1437}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeferredLighting-Ext", "Samples\DeferredLighting\DeferredLighting.vcxproj", "{8741255E-434B-46D1-95AF-28358D4B1437}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{9865C93E-A948-48DE-BFA3-55F9E8619628}"
 EndProject
@@ -11,26 +11,52 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DXUT-Ext", "DXUT-Ext\DXUT-E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DXUT-Ext", "DXUT-Ext", "{513C1725-A7DF-4687-85CB-1DF9ADDFAFB9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeferredLighting", "Samples\DeferredLighting-DXUT-Ext\DL-DXUT-Ext.vcxproj", "{C7AEBB42-DE58-461E-8DDD-9FDE6A34532B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DXUTCore", "DXUT-Dummy\Core\DXUTCore_2008.vcxproj", "{E0CF097B-F22D-465B-A884-D89E55BD7ECD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
 		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8741255E-434B-46D1-95AF-28358D4B1437}.Debug|Win32.ActiveCfg = Debug|Win32
 		{8741255E-434B-46D1-95AF-28358D4B1437}.Debug|Win32.Build.0 = Debug|Win32
+		{8741255E-434B-46D1-95AF-28358D4B1437}.Debug|x64.ActiveCfg = Debug|Win32
 		{8741255E-434B-46D1-95AF-28358D4B1437}.Release|Win32.ActiveCfg = Release|Win32
 		{8741255E-434B-46D1-95AF-28358D4B1437}.Release|Win32.Build.0 = Release|Win32
+		{8741255E-434B-46D1-95AF-28358D4B1437}.Release|x64.ActiveCfg = Release|Win32
 		{DDEC4B34-4A0A-4516-A2BF-258C8D295BF7}.Debug|Win32.ActiveCfg = Debug|Win32
 		{DDEC4B34-4A0A-4516-A2BF-258C8D295BF7}.Debug|Win32.Build.0 = Debug|Win32
+		{DDEC4B34-4A0A-4516-A2BF-258C8D295BF7}.Debug|x64.ActiveCfg = Debug|Win32
 		{DDEC4B34-4A0A-4516-A2BF-258C8D295BF7}.Release|Win32.ActiveCfg = Release|Win32
 		{DDEC4B34-4A0A-4516-A2BF-258C8D295BF7}.Release|Win32.Build.0 = Release|Win32
+		{DDEC4B34-4A0A-4516-A2BF-258C8D295BF7}.Release|x64.ActiveCfg = Release|Win32
+		{C7AEBB42-DE58-461E-8DDD-9FDE6A34532B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C7AEBB42-DE58-461E-8DDD-9FDE6A34532B}.Debug|Win32.Build.0 = Debug|Win32
+		{C7AEBB42-DE58-461E-8DDD-9FDE6A34532B}.Debug|x64.ActiveCfg = Debug|Win32
+		{C7AEBB42-DE58-461E-8DDD-9FDE6A34532B}.Release|Win32.ActiveCfg = Release|Win32
+		{C7AEBB42-DE58-461E-8DDD-9FDE6A34532B}.Release|Win32.Build.0 = Release|Win32
+		{C7AEBB42-DE58-461E-8DDD-9FDE6A34532B}.Release|x64.ActiveCfg = Release|Win32
+		{E0CF097B-F22D-465B-A884-D89E55BD7ECD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E0CF097B-F22D-465B-A884-D89E55BD7ECD}.Debug|Win32.Build.0 = Debug|Win32
+		{E0CF097B-F22D-465B-A884-D89E55BD7ECD}.Debug|x64.ActiveCfg = Debug|x64
+		{E0CF097B-F22D-465B-A884-D89E55BD7ECD}.Debug|x64.Build.0 = Debug|x64
+		{E0CF097B-F22D-465B-A884-D89E55BD7ECD}.Release|Win32.ActiveCfg = Release|Win32
+		{E0CF097B-F22D-465B-A884-D89E55BD7ECD}.Release|Win32.Build.0 = Release|Win32
+		{E0CF097B-F22D-465B-A884-D89E55BD7ECD}.Release|x64.ActiveCfg = Release|x64
+		{E0CF097B-F22D-465B-A884-D89E55BD7ECD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8741255E-434B-46D1-95AF-28358D4B1437} = {9865C93E-A948-48DE-BFA3-55F9E8619628}
+		{C7AEBB42-DE58-461E-8DDD-9FDE6A34532B} = {9865C93E-A948-48DE-BFA3-55F9E8619628}
 		{DDEC4B34-4A0A-4516-A2BF-258C8D295BF7} = {513C1725-A7DF-4687-85CB-1DF9ADDFAFB9}
+		{E0CF097B-F22D-465B-A884-D89E55BD7ECD} = {513C1725-A7DF-4687-85CB-1DF9ADDFAFB9}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <FxCompile Include="..\DeferredLighting-DXUT-Ext\DeferredLight.hlsl" />
+    <FxCompile Include="..\DeferredLighting-DXUT-Ext\GPass.hlsl" />
+    <FxCompile Include="..\DeferredLighting-DXUT-Ext\ScenePass.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.cpp" />
+    <ClCompile Include="..\..\DXUT-Ext\Src\GameApp.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DXUT-Ext\Src\ShaderManager.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{d7f34264-3288-4285-a778-0578a5d57f7e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

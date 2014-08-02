@@ -1,3 +1,7 @@
+#ifndef _DEFERRED_LIGHTING_H_
+#define _DEFERRED_LIGHTING_H_
+
+
 #include "DXUT-Ext.h"
 
 
@@ -103,3 +107,6 @@ void RenderDeferredLight(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImme
 void RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext);
 
 void DLInitResource(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc);
+
+
+#endif
