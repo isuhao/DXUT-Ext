@@ -5,6 +5,8 @@
 #include "GameApp.h"
 
 
+
+
 // Constant Buffer
 struct CB_GPass
 {

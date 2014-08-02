@@ -3,6 +3,9 @@
 
 #include "DXUT-Ext.h"
 
+// 引用一下这个库
+#pragma comment(lib, "DXUT-Ext.lib")
+
 class GameApp
 {
 public:

@@ -28,8 +28,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\DXUT-Ext\Src\GameApp.cpp" />
-    <ClCompile Include="..\..\DXUT-Ext\Src\ShaderManager.cpp" />
     <ClCompile Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -79,7 +77,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;..\..\DXUT\lib;..\..\DXUT-Ext\Lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3dcompiler.lib;d3dx9d.lib;d3dx11d.lib;d3dx10d.lib;dxerr.lib;D3DCSXd.lib;dsound.lib;dxguid.lib;DXUTd.lib;DXUTOptD.lib;winmm.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dcompiler.lib;d3dx9d.lib;d3dx11d.lib;d3dx10d.lib;dxerr.lib;D3DCSXd.lib;dsound.lib;dxguid.lib;DXUTd.lib;DXUTOptD.lib;winmm.lib;comctl32.lib;DXUT-Ext.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -7,19 +7,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.cpp" />
-    <ClCompile Include="..\..\DXUT-Ext\Src\GameApp.cpp">
-      <Filter>Lib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\DXUT-Ext\Src\ShaderManager.cpp">
-      <Filter>Lib</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Lib">
-      <UniqueIdentifier>{d7f34264-3288-4285-a778-0578a5d57f7e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
 </Project>
