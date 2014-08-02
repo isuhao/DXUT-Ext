@@ -29,9 +29,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.cpp" />
+    <ClCompile Include="DLShaders.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.h" />
+    <ClInclude Include="DLShaders.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8741255E-434B-46D1-95AF-28358D4B1437}</ProjectGuid>

@@ -76,12 +76,16 @@
     <ClInclude Include="Inc\GameApp.h" />
     <ClInclude Include="Inc\Core.h" />
     <ClInclude Include="Inc\DXUT-Ext.h" />
+    <ClInclude Include="Inc\RHI.h" />
     <ClInclude Include="Inc\Shader.h" />
     <ClInclude Include="Inc\ShaderManager.h" />
     <ClInclude Include="Inc\SmartPtr.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Inc\RHI.cpp" />
+    <ClCompile Include="Inc\RHIMethods.h" />
     <ClCompile Include="Src\GameApp.cpp" />
+    <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\ShaderManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

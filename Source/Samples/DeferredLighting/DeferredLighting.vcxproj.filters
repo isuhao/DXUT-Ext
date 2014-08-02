@@ -7,8 +7,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.cpp" />
+    <ClCompile Include="DLShaders.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.h" />
+    <ClInclude Include="DLShaders.h" />
   </ItemGroup>
 </Project>

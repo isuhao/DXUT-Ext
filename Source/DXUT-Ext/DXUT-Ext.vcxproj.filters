@@ -10,6 +10,9 @@
     <Filter Include="Application">
       <UniqueIdentifier>{c8e32801-4563-42b7-8ec2-4bd00058fc25}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RHI">
+      <UniqueIdentifier>{20f22e6b-bc4c-42d5-bdad-a39742fda462}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\ShaderManager.h">
@@ -31,6 +34,9 @@
     <ClInclude Include="Inc\Build.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\RHI.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GameApp.cpp">
@@ -38,6 +44,15 @@
     </ClCompile>
     <ClCompile Include="Src\ShaderManager.cpp">
       <Filter>ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Shader.cpp">
+      <Filter>ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\RHI.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\RHIMethods.h">
+      <Filter>RHI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -6,7 +6,9 @@
 // Include¸÷ÖÖÄ£¿é
 
 #include "Core.h"
+#include "RHI.h"
 #include "ShaderManager.h"
+#include "Shader.h"
 
 
 #endif // #if

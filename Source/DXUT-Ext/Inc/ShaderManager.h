@@ -2,6 +2,7 @@
 #define _SHADER_MANAGER_H_
 
 #include "Core.h"
+#include "Shader.h"
 
 //--------------------------------------------------------------------------------------
 // ±‡“ÎShader
