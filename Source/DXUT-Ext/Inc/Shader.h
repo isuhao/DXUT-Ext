@@ -8,6 +8,10 @@
 	ShaderClass() : Shader(FileName, EntryPoint, ShaderModel, ShaderType) {} \
 	public:
 
+#define SET_SHADER_VERT_DECL(ShaderClass, VerDecl) \
+	void ShaderClass::InitVertexDeclaration() \
+	{ m_pVertexDeclaration = VerDecl; }
+
 enum EShaderType
 {
 	EST_VertexShader,
@@ -19,7 +23,6 @@ enum EShaderType
 
 	EST_Max
 };
-
 
 enum EVertexElementType
 {
@@ -50,14 +53,24 @@ enum EVertexElementUsage
 	VEU_Color
 };
 
-struct VertexDeclaration 
+class VertexDeclaration 
 {
-	TArray<D3D11_INPUT_ELEMENT_DESC>			Layouts;
+public:
+	VertexDeclaration()
+	{
+		Clear();
+	}
 
-	// 这个值只有AppendElementFast才有用
-	UINT										CurrOffset;
+	VertexDeclaration(const VertexDeclaration& Other)
+	{
+		m_nCurrOffset	= Other.m_nCurrOffset;
+		m_Layouts		= Other.m_Layouts;
+	}
 
-	void Clear();
+	const TArray<D3D11_INPUT_ELEMENT_DESC>& GetLayouts() 
+	{ 
+		return m_Layouts;
+	}
 
 	void AppendElement(UINT StreamIndex, UINT Offset, EVertexElementType ElemType, EVertexElementUsage Usage, UINT UsageIndex, 
 		bool bUseInstanceIndex = false,	UINT NumVerticesPerInstance = 0);
@@ -66,6 +79,14 @@ struct VertexDeclaration
 		bool bUseInstanceIndex = false,	UINT NumVerticesPerInstance = 0);
 
 	static UINT GetFormatByteSize(EVertexElementType UType);
+
+	void Clear();
+
+private:
+	UINT										m_nCurrOffset; // 这个值只有AppendElementFast才有用
+	TArray<D3D11_INPUT_ELEMENT_DESC>			m_Layouts;
+
+	friend class VertexDeclaration;
 };
 
 class Shader 
@@ -107,7 +128,7 @@ protected:
 	String								m_szEntryPoint;
 	String								m_szShaderModel;
 	EShaderType							m_ShaderType;
-	VertexDeclaration					m_VertexDeclaration;
+	TSharedPtr<VertexDeclaration>		m_pVertexDeclaration;
 
 	TSharedPtr<ID3D11InputLayout>		m_pInputLayout;
 	TSharedPtr<ID3D11VertexShader>		m_pVertexShader;

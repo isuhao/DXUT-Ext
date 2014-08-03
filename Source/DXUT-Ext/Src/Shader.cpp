@@ -7,6 +7,8 @@ Shader::Shader(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ESh
 ,	m_szShaderModel	(szShaderModel)
 ,	m_ShaderType	(ShaderType)
 {
+	m_pVertexDeclaration.reset();
+
 	InitShader();
 }
 
@@ -71,10 +73,11 @@ void Shader::CompileAndCreateShader()
 		Check(0);
 	}
 	
-	UINT NumElements = m_VertexDeclaration.Layouts.GetSize();
-	if (NumElements > 0)
+	UINT NumElements = m_pVertexDeclaration->GetLayouts().GetSize();
+	if (NumElements > 0 && m_pVertexDeclaration)
 	{
-		const D3D11_INPUT_ELEMENT_DESC* Layouts = m_VertexDeclaration.Layouts.GetData();
+		D3D11_INPUT_ELEMENT_DESC* Layouts = &(m_pVertexDeclaration->GetLayouts().GetAt(0));
+
 		ID3D11InputLayout*				pInputLayout = NULL;
 		V(pd3dDevice->CreateInputLayout(Layouts, NumElements, pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pInputLayout));
 		m_pInputLayout = MakeCOMPtr<ID3D11InputLayout>(pInputLayout);
@@ -87,8 +90,8 @@ void Shader::CompileAndCreateShader()
 
 void VertexDeclaration::Clear()
 {
-	Layouts.RemoveAll();
-	CurrOffset = 0;
+	m_Layouts.RemoveAll();
+	m_nCurrOffset = 0;
 }
 
 void VertexDeclaration::AppendElement(UINT StreamIndex, UINT Offset, EVertexElementType ElemType, EVertexElementUsage Usage, UINT UsageIndex, 
@@ -132,7 +135,7 @@ void VertexDeclaration::AppendElement(UINT StreamIndex, UINT Offset, EVertexElem
 	D3DElement.InputSlotClass = bUseInstanceIndex ? D3D11_INPUT_PER_INSTANCE_DATA : D3D11_INPUT_PER_VERTEX_DATA;
 	D3DElement.InstanceDataStepRate = bUseInstanceIndex ? 1 : 0;
 
-	Layouts.Add(D3DElement);
+	m_Layouts.Add(D3DElement);
 }
 
 /** 
@@ -168,10 +171,10 @@ void VertexDeclaration::AppendElementFast(UINT StreamIndex, EVertexElementType E
 {
 	if (bResetOffset)
 	{
-		CurrOffset = 0;
+		m_nCurrOffset = 0;
 	}
 
-	AppendElement(StreamIndex, CurrOffset, ElemType, Usage, UsageIndex, bUseInstanceIndex, NumVerticesPerInstance);
+	AppendElement(StreamIndex, m_nCurrOffset, ElemType, Usage, UsageIndex, bUseInstanceIndex, NumVerticesPerInstance);
 
-	CurrOffset += GetFormatByteSize(ElemType);
+	m_nCurrOffset += GetFormatByteSize(ElemType);
 }
