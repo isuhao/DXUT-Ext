@@ -1,4 +1,5 @@
 #include "DeferredLighting-Ext.h"
+#include "RHI.h"
 
 //--------------------------------------------------------------------------------------
 // Win Main
@@ -16,6 +17,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+
+DeferredLightingApp::DeferredLightingApp()
+{
+	m_pGPassBST.reset();
+	m_pDLPassBST.reset();
+	m_pScenePassBST.reset();
+}
 
 //--------------------------------------------------------------------------------------
 // Create any D3D11 resources that aren't dependant on the back buffer
@@ -61,44 +69,51 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	pd3dDevice->CreateShaderResourceView(g_pDepthTexture, &srvDesc, &g_pDepthTextureSRV);
 
-	// InputLayout
-	const D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
+	// Vertex Declaration
+	FVertexDeclarationFactory_DL VDF;
 
-	// 编译Shader
-	ID3DBlob* pBlob = NULL;
-	V_RETURN(CompileShaderFromFile(L"GPass.hlsl", "VS_Main", "vs_5_0", &pBlob));
-	V_RETURN(pd3dDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pGPVertexShader));
-	V_RETURN(pd3dDevice->CreateInputLayout(layout, ARRAYSIZE(layout), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &g_pGPLayout));
-	SAFE_RELEASE(pBlob);
+	// GPass Shader
+	CREATE_SHADER(GPassVertexShader, GPassVS);
+	CREATE_SHADER(GPassPixelShader, GPassPS);
 
-	V_RETURN(CompileShaderFromFile(L"GPass.hlsl", "PS_Main", "ps_5_0", &pBlob));
-	V_RETURN(pd3dDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pGPPixelShader));
-	SAFE_RELEASE(pBlob);
+	m_pGPassBST = RHI->CreateBoundShaderState(
+		VDF.GetVertexDeclaration(),
+		GPassVS.GetCode(),
+		GPassVS.GetVertexShader(),
+		GPassPS.GetPixelShader(),
+		NULL,
+		NULL,
+		NULL,
+		NULL
+		);
 
 	// DL Shader
-	V_RETURN(CompileShaderFromFile(L"DeferredLight.hlsl", "VS_Main", "vs_5_0", &pBlob));
-	V_RETURN(pd3dDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pDLVertexShader));
-	V_RETURN(pd3dDevice->CreateInputLayout(layout, ARRAYSIZE(layout), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &g_pDLLayout));
-	SAFE_RELEASE(pBlob);
+	CREATE_SHADER(DLVertexShader, DLPassVS);
+	CREATE_SHADER(DLPixelShader, DLPassPS);
+	m_pDLPassBST = RHI->CreateBoundShaderState(
+		VDF.GetVertexDeclaration(),
+		DLPassVS.GetCode(),
+		DLPassVS.GetVertexShader(),
+		DLPassPS.GetPixelShader(),
+		NULL,
+		NULL,
+		NULL,
+		NULL
+		);
 
-	V_RETURN(CompileShaderFromFile(L"DeferredLight.hlsl", "PS_Main", "ps_5_0", &pBlob));
-	V_RETURN(pd3dDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pDLPixelShader));
-	SAFE_RELEASE(pBlob);
-
-	// RenderScene Shader
-	V_RETURN(CompileShaderFromFile(L"ScenePass.hlsl", "RenderSceneVS", "vs_5_0", &pBlob));
-	V_RETURN(pd3dDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pSPVertexShader));
-	V_RETURN(pd3dDevice->CreateInputLayout(layout, ARRAYSIZE(layout), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &g_pSPLayout));
-	SAFE_RELEASE(pBlob);
-
-	V_RETURN(CompileShaderFromFile(L"ScenePass.hlsl", "RenderScenePS", "ps_5_0", &pBlob));
-	V_RETURN(pd3dDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pSPPixelShader));
-	SAFE_RELEASE(pBlob);
+	// Scene Pass Shader
+	CREATE_SHADER(SceneVertexShader, ScenePassVS);
+	CREATE_SHADER(ScenePixelShader, ScenePassPS);
+	m_pScenePassBST = RHI->CreateBoundShaderState(
+		VDF.GetVertexDeclaration(),
+		ScenePassVS.GetCode(),
+		ScenePassVS.GetVertexShader(),
+		ScenePassPS.GetPixelShader(),
+		NULL,
+		NULL,
+		NULL,
+		NULL
+		);
 
 	// 创建Mesh
 	V_RETURN(g_Mesh.Create(pd3dDevice, L"Crypt\\Crypt.sdkmesh", true));
@@ -176,18 +191,9 @@ void DeferredLightingApp::OnDestroy()
 {
 	g_Mesh.Destroy();
 
-	SAFE_RELEASE(g_pDLLayout);
-	SAFE_RELEASE(g_pDLVertexShader);
-	SAFE_RELEASE(g_pDLPixelShader);
-	SAFE_RELEASE(g_pSPLayout);
-	SAFE_RELEASE(g_pSPVertexShader);
-	SAFE_RELEASE(g_pSPPixelShader);
 	SAFE_RELEASE(g_pcbGPass);
 	SAFE_RELEASE(g_pcbDLPass);
 	SAFE_RELEASE(g_pcbScenePass);
-	SAFE_RELEASE(g_pGPLayout);
-	SAFE_RELEASE(g_pGPVertexShader);
-	SAFE_RELEASE(g_pGPPixelShader);
 	SAFE_RELEASE(g_pSamLinearWrap);
 	SAFE_RELEASE(g_pColorWritesOn);
 	SAFE_RELEASE(g_pCullBack);
@@ -294,8 +300,6 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &g_pcbGPass);
 	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &g_pcbGPass);
 
-	pd3dImmediateContext->IASetInputLayout(g_pGPLayout);
-
 	UINT Strides[1];
 	UINT Offsets[1];
 	ID3D11Buffer* pVB[1];
@@ -308,9 +312,6 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	ID3D11RenderTargetView* pRTV = g_pGBufferTextureRT[EGBT_Normal];
 	ID3D11DepthStencilView* pDSV = g_pDepthTextureDSV;
 
-	//ID3D11RenderTargetView* pRTV = DXUTGetD3D11RenderTargetView();
-	//ID3D11DepthStencilView* pDSV = DXUTGetD3D11DepthStencilView();
-
 	pd3dImmediateContext->OMSetRenderTargets(1, &pRTV, pDSV);
 	float ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
@@ -320,8 +321,7 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	pd3dImmediateContext->OMSetBlendState(g_pColorWritesOn, 0, 0xffffffff);
 	pd3dImmediateContext->RSSetState(g_pCullBack);
 
-	pd3dImmediateContext->VSSetShader(g_pGPVertexShader, NULL, 0);
-	pd3dImmediateContext->PSSetShader(g_pGPPixelShader, NULL, 0);
+	RHI->SetBoundShaderState(m_pGPassBST);
 	pd3dImmediateContext->PSSetSamplers(0, 1, &g_pSamLinearWrap);
 
 	g_Mesh.Render(pd3dImmediateContext, 0);
@@ -349,13 +349,11 @@ void DeferredLightingApp::RenderDeferredLight(ID3D11Device* pd3dDevice, ID3D11De
 	pd3dImmediateContext->Unmap(g_pcbDLPass, 0);
 
 	pd3dImmediateContext->PSSetShaderResources(0, 1, &g_pGBufferTextureSRV[EGBT_Normal]);
-
 	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &g_pcbDLPass);
 	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &g_pcbDLPass);
-	pd3dImmediateContext->IASetInputLayout(g_pDLLayout);
 
-	pd3dImmediateContext->VSSetShader(g_pDLVertexShader, NULL, 0);
-	pd3dImmediateContext->PSSetShader(g_pDLPixelShader, NULL, 0);
+	RHI->SetBoundShaderState(m_pDLPassBST);
+
 	pd3dImmediateContext->PSSetSamplers(0, 1, &g_pSamLinearWrap);
 
 	// 要用TriangleStrip
@@ -392,7 +390,7 @@ void DeferredLightingApp::RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 
 	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &g_pcbScenePass);
 	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &g_pcbScenePass);
-	pd3dImmediateContext->IASetInputLayout(g_pGPLayout);
+	//pd3dImmediateContext->IASetInputLayout(g_pSPLayout);
 
 	UINT Strides[1];
 	UINT Offsets[1];
@@ -407,8 +405,8 @@ void DeferredLightingApp::RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	pd3dImmediateContext->OMSetBlendState(g_pColorWritesOn, 0, 0xffffffff);
 	pd3dImmediateContext->RSSetState(g_pCullBack);
 
-	pd3dImmediateContext->VSSetShader(g_pSPVertexShader, NULL, 0);
-	pd3dImmediateContext->PSSetShader(g_pSPPixelShader, NULL, 0);
+	RHI->SetBoundShaderState(m_pScenePassBST);
+
 	pd3dImmediateContext->PSSetSamplers(0, 1, &g_pSamLinearWrap);
 
 	g_Mesh.Render(pd3dImmediateContext, 0);

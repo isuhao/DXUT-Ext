@@ -218,7 +218,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
-	// ±àÒëShader
+	// ±àÒëFShader
 	ID3DBlob* pBlob = NULL;
 	V_RETURN(CompileShaderFromFile(L"GPass.hlsl", "VS_Main", "vs_5_0", &pBlob));
 	V_RETURN(pd3dDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pGPVertexShader));
@@ -229,7 +229,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 	V_RETURN(pd3dDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pGPPixelShader));
 	SAFE_RELEASE(pBlob);
 
-	// DL Shader
+	// DL FShader
 	V_RETURN(CompileShaderFromFile(L"DeferredLight.hlsl", "VS_Main", "vs_5_0", &pBlob));
 	V_RETURN(pd3dDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pDLVertexShader));
 	V_RETURN(pd3dDevice->CreateInputLayout(layout, ARRAYSIZE(layout), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &g_pDLLayout));
@@ -239,7 +239,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 	V_RETURN(pd3dDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pDLPixelShader));
 	SAFE_RELEASE(pBlob);
 
-	// RenderScene Shader
+	// RenderScene FShader
 	V_RETURN(CompileShaderFromFile(L"ScenePass.hlsl", "RenderSceneVS", "vs_5_0", &pBlob));
 	V_RETURN(pd3dDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), NULL, &g_pSPVertexShader));
 	V_RETURN(pd3dDevice->CreateInputLayout(layout, ARRAYSIZE(layout), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &g_pSPLayout));

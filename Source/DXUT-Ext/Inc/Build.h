@@ -10,4 +10,8 @@
 #define DO_CHECK 1
 #endif
 
+#ifndef INCLUDE_LIB
+#define INCLUDE_LIB 1
+#endif
+
 #endif

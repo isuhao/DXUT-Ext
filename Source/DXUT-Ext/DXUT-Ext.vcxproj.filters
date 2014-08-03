@@ -37,6 +37,12 @@
     <ClInclude Include="Inc\RHI.h">
       <Filter>RHI</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\RHIResources.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\VertexDelcaration.h">
+      <Filter>ShaderManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GameApp.cpp">
@@ -53,6 +59,12 @@
     </ClCompile>
     <ClCompile Include="Inc\RHIMethods.h">
       <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RHIStates.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VertexDeclaration.cpp">
+      <Filter>ShaderManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

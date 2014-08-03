@@ -4,13 +4,15 @@
 #include "DXUT-Ext.h"
 
 // 引用一下这个库
+#if INCLUDE_LIB
 #pragma comment(lib, "DXUT-Ext.lib")
+#endif
 
-class GameApp
+class FGameApp
 {
 public:
-	GameApp();
-	virtual ~GameApp();
+	FGameApp();
+	virtual ~FGameApp();
 
 	int Run();
 
@@ -73,7 +75,7 @@ protected:
 };
 
 // 当前游戏Instance
-extern GameApp* g_pCurrGame;
+extern FGameApp* g_pCurrGame;
 
 // 各种全局变量
 extern CDXUTDialogResourceManager  g_DialogResourceManager; // manager for shared resources of dialogs

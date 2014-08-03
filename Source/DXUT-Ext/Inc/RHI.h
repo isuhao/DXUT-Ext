@@ -2,15 +2,17 @@
 #define _RHI_H_
 
 #include "Core.h"
+#include "RHIResources.h"
+
 
 /** 
  * Render hardware interface
  */
-class DynamicRHI
+class FDynamicRHI
 {
 public:
-	DynamicRHI();
-	~DynamicRHI();
+	FDynamicRHI();
+	~FDynamicRHI();
 
 	static void InitRHI();
 	static void ReleaseRHI();
@@ -22,6 +24,6 @@ private:
 	ID3D11Device*				m_pd3dDevice;
 };
 
-extern DynamicRHI* RHI;
+extern FDynamicRHI* RHI;
 
 #endif

@@ -3,8 +3,7 @@
 
 
 #include "GameApp.h"
-#include "Shader.h"
-
+#include "DLShaders.h"
 
 
 // Constant Buffer
@@ -38,10 +37,10 @@ enum EGBufferType
 	EGBT_MaxSize
 };
 
-class DeferredLightingApp : public GameApp
+class DeferredLightingApp : public FGameApp
 {
 public:
-	DeferredLightingApp() {}
+	DeferredLightingApp();
 	~DeferredLightingApp() {}
 
 	virtual void OnInit();
@@ -66,15 +65,7 @@ protected:
 	ID3D11Buffer*				g_pcbGPass = NULL;
 	ID3D11Buffer*				g_pcbDLPass = NULL;
 	ID3D11Buffer*				g_pcbScenePass = NULL;
-	ID3D11InputLayout*			g_pGPLayout = NULL;
-	ID3D11VertexShader*			g_pGPVertexShader = NULL;
-	ID3D11PixelShader*			g_pGPPixelShader = NULL;
-	ID3D11InputLayout*			g_pDLLayout = NULL;
-	ID3D11VertexShader*			g_pDLVertexShader = NULL;
-	ID3D11PixelShader*			g_pDLPixelShader = NULL;
-	ID3D11InputLayout*			g_pSPLayout = NULL;
-	ID3D11VertexShader*			g_pSPVertexShader = NULL;
-	ID3D11PixelShader*			g_pSPPixelShader = NULL;
+
 	ID3D11SamplerState*			g_pSamLinearWrap = NULL;
 	ID3D11BlendState*			g_pColorWritesOn = NULL;
 	ID3D11RasterizerState*		g_pCullBack = NULL;
@@ -88,6 +79,11 @@ protected:
 	ID3D11Texture2D*            g_pDepthTexture = NULL;
 	ID3D11ShaderResourceView*   g_pDepthTextureSRV = NULL; // SRV of the SM
 	ID3D11DepthStencilView*     g_pDepthTextureDSV = NULL; // depth stencil view of the SM
+
+
+	TSharedPtr<FBoundShaderState>		m_pGPassBST;
+	TSharedPtr<FBoundShaderState>		m_pDLPassBST;
+	TSharedPtr<FBoundShaderState>		m_pScenePassBST;
 };
 
 

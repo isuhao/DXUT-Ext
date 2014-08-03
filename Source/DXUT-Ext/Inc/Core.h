@@ -36,6 +36,14 @@
 	#define Check(Expr) { assert(Expr); }
 #endif
 
+// 前向声明
+#define PRE_DECLARE_CLASS(ClassType) \
+class ClassType;
+
+#define PRE_DECLARE_STRUCT(StructType) \
+class StructType;
+
+
 // 一个很牛逼的宏，获取成员在Struct中的偏移量
 #ifdef __GNUC__
 #define STRUCT_OFFSET( struc, member )	( ( (PTRINT)&((struc*)0x1)->member ) - 0x1 )

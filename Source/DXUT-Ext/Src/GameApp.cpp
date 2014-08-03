@@ -1,7 +1,7 @@
 #include "GameApp.h"
 
-// 当前游戏GameApp的全局指针
-GameApp* g_pCurrGame = NULL;
+// 当前游戏FGameApp的全局指针
+FGameApp* g_pCurrGame = NULL;
 
 // 各种全局变量
 CDXUTDialogResourceManager  g_DialogResourceManager;
@@ -11,13 +11,13 @@ CDXUTDialog                 g_HUD;
 CDXUTDialog                 g_SampleUI;
 
 // 构造
-GameApp::GameApp()
+FGameApp::FGameApp()
 : m_bShouldRenderText(false)
 {	
 	g_pCurrGame = this;
 }
 
-GameApp::~GameApp()
+FGameApp::~FGameApp()
 {
 	g_pCurrGame = NULL;
 }
@@ -28,14 +28,14 @@ GameApp::~GameApp()
 //--------------------------------------------------------------------------------------
 // Handle messages to the application
 //--------------------------------------------------------------------------------------
-LRESULT CALLBACK GameApp::__MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing,
+LRESULT CALLBACK FGameApp::__MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing,
 	void* pUserContext)
 {
 	Check(g_pCurrGame);
 	return g_pCurrGame->MsgProc(hWnd, uMsg, wParam, lParam, pbNoFurtherProcessing, pUserContext);
 }
 
-LRESULT GameApp::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing,
+LRESULT FGameApp::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing,
 	void* pUserContext)
 {
 	// Pass messages to dialog resource manager calls so GUI state is updated correctly
@@ -68,7 +68,7 @@ LRESULT GameApp::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, boo
 //--------------------------------------------------------------------------------------
 // Handle key presses
 //--------------------------------------------------------------------------------------
-void CALLBACK GameApp::__OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext)
+void CALLBACK FGameApp::__OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext)
 {
 	if (g_pCurrGame)
 	{
@@ -79,7 +79,7 @@ void CALLBACK GameApp::__OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, vo
 //--------------------------------------------------------------------------------------
 // Handles the GUI events
 //--------------------------------------------------------------------------------------
-void CALLBACK GameApp::__OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext)
+void CALLBACK FGameApp::__OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext)
 {
 	if (g_pCurrGame)
 	{
@@ -91,7 +91,7 @@ void CALLBACK GameApp::__OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* p
 // Handle updates to the scene.  This is called regardless of which D3D API is used
 // 相当于Tick
 //--------------------------------------------------------------------------------------
-void CALLBACK GameApp::__OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
+void CALLBACK FGameApp::__OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
 	if (g_pCurrGame)
 	{
@@ -99,7 +99,7 @@ void CALLBACK GameApp::__OnFrameMove(double fTime, float fElapsedTime, void* pUs
 	}
 }
 
-void GameApp::OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
+void FGameApp::OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
 	// Update the camera's position based on user input 
 	m_Camera.FrameMove(fElapsedTime);
@@ -108,15 +108,15 @@ void GameApp::OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 	OnTick(fElapsedTime);
 }
 
-HRESULT CALLBACK GameApp::__OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc,
+HRESULT CALLBACK FGameApp::__OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc,
 	void* pUserContext)
 {
-	DynamicRHI::InitRHI();
+	FDynamicRHI::InitRHI();
 	Check(g_pCurrGame);
 	return g_pCurrGame->OnD3D11CreateDevice(pd3dDevice, pBackBufferSurfaceDesc, pUserContext);
 }
 
-HRESULT GameApp::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc,
+HRESULT FGameApp::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc,
 	void* pUserContext)
 {
 	HRESULT hr;
@@ -131,7 +131,7 @@ HRESULT GameApp::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 //--------------------------------------------------------------------------------------
 // Release D3D11 resources created in OnD3D11ResizedSwapChain 
 //--------------------------------------------------------------------------------------
-void CALLBACK GameApp::__OnD3D11ReleasingSwapChain(void* pUserContext)
+void CALLBACK FGameApp::__OnD3D11ReleasingSwapChain(void* pUserContext)
 {
 	if (g_pCurrGame)
 	{
@@ -139,7 +139,7 @@ void CALLBACK GameApp::__OnD3D11ReleasingSwapChain(void* pUserContext)
 	}
 }
 
-void GameApp::OnD3D11ReleasingSwapChain(void* pUserContext)
+void FGameApp::OnD3D11ReleasingSwapChain(void* pUserContext)
 {
 	g_DialogResourceManager.OnD3D11ReleasingSwapChain();
 }
@@ -148,14 +148,14 @@ void GameApp::OnD3D11ReleasingSwapChain(void* pUserContext)
 // Create any D3D11 resources that depend on the back buffer
 // 根据BackBuffer来创建D3D资源
 //--------------------------------------------------------------------------------------
-HRESULT CALLBACK GameApp::__OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain,
+HRESULT CALLBACK FGameApp::__OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain,
 	const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
 {
 	Check(g_pCurrGame);
 	return g_pCurrGame->OnResizedSwapChain(pd3dDevice, pSwapChain, pBackBufferSurfaceDesc);
 }
 
-HRESULT GameApp::OnResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc)
+HRESULT FGameApp::OnResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc)
 {
 	HRESULT hr;
 
@@ -180,9 +180,9 @@ HRESULT GameApp::OnResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pS
 	return S_OK;
 }
 
-void CALLBACK GameApp::__OnD3D11DestroyDevice(void* pUserContext)
+void CALLBACK FGameApp::__OnD3D11DestroyDevice(void* pUserContext)
 {
-	DynamicRHI::ReleaseRHI();
+	FDynamicRHI::ReleaseRHI();
 
 	if (g_pCurrGame)
 	{
@@ -190,7 +190,7 @@ void CALLBACK GameApp::__OnD3D11DestroyDevice(void* pUserContext)
 	}
 }
 
-void GameApp::OnD3D11DestroyDevice(void* pUserContext)
+void FGameApp::OnD3D11DestroyDevice(void* pUserContext)
 {	
 }
 
@@ -198,13 +198,13 @@ void GameApp::OnD3D11DestroyDevice(void* pUserContext)
 // Render the scene using the D3D11 device
 // 渲染更新
 //--------------------------------------------------------------------------------------
-void CALLBACK GameApp::__OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext, double fTime,
+void CALLBACK FGameApp::__OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext, double fTime,
 	float fElapsedTime, void* pUserContext)
 {
 	g_pCurrGame->OnD3D11FrameRender(pd3dDevice, pd3dImmediateContext, fTime, fElapsedTime, pUserContext);
 }
 
-void GameApp::OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext, double fTime, float fElapsedTime, void* pUserContext)
+void FGameApp::OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext, double fTime, float fElapsedTime, void* pUserContext)
 {
 	// If the settings dialog is being shown, then render it instead of rendering the app's scene
 	if (g_SettingsDlg.IsActive())
@@ -217,7 +217,7 @@ void GameApp::OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 }
 
 
-void GameApp::RenderText()
+void FGameApp::RenderText()
 {
 	g_pTxtHelper->Begin();
 	g_pTxtHelper->SetInsertionPos(5, 5);
@@ -227,7 +227,7 @@ void GameApp::RenderText()
 	g_pTxtHelper->End();
 }
 
-int GameApp::Run()
+int FGameApp::Run()
 {
 	HRESULT hr;
 	// @TODO: Aeron ???!!!! 资源搜索路径，要改改
@@ -257,7 +257,7 @@ int GameApp::Run()
 
 	DXUTInit(true, true, NULL); // Parse the command line, show msgboxes on error, no extra command line params
 	DXUTSetCursorSettings(true, true);
-	DXUTCreateWindow(L"GameApp");
+	DXUTCreateWindow(L"FGameApp");
 
 	DXUTCreateDevice(D3D_FEATURE_LEVEL_11_0, true, 640, 480);
 
@@ -269,7 +269,7 @@ int GameApp::Run()
 	return DXUTGetExitCode();
 }
 
-void GameApp::InitApp()
+void FGameApp::InitApp()
 {
 	g_SettingsDlg.Init(&g_DialogResourceManager);
 	g_HUD.Init(&g_DialogResourceManager);
@@ -281,7 +281,7 @@ void GameApp::InitApp()
 	OnInit();
 }
 
-void GameApp::DestroyApp()
+void FGameApp::DestroyApp()
 {
 	// 销毁之前创建的对象
 	OnDestroy();
