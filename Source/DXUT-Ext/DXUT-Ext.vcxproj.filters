@@ -13,15 +13,18 @@
     <Filter Include="RHI">
       <UniqueIdentifier>{20f22e6b-bc4c-42d5-bdad-a39742fda462}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{8aaa2777-5edb-487f-95fb-a66880b75cf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{d9dd991d-5c45-4407-89f4-9b8ffed3ecd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\ShaderManager.h">
       <Filter>ShaderManager</Filter>
     </ClInclude>
     <ClInclude Include="Inc\DXUT-Ext.h" />
-    <ClInclude Include="Inc\SmartPtr.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Core.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -42,6 +45,18 @@
     </ClInclude>
     <ClInclude Include="Inc\VertexDelcaration.h">
       <Filter>ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Color.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\SmartPtr.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Mesh.h">
+      <Filter>Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +80,15 @@
     </ClCompile>
     <ClCompile Include="Src\VertexDeclaration.cpp">
       <Filter>ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Color.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RHIMethods.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Mesh.cpp">
+      <Filter>Mesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

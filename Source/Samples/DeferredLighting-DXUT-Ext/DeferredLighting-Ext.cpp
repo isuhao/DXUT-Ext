@@ -125,7 +125,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	//samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	samDesc.MipLODBias = 0.0f;
 	samDesc.MaxAnisotropy = 1;
-	samDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	samDesc.BorderColor[0] = samDesc.BorderColor[1] = samDesc.BorderColor[2] = samDesc.BorderColor[3] = 0;
 	samDesc.MinLOD = 0;
 	samDesc.MaxLOD = D3D11_FLOAT32_MAX;
@@ -133,7 +133,9 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	V_RETURN(pd3dDevice->CreateSamplerState(&samDesc, &g_pSamLinearWrap));
+	V_RETURN(pd3dDevice->CreateSamplerState(&samDesc, &g_pSamLinearWrap)); 
+
+	m_pSamplerState = RHI->CreateSamplerState(ESF_Trilinear);
 
 	// 创建BlendState
 	D3D11_BLEND_DESC blendDesc;
@@ -300,15 +302,6 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &g_pcbGPass);
 	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &g_pcbGPass);
 
-	UINT Strides[1];
-	UINT Offsets[1];
-	ID3D11Buffer* pVB[1];
-	pVB[0] = g_Mesh.GetVB11(0, 0);
-	Strides[0] = (UINT)g_Mesh.GetVertexStride(0, 0);
-	Offsets[0] = 0;
-	pd3dImmediateContext->IASetVertexBuffers(0, 1, pVB, Strides, Offsets);
-	pd3dImmediateContext->IASetIndexBuffer(g_Mesh.GetIB11(0), g_Mesh.GetIBFormat11(0), 0);
-
 	ID3D11RenderTargetView* pRTV = g_pGBufferTextureRT[EGBT_Normal];
 	ID3D11DepthStencilView* pDSV = g_pDepthTextureDSV;
 
@@ -322,7 +315,16 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	pd3dImmediateContext->RSSetState(g_pCullBack);
 
 	RHI->SetBoundShaderState(m_pGPassBST);
-	pd3dImmediateContext->PSSetSamplers(0, 1, &g_pSamLinearWrap);
+	RHI->PSSetSamplerState(0, m_pSamplerState);
+
+	UINT Strides[1];
+	UINT Offsets[1];
+	ID3D11Buffer* pVB[1];
+	pVB[0] = g_Mesh.GetVB11(0, 0);
+	Strides[0] = (UINT)g_Mesh.GetVertexStride(0, 0);
+	Offsets[0] = 0;
+	pd3dImmediateContext->IASetVertexBuffers(0, 1, pVB, Strides, Offsets);
+	pd3dImmediateContext->IASetIndexBuffer(g_Mesh.GetIB11(0), g_Mesh.GetIBFormat11(0), 0);
 
 	g_Mesh.Render(pd3dImmediateContext, 0);
 }
@@ -353,8 +355,7 @@ void DeferredLightingApp::RenderDeferredLight(ID3D11Device* pd3dDevice, ID3D11De
 	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &g_pcbDLPass);
 
 	RHI->SetBoundShaderState(m_pDLPassBST);
-
-	pd3dImmediateContext->PSSetSamplers(0, 1, &g_pSamLinearWrap);
+	RHI->PSSetSamplerState(0, m_pSamplerState);
 
 	// 要用TriangleStrip
 	pd3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -406,8 +407,7 @@ void DeferredLightingApp::RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	pd3dImmediateContext->RSSetState(g_pCullBack);
 
 	RHI->SetBoundShaderState(m_pScenePassBST);
-
-	pd3dImmediateContext->PSSetSamplers(0, 1, &g_pSamLinearWrap);
+	RHI->PSSetSamplerState(0, m_pSamplerState);
 
 	g_Mesh.Render(pd3dImmediateContext, 0);
 }

@@ -81,9 +81,11 @@ protected:
 	ID3D11DepthStencilView*     g_pDepthTextureDSV = NULL; // depth stencil view of the SM
 
 
-	TSharedPtr<FBoundShaderState>		m_pGPassBST;
-	TSharedPtr<FBoundShaderState>		m_pDLPassBST;
-	TSharedPtr<FBoundShaderState>		m_pScenePassBST;
+	TSharedPtr<FRHIBoundShaderState>		m_pGPassBST;
+	TSharedPtr<FRHIBoundShaderState>		m_pDLPassBST;
+	TSharedPtr<FRHIBoundShaderState>		m_pScenePassBST;
+
+	TSharedPtr<FRHISamplerState>			m_pSamplerState;
 };
 
 
