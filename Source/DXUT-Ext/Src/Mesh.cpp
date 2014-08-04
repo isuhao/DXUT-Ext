@@ -43,6 +43,8 @@ void FSDKMesh::Render()
 		//UINT Stride = m_SDKMesh.GetVertexStride()
 		//pDeviceContext->IASetVertexBuffers(VBIndex, 1, &pVB, 
 		//m_SDKMesh.GetAdjIB11()
+
+
 	}
 
 	/*for (int i = 0; i < NumVBs; ++i)
