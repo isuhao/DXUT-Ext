@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ShaderManager">
-      <UniqueIdentifier>{a33efc03-f1cf-4fa3-893a-388caba19b25}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{75fa322b-981f-44d0-b82e-debee4eec35b}</UniqueIdentifier>
     </Filter>
@@ -19,17 +16,20 @@
     <Filter Include="Mesh">
       <UniqueIdentifier>{d9dd991d-5c45-4407-89f4-9b8ffed3ecd1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{a33efc03-f1cf-4fa3-893a-388caba19b25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\ShaderManager.h">
-      <Filter>ShaderManager</Filter>
+      <Filter>Shader</Filter>
     </ClInclude>
     <ClInclude Include="Inc\DXUT-Ext.h" />
     <ClInclude Include="Inc\Core.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Shader.h">
-      <Filter>ShaderManager</Filter>
+      <Filter>Shader</Filter>
     </ClInclude>
     <ClInclude Include="Inc\GameApp.h">
       <Filter>Application</Filter>
@@ -44,7 +44,7 @@
       <Filter>RHI</Filter>
     </ClInclude>
     <ClInclude Include="Inc\VertexDelcaration.h">
-      <Filter>ShaderManager</Filter>
+      <Filter>Shader</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Color.h">
       <Filter>Util</Filter>
@@ -64,10 +64,10 @@
       <Filter>Application</Filter>
     </ClCompile>
     <ClCompile Include="Src\ShaderManager.cpp">
-      <Filter>ShaderManager</Filter>
+      <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="Src\Shader.cpp">
-      <Filter>ShaderManager</Filter>
+      <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="Inc\RHI.cpp">
       <Filter>RHI</Filter>
@@ -79,7 +79,7 @@
       <Filter>RHI</Filter>
     </ClCompile>
     <ClCompile Include="Src\VertexDeclaration.cpp">
-      <Filter>ShaderManager</Filter>
+      <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="Src\Color.cpp">
       <Filter>Util</Filter>

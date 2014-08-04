@@ -1,14 +1,18 @@
 #include "Mesh.h"
 
+#define MAX_D3D11_VERTEX_STREAMS D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT
+
 FMesh::FMesh(WCHAR* MeshName)
 :	m_szMeshName(MeshName)
 {
 }
 
-FSDKMesh::FSDKMesh(WCHAR* MeshName, bool bCreateAdjIndices /* = false */, SDKMeshLoadCallbackType pLoadedCallback /* = NULL */)
-: FMesh(MeshName)
-, m_pLoadedCallBack(NULL)
+FSDKMesh::FSDKMesh(WCHAR* MeshName, bool bCreateAdjIndices /* = false */)
+: FMesh(MeshName) 
 , m_bCreateAdjIndices(bCreateAdjIndices)
+, m_iDiffuseSlot(0)
+, m_iNormalSlot(0)
+, m_iSpecularSlot(0)
 {
 }
 
@@ -17,38 +21,11 @@ void FSDKMesh::Init()
 	HRESULT hr;
 	ID3D11Device* pd3dDevice = DXUTGetD3D11Device();
 
-	V(m_SDKMesh.Create(pd3dDevice, (LPCTSTR)m_szMeshName.c_str(), m_bCreateAdjIndices, NULL));
+	V(Create(pd3dDevice, (LPCTSTR)m_szMeshName.c_str(), m_bCreateAdjIndices, NULL));
 }
 
-void FSDKMesh::Render()
+void FSDKMesh::Render(UINT iDiffuseSlot /* = 0 */, UINT iNormalSlot /* = INVALID_SAMPLER_SLOT */, UINT iSpecularSlot /* = INVALID_SAMPLER_SLOT */)
 {
-	//for (int MeshIndex = 0; MeshIndex < m_SDKMesh.GetNumMeshes(); ++MeshIndex)
-	//{
-	//	SDKMESH_MESH* Mesh = m_SDKMesh.GetMesh(MeshIndex);
-	//	if (Mesh != NULL)
-	//	{
-	//		for (int VBIndex = 0; VBIndex < Mesh->NumVertexBuffers; ++VBIndex)
-	//		{
-	//			ID3D11Buffer* VB = m_SDKMesh.GetVB11(MeshIndex, VBIndex);
-	//			RHI->SetVertexBuffer()
-	//		}
-	//	}
-	//}
-
-	ID3D11DeviceContext* pDeviceContext = DXUTGetD3D11DeviceContext();
-
-	for (int VBIndex = 0; VBIndex < m_SDKMesh.GetNumVBs(); ++VBIndex)
-	{
-		ID3D11Buffer* pVB = m_SDKMesh.GetVB11At(VBIndex);
-		//UINT Stride = m_SDKMesh.GetVertexStride()
-		//pDeviceContext->IASetVertexBuffers(VBIndex, 1, &pVB, 
-		//m_SDKMesh.GetAdjIB11()
-
-
-	}
-
-	/*for (int i = 0; i < NumVBs; ++i)
-	{
-	UINT Stride = m_SDKMesh.GetVertexStride()
-	}*/
+	CDXUTSDKMesh::Render(DXUTGetD3D11DeviceContext(), iDiffuseSlot, iNormalSlot, iSpecularSlot);
 }
+

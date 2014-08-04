@@ -3,6 +3,8 @@
 
 #include "RHI.h"
 
+#pragma comment(lib, "DXUTOptd.lib")
+
 class FMesh 
 {
 public:
@@ -16,27 +18,25 @@ protected:
 	WString					m_szMeshName;
 };
 
-class FSDKMesh : public FMesh
+class FSDKMesh : public FMesh, public CDXUTSDKMesh
 {
 public:
-	typedef SDKMESH_CALLBACKS11*		SDKMeshLoadCallbackType;
 
-	FSDKMesh(WCHAR* MeshName, bool bCreateAdjIndices = false, SDKMeshLoadCallbackType pLoadedCallback = NULL);
+	FSDKMesh(WCHAR* MeshName, bool bCreateAdjIndices = false);
 
 	~FSDKMesh() { Destroy(); }
 
 	virtual void Init();
 
-	virtual void Render();
-	
-	void Destroy() { m_SDKMesh.Destroy(); }
+	virtual void Render(UINT iDiffuseSlot = 0, UINT iNormalSlot = INVALID_SAMPLER_SLOT, UINT iSpecularSlot = INVALID_SAMPLER_SLOT);
 
 protected:
 	bool						m_bCreateAdjIndices;
-	CDXUTSDKMesh				m_SDKMesh;
-	SDKMeshLoadCallbackType		m_pLoadedCallBack;
-};
 
+	UINT						m_iDiffuseSlot;
+	UINT						m_iNormalSlot;
+	UINT						m_iSpecularSlot;
+};
 
 
 #endif

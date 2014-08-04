@@ -1237,17 +1237,21 @@ void CDXUTSDKMesh::RenderAdjacent( ID3D11DeviceContext* pd3dDeviceContext,
     RenderFrame( 0, true, pd3dDeviceContext, iDiffuseSlot, iNormalSlot, iSpecularSlot );
 }
 
+// Aeron Begin
+// 不使用DX9的Effect,先注释掉
 
 //--------------------------------------------------------------------------------------
-void CDXUTSDKMesh::Render( LPDIRECT3DDEVICE9 pd3dDevice,
-                           LPD3DXEFFECT pEffect,
-                           D3DXHANDLE hTechnique,
-                           D3DXHANDLE htxDiffuse,
-                           D3DXHANDLE htxNormal,
-                           D3DXHANDLE htxSpecular )
-{
-    RenderFrame( 0, pd3dDevice, pEffect, hTechnique, htxDiffuse, htxNormal, htxSpecular );
-}
+//void CDXUTSDKMesh::Render( LPDIRECT3DDEVICE9 pd3dDevice,
+//                           LPD3DXEFFECT pEffect,
+//                           D3DXHANDLE hTechnique,
+//                           D3DXHANDLE htxDiffuse,
+//                           D3DXHANDLE htxNormal,
+//                           D3DXHANDLE htxSpecular )
+//{
+//    RenderFrame( 0, pd3dDevice, pEffect, hTechnique, htxDiffuse, htxNormal, htxSpecular );
+//}
+
+// Aeron End
 
 //--------------------------------------------------------------------------------------
 D3D11_PRIMITIVE_TOPOLOGY CDXUTSDKMesh::GetPrimitiveType11( SDKMESH_PRIMITIVE_TYPE PrimType )

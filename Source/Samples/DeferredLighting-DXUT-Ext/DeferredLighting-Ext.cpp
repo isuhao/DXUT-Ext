@@ -23,6 +23,7 @@ DeferredLightingApp::DeferredLightingApp()
 	m_pGPassBST.reset();
 	m_pDLPassBST.reset();
 	m_pScenePassBST.reset();
+	m_pMesh = TSharedPtr<FSDKMesh>(new FSDKMesh(L"Crypt\\Crypt.sdkmesh", false));
 }
 
 //--------------------------------------------------------------------------------------
@@ -116,7 +117,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 		);
 
 	// 创建Mesh
-	V_RETURN(g_Mesh.Create(pd3dDevice, L"Crypt\\Crypt.sdkmesh", true));
+	V_RETURN(g_Mesh.Create(pd3dDevice, L"Crypt\\Crypt.sdkmesh", false));
 
 	// 创建SamplerState
 	D3D11_SAMPLER_DESC samDesc;
@@ -317,14 +318,14 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	RHI->SetBoundShaderState(m_pGPassBST);
 	RHI->PSSetSamplerState(0, m_pSamplerState);
 
-	UINT Strides[1];
-	UINT Offsets[1];
-	ID3D11Buffer* pVB[1];
-	pVB[0] = g_Mesh.GetVB11(0, 0);
-	Strides[0] = (UINT)g_Mesh.GetVertexStride(0, 0);
-	Offsets[0] = 0;
-	pd3dImmediateContext->IASetVertexBuffers(0, 1, pVB, Strides, Offsets);
-	pd3dImmediateContext->IASetIndexBuffer(g_Mesh.GetIB11(0), g_Mesh.GetIBFormat11(0), 0);
+	//UINT Strides[1];
+	//UINT Offsets[1];
+	//ID3D11Buffer* pVB[1];
+	//pVB[0] = g_Mesh.GetVB11(0, 0);
+	//Strides[0] = (UINT)g_Mesh.GetVertexStride(0, 0);
+	//Offsets[0] = 0;
+	//pd3dImmediateContext->IASetVertexBuffers(0, 1, pVB, Strides, Offsets);
+	//pd3dImmediateContext->IASetIndexBuffer(g_Mesh.GetIB11(0), g_Mesh.GetIBFormat11(0), 0);
 
 	g_Mesh.Render(pd3dImmediateContext, 0);
 }

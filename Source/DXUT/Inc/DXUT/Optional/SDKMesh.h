@@ -442,13 +442,18 @@ public:
                                                     UINT iNormalSlot = INVALID_SAMPLER_SLOT,
                                                     UINT iSpecularSlot = INVALID_SAMPLER_SLOT );
 
+	// Aeron Begin
+	// 不使用DX9的Effect,先注释掉
+
     //Direct3D 9 Rendering
-    virtual void                    Render( LPDIRECT3DDEVICE9 pd3dDevice,
-                                            LPD3DXEFFECT pEffect,
-                                            D3DXHANDLE hTechnique,
-                                            D3DXHANDLE htxDiffuse = 0,
-                                            D3DXHANDLE htxNormal = 0,
-                                            D3DXHANDLE htxSpecular = 0 );
+    //virtual void                    Render( LPDIRECT3DDEVICE9 pd3dDevice,
+    //                                        LPD3DXEFFECT pEffect,
+    //                                        D3DXHANDLE hTechnique,
+    //                                        D3DXHANDLE htxDiffuse = 0,
+    //                                        D3DXHANDLE htxNormal = 0,
+    //                                        D3DXHANDLE htxSpecular = 0 );
+
+	// Aeron End
 
     //Helpers (D3D11 specific)
     static D3D11_PRIMITIVE_TOPOLOGY GetPrimitiveType11( SDKMESH_PRIMITIVE_TYPE PrimType );
