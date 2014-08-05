@@ -38,59 +38,35 @@ TSharedPtr<FRHIBoundShaderState> FDynamicRHI::CreateBoundShaderState(TSharedPtr<
 	return BoundState;
 }
 
-static D3D11_TEXTURE_ADDRESS_MODE GetD3DSamplerAddressMode(ESamplerAddressMode AddressMode)
+// VS & PS only
+TSharedPtr<FRHIBoundShaderState> FDynamicRHI::CreateBoundShaderState(TSharedPtr<FVertexDeclaration> VertexDeclaration, TSharedPtr<ID3DBlob> BindCode, TSharedPtr<ID3D11VertexShader> VS,
+	TSharedPtr<ID3D11PixelShader> PS)
 {
-	switch (AddressMode)
+	HRESULT hr;
+
+	TSharedPtr<FRHIBoundShaderState> BoundState = TSharedPtr<FRHIBoundShaderState>(new FRHIBoundShaderState);
+	BoundState->VertexShader = VS;
+	BoundState->PixelShader = PS;
+	BoundState->DomainShader = NULL;
+	BoundState->HullShader = NULL;
+	BoundState->GeometryShader = NULL;
+	BoundState->ComputeShader = NULL;
+
+	if (VertexDeclaration)
 	{
-	case ESAM_Clamp: 
-		return D3D11_TEXTURE_ADDRESS_CLAMP;
-
-	case ESAM_Mirror: 
-		return D3D11_TEXTURE_ADDRESS_MIRROR;
-
-	case ESAM_Border: 
-		return D3D11_TEXTURE_ADDRESS_BORDER;
-
-	default: 
-		return D3D11_TEXTURE_ADDRESS_WRAP;
-	};
-}
-
-static D3D11_COMPARISON_FUNC GetD3DSamplerCompareFunc(ESamplerCompareFunction CompareFunc)
-{
-	switch (CompareFunc)
-	{
-	case ESCF_Never:
-		return D3D11_COMPARISON_NEVER;
-
-	case ESCF_Less:
-		return D3D11_COMPARISON_LESS;
-
-	case ESCF_Equal:
-		return D3D11_COMPARISON_EQUAL;
-
-	case ESCF_LessEqual:
-		return D3D11_COMPARISON_LESS_EQUAL;
-
-	case ESCF_Greater:
-		return D3D11_COMPARISON_GREATER;
-
-	case ESCF_NotEqual:
-		return D3D11_COMPARISON_NOT_EQUAL;
-
-	case ESCF_GreaterEqual:
-		return D3D11_COMPARISON_GREATER_EQUAL;
-
-	case ESCF_Always:
-		return D3D11_COMPARISON_ALWAYS;
-
-	default:
-		return D3D11_COMPARISON_NEVER;
+		ID3D11InputLayout* pInputLayout = NULL;
+		D3D11_INPUT_ELEMENT_DESC* Elements = VertexDeclaration->GetElements();
+		UINT NumElements = VertexDeclaration->GetElementNum();
+		ID3DBlob* pBlob = BindCode.get();
+		V(m_pd3dDevice->CreateInputLayout(Elements, NumElements, pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pInputLayout));
+		BoundState->InputLayouts = MakeCOMPtr<ID3D11InputLayout>(pInputLayout);
 	}
+
+	return BoundState;
 }
 
 TSharedPtr<FRHISamplerState> FDynamicRHI::CreateSamplerState(ESamplerFilter Filter, ESamplerAddressMode AddressU, ESamplerAddressMode AddressV, ESamplerAddressMode AddressW,
-	float MipBias, UINT MaxAnisotropy, FLinearColor BorderColor, ESamplerCompareFunction CompareFunc)
+	float MipBias, UINT MaxAnisotropy, FLinearColor BorderColor, ECompareFunction CompareFunc)
 {
 	ID3D11SamplerState*		pSamplerState = NULL;
 	D3D11_SAMPLER_DESC		SamplerDesc;
@@ -98,28 +74,28 @@ TSharedPtr<FRHISamplerState> FDynamicRHI::CreateSamplerState(ESamplerFilter Filt
 
 	ZeroMemory(&SamplerDesc, sizeof(D3D11_SAMPLER_DESC));
 
-	const bool bComparisonEnabled = (CompareFunc != ESCF_Never);
+	const bool bComparisonEnabled = (CompareFunc != CF_Never);
 	switch (Filter)
 	{
-	case ESF_AnisotropicLinear:
-	case ESF_AnisotropicPoint:
+	case SF_AnisotropicLinear:
+	case SF_AnisotropicPoint:
 		// D3D11 doesn't allow using point filtering for mip filter when using anisotropic filtering
 		SamplerDesc.Filter = bComparisonEnabled ? D3D11_FILTER_COMPARISON_ANISOTROPIC : D3D11_FILTER_ANISOTROPIC;
 		break;
-	case ESF_Trilinear:
+	case SF_Trilinear:
 		SamplerDesc.Filter = bComparisonEnabled ? D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		break;
-	case ESF_Bilinear:
+	case SF_Bilinear:
 		SamplerDesc.Filter = bComparisonEnabled ? D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT : D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 		break;
-	case ESF_Point:
+	case SF_Point:
 		SamplerDesc.Filter = bComparisonEnabled ? D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT : D3D11_FILTER_MIN_MAG_MIP_POINT;
 		break;
 	}
 
-	SamplerDesc.AddressU = GetD3DSamplerAddressMode(AddressU);
-	SamplerDesc.AddressV = GetD3DSamplerAddressMode(AddressV);
-	SamplerDesc.AddressW = GetD3DSamplerAddressMode(AddressW);
+	SamplerDesc.AddressU = TranslateSamplerAddressMode(AddressU);
+	SamplerDesc.AddressV = TranslateSamplerAddressMode(AddressV);
+	SamplerDesc.AddressW = TranslateSamplerAddressMode(AddressW);
 
 	SamplerDesc.MipLODBias = MipBias;
 	SamplerDesc.MaxAnisotropy = MaxAnisotropy;
@@ -129,7 +105,7 @@ TSharedPtr<FRHISamplerState> FDynamicRHI::CreateSamplerState(ESamplerFilter Filt
 	SamplerDesc.BorderColor[2] = BorderColor.B;
 	SamplerDesc.BorderColor[3] = BorderColor.A;
 
-	SamplerDesc.ComparisonFunc = GetD3DSamplerCompareFunc(CompareFunc);
+	SamplerDesc.ComparisonFunc = TranslateCompareFunc(CompareFunc);
 
 	V(m_pd3dDevice->CreateSamplerState(&SamplerDesc, &pSamplerState));
 
@@ -150,4 +126,74 @@ void FDynamicRHI::VSSetSamplerState(int SamplerIndex, const TSharedPtr<FRHISampl
 {
 	FRHISamplerState* pSamp = SamplerState.get();
 	m_pd3dImmediateContext->VSSetSamplers(SamplerIndex, 1, &pSamp);
+}
+
+TSharedPtr<FRHIRasterState> FDynamicRHI::CreateRasterizerState(ERasterizerFillMode FillMode, ERasterizerCullMode CullMode, bool bAllowMSAA, bool bFrontCounterClockwise, INT DepthBias, float SlopeScaledDepthBias)
+{
+	D3D11_RASTERIZER_DESC	RasterizerDesc;
+	ID3D11RasterizerState*	pRasterizer;
+	HRESULT					hr;
+
+	ZeroMemory(&RasterizerDesc, sizeof(RasterizerDesc));
+
+	RasterizerDesc.FillMode = TranslateRasterizeFillMode(FillMode);
+	RasterizerDesc.CullMode = TranslateRasterizeCullMode(CullMode);
+	RasterizerDesc.SlopeScaledDepthBias = SlopeScaledDepthBias;
+	RasterizerDesc.FrontCounterClockwise = bFrontCounterClockwise;
+	RasterizerDesc.DepthBias = DepthBias;
+	RasterizerDesc.DepthClipEnable = TRUE;
+	RasterizerDesc.MultisampleEnable = bAllowMSAA;
+
+	V(m_pd3dDevice->CreateRasterizerState(&RasterizerDesc, &pRasterizer));
+
+	return MakeCOMPtr<FRHIRasterState>(pRasterizer);
+}
+
+void FDynamicRHI::SetRasterizerState(const TSharedPtr<FRHIRasterState>& RasterizerState)
+{
+	m_pd3dImmediateContext->RSSetState(RasterizerState.get());
+}
+
+bool g_bIndependentBlendEnable = true;
+
+TSharedPtr<FRHIBlendState> FDynamicRHI::CreateBlendState(EBlendOperation ColorBlendOp, EBlendFactor ColorSrcBlend, EBlendFactor ColorDstBlend, EBlendOperation AlphaBlendOp,
+	EBlendFactor AlphaSrcBlend, EBlendFactor AlphaDstBlend, EBlendColorWriteEnable ColorWriteEnable)
+{
+	D3D11_BLEND_DESC	BlendDesc;
+	FRHIBlendState*		pBlendState;
+	HRESULT				hr;
+
+	ZeroMemory(&BlendDesc, sizeof(D3D11_BLEND_DESC));
+
+	BlendDesc.AlphaToCoverageEnable = FALSE;
+	BlendDesc.IndependentBlendEnable = g_bIndependentBlendEnable;
+	BlendDesc.RenderTarget[0].BlendEnable =
+		ColorBlendOp != BO_Add || ColorDstBlend != BF_Zero || ColorSrcBlend != BF_One ||
+		AlphaBlendOp != BO_Add || AlphaDstBlend != BF_Zero || AlphaSrcBlend != BF_One;
+	BlendDesc.RenderTarget[0].BlendOp = TranslateBlendOp(ColorBlendOp);
+	BlendDesc.RenderTarget[0].SrcBlend = TranslateBlendFactor(ColorSrcBlend);
+	BlendDesc.RenderTarget[0].DestBlend = TranslateBlendFactor(ColorDstBlend);
+	BlendDesc.RenderTarget[0].BlendOpAlpha = TranslateBlendOp(AlphaBlendOp);
+	BlendDesc.RenderTarget[0].SrcBlendAlpha = TranslateBlendFactor(AlphaSrcBlend);
+	BlendDesc.RenderTarget[0].DestBlendAlpha = TranslateBlendFactor(AlphaDstBlend);
+	BlendDesc.RenderTarget[0].RenderTargetWriteMask = TranslateBlendColorWriteEnable(ColorWriteEnable);
+
+	// For MRT
+	if (g_bIndependentBlendEnable)
+	{
+		for (UINT RenderTargetIndex = 1; RenderTargetIndex < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; ++RenderTargetIndex)
+		{
+			CopyMemory(&BlendDesc.RenderTarget[RenderTargetIndex], &BlendDesc.RenderTarget[0], sizeof(BlendDesc.RenderTarget[0]));
+		}
+	}
+
+	V(m_pd3dDevice->CreateBlendState(&BlendDesc, &pBlendState));
+
+	return MakeCOMPtr<FRHIBlendState>(pBlendState);
+}
+
+
+void FDynamicRHI::SetBlendState(const TSharedPtr<FRHIBlendState>& BlendState, FLinearColor Color, UINT SimpleMask)
+{
+	m_pd3dImmediateContext->OMSetBlendState(BlendState.get(), &Color.R, SimpleMask);
 }

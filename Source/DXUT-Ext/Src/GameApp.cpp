@@ -257,7 +257,7 @@ int FGameApp::Run()
 
 	DXUTInit(true, true, NULL); // Parse the command line, show msgboxes on error, no extra command line params
 	DXUTSetCursorSettings(true, true);
-	DXUTCreateWindow(L"FGameApp");
+	DXUTCreateWindow(L"GameApp");
 
 	DXUTCreateDevice(D3D_FEATURE_LEVEL_11_0, true, 640, 480);
 

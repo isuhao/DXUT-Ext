@@ -19,6 +19,10 @@ public:
 	
 	FLinearColor();
 	explicit FLinearColor(float InR, float InG, float InB, float InA = 1.f);
+
+	// Common colors.	
+	static const FLinearColor White;
+	static const FLinearColor Black;
 };
 
 #endif

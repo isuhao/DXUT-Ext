@@ -12,6 +12,12 @@ DEFINE_RHIMETHOD(
 	);
 
 DEFINE_RHIMETHOD(
+	TSharedPtr<FRHIBoundShaderState>,
+	CreateBoundShaderState,
+	(TSharedPtr<FVertexDeclaration> VertexDeclaration, TSharedPtr<ID3DBlob> BindCode, TSharedPtr<ID3D11VertexShader> VS, TSharedPtr<ID3D11PixelShader> PS)
+	);
+
+DEFINE_RHIMETHOD(
 	void,
 	SetBoundShaderState,
 	(TSharedPtr<FRHIBoundShaderState> BoundShaderState)
@@ -20,7 +26,7 @@ DEFINE_RHIMETHOD(
 DEFINE_RHIMETHOD(
 	TSharedPtr<FRHISamplerState>,
 	CreateSamplerState,
-	(ESamplerFilter Filter, ESamplerAddressMode	AddressU = ESAM_Warp, ESamplerAddressMode AddressV = ESAM_Warp, ESamplerAddressMode AddressW = ESAM_Warp, float MipBias = 0.f, UINT MaxAnisotropy = 0, FLinearColor BorderColor = FLinearColor(), ESamplerCompareFunction CompareFunc = ESCF_Never)
+	(ESamplerFilter Filter, ESamplerAddressMode	AddressU = AM_Warp, ESamplerAddressMode AddressV = AM_Warp, ESamplerAddressMode AddressW = AM_Warp, float MipBias = 0.f, UINT MaxAnisotropy = 0, FLinearColor BorderColor = FLinearColor(), ECompareFunction CompareFunc = CF_Never)
 	);
 
 DEFINE_RHIMETHOD(
@@ -51,4 +57,28 @@ DEFINE_RHIMETHOD(
 	void,
 	DrawIndexedPrimitive,
 	(const TSharedPtr<FRHIBuffer>& IndexBuffer, EPrimitiveType PrimitiveType)
+	);
+
+DEFINE_RHIMETHOD(
+	TSharedPtr<FRHIRasterState>,
+	CreateRasterizerState,
+	(ERasterizerFillMode FillMode = FM_Solid, ERasterizerCullMode CullMode = CM_CCW, bool bAllowMSAA = true, bool bFrontCounterClockwise = false, INT DepthBias = 0, float SlopeScaledDepthBias = 0)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	SetRasterizerState,
+	(const TSharedPtr<FRHIRasterState>& RasterizerState)
+	);
+
+DEFINE_RHIMETHOD(
+	TSharedPtr<FRHIBlendState>,
+	CreateBlendState,
+	(EBlendOperation ColorBlendOp = BO_Add, EBlendFactor ColorSrcBlend = BF_One, EBlendFactor ColorDstBlend = BF_Zero, EBlendOperation AlphaBlendOp = BO_Add, EBlendFactor AlphaSrcBlend = BF_One, EBlendFactor AlphaDstBlend = BF_Zero, EBlendColorWriteEnable ColorWriteEnable = CWE_All)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	SetBlendState,
+	(const TSharedPtr<FRHIBlendState>& BlendState, FLinearColor Color = FLinearColor(), UINT SimpleMask = 0xffffffff)
 	);

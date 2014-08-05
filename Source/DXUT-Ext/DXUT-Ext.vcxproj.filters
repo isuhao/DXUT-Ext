@@ -58,6 +58,15 @@
     <ClInclude Include="Inc\Mesh.h">
       <Filter>Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\RHITranslate.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\RHIBuffer.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Types.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GameApp.cpp">
@@ -89,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="Src\Mesh.cpp">
       <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RHIBuffer.cpp">
+      <Filter>RHI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

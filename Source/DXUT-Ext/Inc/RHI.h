@@ -3,6 +3,7 @@
 
 #include "Core.h"
 #include "RHIResources.h"
+#include "RHITranslate.h"
 
 
 /** 

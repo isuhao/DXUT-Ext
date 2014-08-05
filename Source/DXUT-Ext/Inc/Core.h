@@ -26,6 +26,7 @@
 
 // 其他头文件
 #include "Build.h"
+#include "Types.h"
 #include "Util.h"
 
 /// 各种宏
@@ -37,10 +38,18 @@
 
 // 前向声明
 #define PRE_DECLARE_CLASS(ClassType) \
-class ClassType;
+	class ClassType;
 
 #define PRE_DECLARE_STRUCT(StructType) \
-class StructType;
+	class StructType;
+
+#define PRE_DECLARE_TEMPLATE_CLASS(T, ClassType) \
+	template<typename T> \
+	class ClassType;
+
+#define PRE_DECLARE_TEMPLATE_CLASS2(T1, T2, ClassType) \
+	template<typename T1, typename T2> \
+	class ClassType;
 
 
 // 一个很牛逼的宏，获取成员在Struct中的偏移量
@@ -53,17 +62,5 @@ class StructType;
 #ifndef INDEX_NONE
 #define INDEX_NONE -1
 #endif
-
-// 字符串
-#define WString	std::wstring
-#define String	std::string
-
-// 各种容器
-#define TArray	CGrowableArray
-#define TMap	std::map
-#define TSet	std::set	
-#define TPair	std::pair
-
-
 
 #endif

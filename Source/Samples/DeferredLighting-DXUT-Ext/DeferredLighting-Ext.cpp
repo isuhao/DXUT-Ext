@@ -23,6 +23,8 @@ DeferredLightingApp::DeferredLightingApp()
 	m_pGPassBST.reset();
 	m_pDLPassBST.reset();
 	m_pScenePassBST.reset();
+	m_pCullBack.reset();
+	m_pColorWriteOn.reset();
 	m_pMesh = TSharedPtr<FSDKMesh>(new FSDKMesh(L"Crypt\\Crypt.sdkmesh", false));
 }
 
@@ -70,7 +72,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	pd3dDevice->CreateShaderResourceView(g_pDepthTexture, &srvDesc, &g_pDepthTextureSRV);
 
-	// Vertex Declaration
+	// 顶点声明工厂
 	FVertexDeclarationFactory_DL VDF;
 
 	// GPass Shader
@@ -81,11 +83,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 		VDF.GetVertexDeclaration(),
 		GPassVS.GetCode(),
 		GPassVS.GetVertexShader(),
-		GPassPS.GetPixelShader(),
-		NULL,
-		NULL,
-		NULL,
-		NULL
+		GPassPS.GetPixelShader()
 		);
 
 	// DL Shader
@@ -95,11 +93,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 		VDF.GetVertexDeclaration(),
 		DLPassVS.GetCode(),
 		DLPassVS.GetVertexShader(),
-		DLPassPS.GetPixelShader(),
-		NULL,
-		NULL,
-		NULL,
-		NULL
+		DLPassPS.GetPixelShader()
 		);
 
 	// Scene Pass Shader
@@ -109,57 +103,20 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 		VDF.GetVertexDeclaration(),
 		ScenePassVS.GetCode(),
 		ScenePassVS.GetVertexShader(),
-		ScenePassPS.GetPixelShader(),
-		NULL,
-		NULL,
-		NULL,
-		NULL
+		ScenePassPS.GetPixelShader()
 		);
 
 	// 创建Mesh
-	V_RETURN(g_Mesh.Create(pd3dDevice, L"Crypt\\Crypt.sdkmesh", false));
+	m_pMesh->Init();
 
 	// 创建SamplerState
-	D3D11_SAMPLER_DESC samDesc;
-
-	ZeroMemory(&samDesc, sizeof(samDesc));
-	//samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samDesc.MipLODBias = 0.0f;
-	samDesc.MaxAnisotropy = 1;
-	samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	samDesc.BorderColor[0] = samDesc.BorderColor[1] = samDesc.BorderColor[2] = samDesc.BorderColor[3] = 0;
-	samDesc.MinLOD = 0;
-	samDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	V_RETURN(pd3dDevice->CreateSamplerState(&samDesc, &g_pSamLinearWrap)); 
-
-	m_pSamplerState = RHI->CreateSamplerState(ESF_Trilinear);
+	m_pSamplerState = RHI->CreateSamplerState(SF_Trilinear);
 
 	// 创建BlendState
-	D3D11_BLEND_DESC blendDesc;
-	ZeroMemory(&blendDesc, sizeof(blendDesc));
-	blendDesc.IndependentBlendEnable = FALSE;
-	blendDesc.RenderTarget[0].BlendEnable = FALSE;
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	V_RETURN(pd3dDevice->CreateBlendState(&blendDesc, &g_pColorWritesOn));
+	m_pColorWriteOn = RHI->CreateBlendState();
 
 	// 创建RasterizeState
-	D3D11_RASTERIZER_DESC rastDesc;
-	ZeroMemory(&rastDesc, sizeof(rastDesc));
-	rastDesc.CullMode = D3D11_CULL_BACK;
-	rastDesc.FillMode = D3D11_FILL_SOLID;
-	rastDesc.AntialiasedLineEnable = FALSE;
-	rastDesc.DepthBias = 0;
-	rastDesc.DepthBiasClamp = 0;
-	rastDesc.DepthClipEnable = TRUE;
-	rastDesc.FrontCounterClockwise = FALSE;
-	rastDesc.MultisampleEnable = TRUE;
-	rastDesc.ScissorEnable = FALSE;
-	rastDesc.SlopeScaledDepthBias = 0;
-	V_RETURN(pd3dDevice->CreateRasterizerState(&rastDesc, &g_pCullBack));
+	m_pCullBack = RHI->CreateRasterizerState(FM_Solid, CM_CCW);
 
 	// 创建CB
 	D3D11_BUFFER_DESC cbDesc;
@@ -192,14 +149,9 @@ void DeferredLightingApp::OnTick(float DeltaSeconds)
 //--------------------------------------------------------------------------------------
 void DeferredLightingApp::OnDestroy()
 {
-	g_Mesh.Destroy();
-
 	SAFE_RELEASE(g_pcbGPass);
 	SAFE_RELEASE(g_pcbDLPass);
 	SAFE_RELEASE(g_pcbScenePass);
-	SAFE_RELEASE(g_pSamLinearWrap);
-	SAFE_RELEASE(g_pColorWritesOn);
-	SAFE_RELEASE(g_pCullBack);
 	SAFE_RELEASE(g_pDepthTexture);
 	SAFE_RELEASE(g_pDepthTextureSRV);
 	SAFE_RELEASE(g_pDepthTextureDSV);
@@ -312,22 +264,12 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	pd3dImmediateContext->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0, 0);
 
 	// Render State
-	pd3dImmediateContext->OMSetBlendState(g_pColorWritesOn, 0, 0xffffffff);
-	pd3dImmediateContext->RSSetState(g_pCullBack);
-
+	RHI->SetBlendState(m_pColorWriteOn);
+	RHI->SetRasterizerState(m_pCullBack);
 	RHI->SetBoundShaderState(m_pGPassBST);
 	RHI->PSSetSamplerState(0, m_pSamplerState);
 
-	//UINT Strides[1];
-	//UINT Offsets[1];
-	//ID3D11Buffer* pVB[1];
-	//pVB[0] = g_Mesh.GetVB11(0, 0);
-	//Strides[0] = (UINT)g_Mesh.GetVertexStride(0, 0);
-	//Offsets[0] = 0;
-	//pd3dImmediateContext->IASetVertexBuffers(0, 1, pVB, Strides, Offsets);
-	//pd3dImmediateContext->IASetIndexBuffer(g_Mesh.GetIB11(0), g_Mesh.GetIBFormat11(0), 0);
-
-	g_Mesh.Render(pd3dImmediateContext, 0);
+	m_pMesh->Render(0);
 }
 
 void DeferredLightingApp::RenderDeferredLight(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext)
@@ -386,29 +328,16 @@ void DeferredLightingApp::RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	pcbScenePass->m_LightDiffuse = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	pcbScenePass->Padding = D3DXVECTOR2(1.0, 1.0);
 	pd3dImmediateContext->Unmap(g_pcbScenePass, 0);
-
 	// 第一个坑被Mesh的贴图占了
 	pd3dImmediateContext->PSSetShaderResources(1, 1, &g_pGBufferTextureSRV[EGBT_Diffuse]);
-
 	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &g_pcbScenePass);
 	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &g_pcbScenePass);
-	//pd3dImmediateContext->IASetInputLayout(g_pSPLayout);
-
-	UINT Strides[1];
-	UINT Offsets[1];
-	ID3D11Buffer* pVB[1];
-	pVB[0] = g_Mesh.GetVB11(0, 0);
-	Strides[0] = (UINT)g_Mesh.GetVertexStride(0, 0);
-	Offsets[0] = 0;
-	pd3dImmediateContext->IASetVertexBuffers(0, 1, pVB, Strides, Offsets);
-	pd3dImmediateContext->IASetIndexBuffer(g_Mesh.GetIB11(0), g_Mesh.GetIBFormat11(0), 0);
 
 	// Render State
-	pd3dImmediateContext->OMSetBlendState(g_pColorWritesOn, 0, 0xffffffff);
-	pd3dImmediateContext->RSSetState(g_pCullBack);
-
+	RHI->SetBlendState(m_pColorWriteOn);
+	RHI->SetRasterizerState(m_pCullBack);
 	RHI->SetBoundShaderState(m_pScenePassBST);
 	RHI->PSSetSamplerState(0, m_pSamplerState);
 
-	g_Mesh.Render(pd3dImmediateContext, 0);
+	m_pMesh->Render(0);
 }

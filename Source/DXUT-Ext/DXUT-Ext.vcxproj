@@ -79,10 +79,13 @@
     <ClInclude Include="Inc\DXUT-Ext.h" />
     <ClInclude Include="Inc\Mesh.h" />
     <ClInclude Include="Inc\RHI.h" />
+    <ClInclude Include="Inc\RHIBuffer.h" />
+    <ClInclude Include="Inc\RHITranslate.h" />
     <ClInclude Include="Inc\RHIResources.h" />
     <ClInclude Include="Inc\Shader.h" />
     <ClInclude Include="Inc\ShaderManager.h" />
     <ClInclude Include="Inc\SmartPtr.h" />
+    <ClInclude Include="Inc\Types.h" />
     <ClInclude Include="Inc\Util.h" />
     <ClInclude Include="Inc\VertexDelcaration.h" />
   </ItemGroup>
@@ -92,6 +95,7 @@
     <ClCompile Include="Src\Color.cpp" />
     <ClCompile Include="Src\GameApp.cpp" />
     <ClCompile Include="Src\Mesh.cpp" />
+    <ClCompile Include="Src\RHIBuffer.cpp" />
     <ClCompile Include="Src\RHIMethods.cpp" />
     <ClCompile Include="Src\RHIStates.cpp" />
     <ClCompile Include="Src\Shader.cpp" />

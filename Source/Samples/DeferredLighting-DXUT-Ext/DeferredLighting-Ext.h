@@ -59,16 +59,10 @@ protected:
 	void DLInitResource(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc);
 
 protected:
-	// Mesh
-	CDXUTSDKMesh                g_Mesh;
 	// D3D×ÊÔ´
 	ID3D11Buffer*				g_pcbGPass = NULL;
 	ID3D11Buffer*				g_pcbDLPass = NULL;
 	ID3D11Buffer*				g_pcbScenePass = NULL;
-
-	ID3D11SamplerState*			g_pSamLinearWrap = NULL;
-	ID3D11BlendState*			g_pColorWritesOn = NULL;
-	ID3D11RasterizerState*		g_pCullBack = NULL;
 
 	// G-Buffer
 	ID3D11Texture2D*			g_pGBufferTexture[EGBT_MaxSize];
@@ -85,6 +79,8 @@ protected:
 	TSharedPtr<FRHIBoundShaderState>		m_pDLPassBST;
 	TSharedPtr<FRHIBoundShaderState>		m_pScenePassBST;
 	TSharedPtr<FRHISamplerState>			m_pSamplerState;
+	TSharedPtr<FRHIRasterState>				m_pCullBack;
+	TSharedPtr<FRHIBlendState>				m_pColorWriteOn;
 	TSharedPtr<FSDKMesh>					m_pMesh;
 };
 

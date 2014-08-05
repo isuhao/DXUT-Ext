@@ -26,6 +26,8 @@ void FSDKMesh::Init()
 
 void FSDKMesh::Render(UINT iDiffuseSlot /* = 0 */, UINT iNormalSlot /* = INVALID_SAMPLER_SLOT */, UINT iSpecularSlot /* = INVALID_SAMPLER_SLOT */)
 {
-	CDXUTSDKMesh::Render(DXUTGetD3D11DeviceContext(), iDiffuseSlot, iNormalSlot, iSpecularSlot);
+	ID3D11DeviceContext* pDeviceContext = DXUTGetD3D11DeviceContext();
+	Check(pDeviceContext);
+	CDXUTSDKMesh::Render(pDeviceContext, iDiffuseSlot, iNormalSlot, iSpecularSlot);
 }
 
