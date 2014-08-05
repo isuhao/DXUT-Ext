@@ -25,7 +25,10 @@ DeferredLightingApp::DeferredLightingApp()
 	m_pScenePassBST.reset();
 	m_pCullBack.reset();
 	m_pColorWriteOn.reset();
-	m_pMesh = TSharedPtr<FSDKMesh>(new FSDKMesh(L"Crypt\\Crypt.sdkmesh", false));
+	m_pcbGPass		= MakeSharedPtr<FConstantBuffer>();
+	m_pcbDLPass		= MakeSharedPtr<FConstantBuffer>();
+	m_pcbScenePass	= MakeSharedPtr<FConstantBuffer>();
+	m_pMesh			= TSharedPtr<FSDKMesh>(new FSDKMesh(L"Crypt\\Crypt.sdkmesh", false));
 }
 
 //--------------------------------------------------------------------------------------
@@ -54,7 +57,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	surfDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	surfDesc.CPUAccessFlags = 0;
 	surfDesc.MiscFlags = 0;
-	pd3dDevice->CreateTexture2D(&surfDesc, 0, &g_pDepthTexture);
+	V(pd3dDevice->CreateTexture2D(&surfDesc, 0, &g_pDepthTexture));
 
 	// Create depth stencil view for shadowmap rendering
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
@@ -62,7 +65,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Flags = 0;
 	dsvDesc.Texture2D.MipSlice = 0;
-	pd3dDevice->CreateDepthStencilView(g_pDepthTexture, &dsvDesc, &g_pDepthTextureDSV);
+	V(pd3dDevice->CreateDepthStencilView(g_pDepthTexture, &dsvDesc, &g_pDepthTextureDSV));
 
 	// Create shader resource view for shadowmap
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -70,7 +73,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	pd3dDevice->CreateShaderResourceView(g_pDepthTexture, &srvDesc, &g_pDepthTextureSRV);
+	V(pd3dDevice->CreateShaderResourceView(g_pDepthTexture, &srvDesc, &g_pDepthTextureSRV));
 
 	// 顶点声明工厂
 	FVertexDeclarationFactory_DL VDF;
@@ -119,19 +122,9 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	m_pCullBack = RHI->CreateRasterizerState(FM_Solid, CM_CCW);
 
 	// 创建CB
-	D3D11_BUFFER_DESC cbDesc;
-	ZeroMemory(&cbDesc, sizeof(cbDesc));
-	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbDesc.ByteWidth = sizeof(CB_GPass);
-	V_RETURN(pd3dDevice->CreateBuffer(&cbDesc, NULL, &g_pcbGPass));
-
-	cbDesc.ByteWidth = sizeof(CB_DLPass);
-	V_RETURN(pd3dDevice->CreateBuffer(&cbDesc, NULL, &g_pcbDLPass));
-
-	cbDesc.ByteWidth = sizeof(CB_ScenePass);
-	V_RETURN(pd3dDevice->CreateBuffer(&cbDesc, NULL, &g_pcbScenePass));
+	m_pcbGPass->CreateBuffer(sizeof(CB_GPass));
+	m_pcbDLPass->CreateBuffer(sizeof(CB_DLPass));
+	m_pcbScenePass->CreateBuffer(sizeof(CB_ScenePass));
 
 	return S_OK;
 }
@@ -149,9 +142,6 @@ void DeferredLightingApp::OnTick(float DeltaSeconds)
 //--------------------------------------------------------------------------------------
 void DeferredLightingApp::OnDestroy()
 {
-	SAFE_RELEASE(g_pcbGPass);
-	SAFE_RELEASE(g_pcbDLPass);
-	SAFE_RELEASE(g_pcbScenePass);
 	SAFE_RELEASE(g_pDepthTexture);
 	SAFE_RELEASE(g_pDepthTextureSRV);
 	SAFE_RELEASE(g_pDepthTextureDSV);
@@ -236,8 +226,6 @@ void DeferredLightingApp::OnInit()
 
 void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext)
 {
-	HRESULT hr;
-	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	D3DXMATRIXA16 mWVP, mWorld;
 
 	mWVP = *m_Camera.GetWorldMatrix() * *m_Camera.GetViewMatrix() * *m_Camera.GetProjMatrix();
@@ -246,14 +234,13 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	D3DXMatrixTranspose(&mWorld, &mWorld);
 
 	// 设置CB的值
-	V(pd3dImmediateContext->Map(g_pcbGPass, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource));
-	CB_GPass* pcbGPass = (CB_GPass*)(MappedResource.pData);
-	pcbGPass->m_mWorldViewProj = mWVP;
-	pcbGPass->m_mWorld = mWorld;
-	pd3dImmediateContext->Unmap(g_pcbGPass, 0);
+	CB_GPass TempValue = { mWVP, mWorld };
+	m_pcbGPass->UpdateData((byte*)&TempValue, 0, sizeof(CB_GPass));
+	m_pcbGPass->CommitData();
 
-	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &g_pcbGPass);
-	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &g_pcbGPass);
+	FRHIBuffer* pGP = m_pcbGPass->GetBuffer().get();
+	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &pGP);
+	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &pGP);
 
 	ID3D11RenderTargetView* pRTV = g_pGBufferTextureRT[EGBT_Normal];
 	ID3D11DepthStencilView* pDSV = g_pDepthTextureDSV;
@@ -281,21 +268,17 @@ void DeferredLightingApp::RenderDeferredLight(ID3D11Device* pd3dDevice, ID3D11De
 	float ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
 
-	HRESULT hr;
-	D3D11_MAPPED_SUBRESOURCE MappedResource;
-	
-	//D3DXVECTOR3 LightVec = *m_LightCamera.GetEyePt() - *m_LightCamera.GetLookAtPt();
 	D3DXVECTOR3 LightVec = D3DXVECTOR3(1.0, 1.0, -1.0);
 
 	// 设置CB的值
-	V(pd3dImmediateContext->Map(g_pcbDLPass, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource));
-	CB_DLPass* pcbGPass = (CB_DLPass*)(MappedResource.pData);
-	pcbGPass->g_vLightDir = LightVec;
-	pd3dImmediateContext->Unmap(g_pcbDLPass, 0);
+	CB_DLPass TempVal = { LightVec, 0 };
+	m_pcbDLPass->UpdateData((byte*)&TempVal, 0, sizeof(CB_DLPass));
+	m_pcbDLPass->CommitData();
+	FRHIBuffer* TempBuffer = m_pcbDLPass->GetBuffer().get();
 
 	pd3dImmediateContext->PSSetShaderResources(0, 1, &g_pGBufferTextureSRV[EGBT_Normal]);
-	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &g_pcbDLPass);
-	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &g_pcbDLPass);
+	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &TempBuffer);
+	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &TempBuffer);
 
 	RHI->SetBoundShaderState(m_pDLPassBST);
 	RHI->PSSetSamplerState(0, m_pSamplerState);
@@ -313,25 +296,24 @@ void DeferredLightingApp::RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	// 把RT设为BackBuffer
 	pd3dImmediateContext->OMSetRenderTargets(1, &pRTV, pDSV);
 
-	HRESULT hr;
-	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	D3DXMATRIXA16 mWVP;
-
 	mWVP = *m_Camera.GetWorldMatrix() * *m_Camera.GetViewMatrix() * *m_Camera.GetProjMatrix();
 	D3DXMatrixTranspose(&mWVP, &mWVP);
 
 	// 设置CB的值
-	V(pd3dImmediateContext->Map(g_pcbScenePass, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource));
-	CB_ScenePass* pcbScenePass = (CB_ScenePass*)(MappedResource.pData);
-	pcbScenePass->m_mWVP = mWVP;
-	pcbScenePass->m_AmbientColor = D3DXVECTOR3(0.15f, 0.15f, 0.15f);
-	pcbScenePass->m_LightDiffuse = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
-	pcbScenePass->Padding = D3DXVECTOR2(1.0, 1.0);
-	pd3dImmediateContext->Unmap(g_pcbScenePass, 0);
+	CB_ScenePass TempVal;
+	TempVal.m_mWVP = mWVP;
+	TempVal.m_AmbientColor = D3DXVECTOR3(0.15f, 0.15f, 0.15f);
+	TempVal.m_LightDiffuse = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+	TempVal.Padding = float2(1.0, 1.0);
+	m_pcbScenePass->UpdateData((byte*)&TempVal, 0, sizeof(CB_ScenePass));
+	m_pcbScenePass->CommitData();
+	FRHIBuffer* TempBuffer = m_pcbScenePass->GetBuffer().get();
+
 	// 第一个坑被Mesh的贴图占了
 	pd3dImmediateContext->PSSetShaderResources(1, 1, &g_pGBufferTextureSRV[EGBT_Diffuse]);
-	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &g_pcbScenePass);
-	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &g_pcbScenePass);
+	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &TempBuffer);
+	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &TempBuffer);
 
 	// Render State
 	RHI->SetBlendState(m_pColorWriteOn);

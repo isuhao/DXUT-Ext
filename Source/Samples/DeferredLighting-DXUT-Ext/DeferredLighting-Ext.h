@@ -60,9 +60,6 @@ protected:
 
 protected:
 	// D3D×ÊÔ´
-	ID3D11Buffer*				g_pcbGPass = NULL;
-	ID3D11Buffer*				g_pcbDLPass = NULL;
-	ID3D11Buffer*				g_pcbScenePass = NULL;
 
 	// G-Buffer
 	ID3D11Texture2D*			g_pGBufferTexture[EGBT_MaxSize];
@@ -82,6 +79,10 @@ protected:
 	TSharedPtr<FRHIRasterState>				m_pCullBack;
 	TSharedPtr<FRHIBlendState>				m_pColorWriteOn;
 	TSharedPtr<FSDKMesh>					m_pMesh;
+
+	TSharedPtr<FConstantBuffer>				m_pcbGPass;
+	TSharedPtr<FConstantBuffer>				m_pcbDLPass;
+	TSharedPtr<FConstantBuffer>				m_pcbScenePass;
 };
 
 

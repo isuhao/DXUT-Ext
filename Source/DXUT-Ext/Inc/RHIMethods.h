@@ -82,3 +82,9 @@ DEFINE_RHIMETHOD(
 	SetBlendState,
 	(const TSharedPtr<FRHIBlendState>& BlendState, FLinearColor Color = FLinearColor(), UINT SimpleMask = 0xffffffff)
 	);
+
+DEFINE_RHIMETHOD(
+	TSharedPtr<FRHIBuffer>,
+	CreateBuffer,
+	()
+	);
