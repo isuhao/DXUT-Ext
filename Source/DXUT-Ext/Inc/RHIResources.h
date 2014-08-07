@@ -5,20 +5,26 @@
 
 // 前向声明
 PRE_DECLARE_CLASS(FVertexDeclaration)
-
+PRE_DECLARE_CLASS(FRenderSurface)
+PRE_DECLARE_CLASS(FTexture2D)
 
 // D3D资源
-typedef ID3D11SamplerState		FRHISamplerState;
-typedef ID3D11RasterizerState	FRHIRasterState;
-typedef ID3D11BlendState		FRHIBlendState;
-typedef ID3D11InputLayout		FRHIInputLayout;
-typedef ID3D11Buffer			FRHIBuffer;
-typedef ID3D11VertexShader		FRHIVertexShader;
-typedef ID3D11PixelShader		FRHIPixelShader;
-typedef ID3D11DomainShader		FRHIDomainShader;
-typedef ID3D11HullShader		FRHIHullShader;
-typedef ID3D11GeometryShader	FRHIGeometryShader;
-typedef ID3D11ComputeShader		FRHIComputeShader;
+typedef ID3D11SamplerState			FRHISamplerState;
+typedef ID3D11RasterizerState		FRHIRasterState;
+typedef ID3D11BlendState			FRHIBlendState;
+typedef ID3D11InputLayout			FRHIInputLayout;
+typedef ID3D11Buffer				FRHIBuffer;
+typedef ID3D11DepthStencilView		FRHIDepthStencilView;
+typedef ID3D11RenderTargetView		FRHIRenderTargetView;
+typedef ID3D11ShaderResourceView	FRHIShaderResourceView;
+typedef ID3D11Texture2D				FRHITexture2D;
+typedef ID3D11Texture3D				FRHITexture3D;
+typedef ID3D11VertexShader			FRHIVertexShader;
+typedef ID3D11PixelShader			FRHIPixelShader;
+typedef ID3D11DomainShader			FRHIDomainShader;
+typedef ID3D11HullShader			FRHIHullShader;
+typedef ID3D11GeometryShader		FRHIGeometryShader;
+typedef ID3D11ComputeShader			FRHIComputeShader;
 
 
 struct FRHIBoundShaderState
@@ -115,7 +121,31 @@ enum EBlendColorWriteEnable
 	CWE_All
 };
 
+enum EPixelFormat
+{
+	PF_Unknown,
+	PF_A32B32G32R32F,
+	PF_A8R8G8B8,
+	PF_G8,
+	PF_G16,
+	PF_DXT1,
+	PF_DXT3,
+	PF_DXT5,
+	PF_UYVY,
+	PF_FloatRGB,			// A RGB FP format with platform-specific implementation, for use with render targets
+	PF_FloatRGBA,			// A RGBA FP format with platform-specific implementation, for use with render targets
+	PF_DepthStencil,		// A depth+stencil format with platform-specific implementation, for use with render targets
+	PF_ShadowDepth,			// A depth format with platform-specific implementation, for use with render targets
+	PF_FilteredShadowDepth, // A depth format with platform-specific implementation, that can be filtered by hardware
+	PF_R32F,
 
-#include "RHIBuffer.h"
+};
+
+// 贴图的像素格式
+struct FPixelFormatInfo
+{
+	const TCHAR*		Name;
+	EPixelFormat		Format;
+};
 
 #endif

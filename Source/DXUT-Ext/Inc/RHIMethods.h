@@ -88,3 +88,33 @@ DEFINE_RHIMETHOD(
 	CreateBuffer,
 	()
 	);
+
+DEFINE_RHIMETHOD(
+	TSharedPtr<FRHIDepthStencilView>,
+	CreateDepthStencilView,
+	()
+	);
+
+DEFINE_RHIMETHOD(
+	TSharedPtr<FRHITexture2D>
+	CreateTexture2D,
+	()
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	SetRenderTarget,
+	(const TSharedPtr<FRenderSurface>& RenderTarget, const TSharedPtr<FRenderSurface>& DepthStencil),
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	SetMRTRenderTarget,
+	(const TSharedPtr<FRenderSurface>& RenderTarget, uint RenderTargetIndex)
+	);
+
+DEFINE_RHIMETHOD(
+	TSharedPtr<FRenderSurface>,
+	CreateRenderSurface,
+	(uint Width, uint Height, uint Format, TSharedPtr<FTexture2D> TextureToAttach = NULL)
+	);

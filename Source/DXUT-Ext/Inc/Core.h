@@ -63,4 +63,9 @@
 #define INDEX_NONE -1
 #endif
 
+#ifndef TEXT(s)
+#define TEXT(s) L##s
+#endif
+
+
 #endif

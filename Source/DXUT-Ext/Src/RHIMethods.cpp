@@ -16,3 +16,8 @@ void FDynamicRHI::DrawIndexedPrimitive(const TSharedPtr<FRHIBuffer>& IndexBuffer
 {
 
 }
+
+//TSharedPtr<FRHITexture2D> FDynamicRHI::CreateTexture2D(uint Width, uint Height, byte Format, uint NumMips, uint Flags)
+//{
+//
+//}

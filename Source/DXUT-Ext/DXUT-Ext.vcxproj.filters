@@ -67,6 +67,9 @@
     <ClInclude Include="Inc\Types.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\RHIRenderTarget.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GameApp.cpp">
@@ -100,6 +103,15 @@
       <Filter>Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Src\RHIBuffer.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\RHITexture.h">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RHITexture.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RHIRenderTarget.cpp">
       <Filter>RHI</Filter>
     </ClCompile>
   </ItemGroup>

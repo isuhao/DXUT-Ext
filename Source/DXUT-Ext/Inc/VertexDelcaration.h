@@ -67,8 +67,6 @@ public:
 private:
 	UINT										m_nCurrOffset; // 这个值只有AppendElementFast才有用
 	TArray<D3D11_INPUT_ELEMENT_DESC>			m_Layouts;
-
-	friend class FVertexDeclaration;
 };
 
 /** 

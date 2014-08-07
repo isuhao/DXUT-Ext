@@ -67,6 +67,15 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	dsvDesc.Texture2D.MipSlice = 0;
 	V(pd3dDevice->CreateDepthStencilView(g_pDepthTexture, &dsvDesc, &g_pDepthTextureDSV));
 
+	// Test Begin
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	ZeroMemory(&dsDesc, sizeof(dsDesc));
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	dsDesc.DepthEnable = false;
+	g_depthStencilStateDisableDepth = NULL;
+	V(pd3dDevice->CreateDepthStencilState(&dsDesc, &g_depthStencilStateDisableDepth));
+	// Test End
+
 	// Create shader resource view for shadowmap
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
@@ -145,6 +154,7 @@ void DeferredLightingApp::OnDestroy()
 	SAFE_RELEASE(g_pDepthTexture);
 	SAFE_RELEASE(g_pDepthTextureSRV);
 	SAFE_RELEASE(g_pDepthTextureDSV);
+	SAFE_RELEASE(g_depthStencilStateDisableDepth);
 
 	// œ»Release
 	for (INT RTType = EGBT_Normal; RTType < EGBT_MaxSize; ++RTType)
@@ -249,6 +259,7 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	float ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
 	pd3dImmediateContext->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0, 0);
+	pd3dImmediateContext->OMSetDepthStencilState(g_depthStencilStateDisableDepth, 0);
 
 	// Render State
 	RHI->SetBlendState(m_pColorWriteOn);
