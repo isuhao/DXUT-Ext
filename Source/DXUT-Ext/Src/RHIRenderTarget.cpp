@@ -51,7 +51,29 @@ void FDynamicRHI::SetMRTRenderTarget(const TSharedPtr<FRenderSurface>& NewRender
 	}
 }
 
-TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderSurface(uint Width, uint Height, uint Format, TSharedPtr<FTexture2D> TextureToAttach)
+TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderSurface(uint Width, uint Height, EPixelFormat PixFormat, uint CreateFlag, TSharedPtr<FTexture2D> TextureToAttach)
 {
+	TSharedPtr<FRHITexture2D> Texture;
+	if (TextureToAttach != NULL)
+	{
+		Texture = TextureToAttach->Texture2D;
+	}
+
+	bool bDepthFormat = (PixFormat == PF_DepthStencil || PixFormat == PF_ShadowDepth);
+
+	D3D11_TEXTURE2D_DESC Desc;
+	::ZeroMemory(&Desc, sizeof (Desc));
+	Desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	Desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	Desc.Height = Height;
+	Desc.Width = Width;
+	Desc.ArraySize = 1;
+	Desc.SampleDesc.Count = 1;
+	Desc.SampleDesc.Quality = 0;
+	Desc.SampleDesc.Count = 1;
+	Desc.SampleDesc.Quality = 0;
+	Desc.MipLevels = 1;
+	Desc.BindFlags = bDepthFormat ? D3D11_BIND_DEPTH_STENCIL : (D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
+
 	return TSharedPtr<FRenderSurface>();
 }

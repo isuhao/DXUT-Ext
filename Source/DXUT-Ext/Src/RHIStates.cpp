@@ -198,7 +198,7 @@ void FDynamicRHI::SetBlendState(const TSharedPtr<FRHIBlendState>& BlendState, FL
 	m_pd3dImmediateContext->OMSetBlendState(BlendState.get(), &Color.R, SimpleMask);
 }
 
-TSharedPtr<FRHIDepthStencilView> FDynamicRHI::CreateDepthStencilView()
-{
-	return TSharedPtr<FRHIDepthStencilView>();
-}
+//TSharedPtr<FRHIDepthStencilView> FDynamicRHI::CreateDepthStencilView()
+//{
+//	return TSharedPtr<FRHIDepthStencilView>();
+//}

@@ -112,6 +112,7 @@ HRESULT CALLBACK FGameApp::__OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const
 	void* pUserContext)
 {
 	FDynamicRHI::InitRHI();
+
 	Check(g_pCurrGame);
 	return g_pCurrGame->OnD3D11CreateDevice(pd3dDevice, pBackBufferSurfaceDesc, pUserContext);
 }

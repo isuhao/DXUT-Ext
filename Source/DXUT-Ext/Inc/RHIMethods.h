@@ -83,28 +83,28 @@ DEFINE_RHIMETHOD(
 	(const TSharedPtr<FRHIBlendState>& BlendState, FLinearColor Color = FLinearColor(), UINT SimpleMask = 0xffffffff)
 	);
 
-DEFINE_RHIMETHOD(
-	TSharedPtr<FRHIBuffer>,
-	CreateBuffer,
-	()
-	);
+//DEFINE_RHIMETHOD(
+//	TSharedPtr<FRHIBuffer>,
+//	CreateBuffer,
+//	()
+//	);
+//
+//DEFINE_RHIMETHOD(
+//	TSharedPtr<FRHIDepthStencilView>,
+//	CreateDepthStencilView,
+//	()
+//	);
 
 DEFINE_RHIMETHOD(
-	TSharedPtr<FRHIDepthStencilView>,
-	CreateDepthStencilView,
-	()
-	);
-
-DEFINE_RHIMETHOD(
-	TSharedPtr<FRHITexture2D>
+	TSharedPtr<FTexture2D>,
 	CreateTexture2D,
-	()
+	(uint Width, uint Height, EPixelFormat PixFormat, uint CreateFlag = 0, uint NumMips = 1)
 	);
 
 DEFINE_RHIMETHOD(
 	void,
 	SetRenderTarget,
-	(const TSharedPtr<FRenderSurface>& RenderTarget, const TSharedPtr<FRenderSurface>& DepthStencil),
+	(const TSharedPtr<FRenderSurface>& RenderTarget, const TSharedPtr<FRenderSurface>& DepthStencil)
 	);
 
 DEFINE_RHIMETHOD(
@@ -116,5 +116,5 @@ DEFINE_RHIMETHOD(
 DEFINE_RHIMETHOD(
 	TSharedPtr<FRenderSurface>,
 	CreateRenderSurface,
-	(uint Width, uint Height, uint Format, TSharedPtr<FTexture2D> TextureToAttach = NULL)
+	(uint Width, uint Height, EPixelFormat PixFormat, uint CreateFlag = RSC_All, TSharedPtr<FTexture2D> TextureToAttach = NULL)
 	);

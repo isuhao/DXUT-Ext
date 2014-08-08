@@ -28,6 +28,7 @@ DeferredLightingApp::DeferredLightingApp()
 	m_pcbGPass		= MakeSharedPtr<FConstantBuffer>();
 	m_pcbDLPass		= MakeSharedPtr<FConstantBuffer>();
 	m_pcbScenePass	= MakeSharedPtr<FConstantBuffer>();
+	m_pDepthTex.reset();
 	m_pMesh			= TSharedPtr<FSDKMesh>(new FSDKMesh(L"Crypt\\Crypt.sdkmesh", false));
 }
 
@@ -44,20 +45,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	DLInitResource(pd3dDevice, pBackBufferSurfaceDesc);
 
 	// 创建用来绘制Normal-Buffer的Depth
-	// Create shadowmap surface and views
-	D3D11_TEXTURE2D_DESC surfDesc;
-	surfDesc.Width = pBackBufferSurfaceDesc->Width;
-	surfDesc.Height = pBackBufferSurfaceDesc->Height;
-	surfDesc.MipLevels = 1;
-	surfDesc.ArraySize = 1;
-	surfDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-	surfDesc.SampleDesc.Count = 1;
-	surfDesc.SampleDesc.Quality = 0;
-	surfDesc.Usage = D3D11_USAGE_DEFAULT;
-	surfDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-	surfDesc.CPUAccessFlags = 0;
-	surfDesc.MiscFlags = 0;
-	V(pd3dDevice->CreateTexture2D(&surfDesc, 0, &g_pDepthTexture));
+	m_pDepthTex = RHI->CreateTexture2D(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_DepthStencil, TC_DepthStencil);
 
 	// Create depth stencil view for shadowmap rendering
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
@@ -65,16 +53,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Flags = 0;
 	dsvDesc.Texture2D.MipSlice = 0;
-	V(pd3dDevice->CreateDepthStencilView(g_pDepthTexture, &dsvDesc, &g_pDepthTextureDSV));
-
-	// Test Begin
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
-	ZeroMemory(&dsDesc, sizeof(dsDesc));
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	dsDesc.DepthEnable = false;
-	g_depthStencilStateDisableDepth = NULL;
-	V(pd3dDevice->CreateDepthStencilState(&dsDesc, &g_depthStencilStateDisableDepth));
-	// Test End
+	V(pd3dDevice->CreateDepthStencilView(m_pDepthTex->Texture2D.get(), &dsvDesc, &g_pDepthTextureDSV));
 
 	// Create shader resource view for shadowmap
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -154,7 +133,7 @@ void DeferredLightingApp::OnDestroy()
 	SAFE_RELEASE(g_pDepthTexture);
 	SAFE_RELEASE(g_pDepthTextureSRV);
 	SAFE_RELEASE(g_pDepthTextureDSV);
-	SAFE_RELEASE(g_depthStencilStateDisableDepth);
+	//SAFE_RELEASE(g_depthStencilStateDisableDepth);
 
 	// 先Release
 	for (INT RTType = EGBT_Normal; RTType < EGBT_MaxSize; ++RTType)
@@ -185,6 +164,7 @@ void DeferredLightingApp::DLInitResource(ID3D11Device* pd3dDevice, const DXGI_SU
 
 	for (INT RTType = EGBT_Normal; RTType < EGBT_MaxSize; ++RTType)
 	{
+		//g_pGBufferTexture[RTType] = RHI->CreateTexture2D(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_A8R8G8B8, TC_RenderTarget);
 		pd3dDevice->CreateTexture2D(&desc, 0, &g_pGBufferTexture[RTType]);
 		pd3dDevice->CreateRenderTargetView(g_pGBufferTexture[RTType], 0, &g_pGBufferTextureRT[RTType]);
 		pd3dDevice->CreateShaderResourceView(g_pGBufferTexture[RTType], 0, &g_pGBufferTextureSRV[RTType]);
@@ -259,7 +239,7 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	float ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
 	pd3dImmediateContext->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0, 0);
-	pd3dImmediateContext->OMSetDepthStencilState(g_depthStencilStateDisableDepth, 0);
+	//pd3dImmediateContext->OMSetDepthStencilState(g_depthStencilStateDisableDepth, 0);
 
 	// Render State
 	RHI->SetBlendState(m_pColorWriteOn);

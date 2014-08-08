@@ -1,7 +1,7 @@
 #ifndef _COLOR_H_
 #define _COLOR_H_
 
-#include "DXUT.h"
+#include "Core.h"
 
 enum EColorChannel
 {

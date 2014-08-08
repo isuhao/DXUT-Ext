@@ -4,27 +4,58 @@
 #include "Core.h"
 #include "RHIResources.h"
 
+/** 
+ * ÌùÍ¼µÄ»ùÀà
+ */
 class FTextureBase
 {
 public:
-	FTextureBase() {}
+	TSharedPtr<FRHIShaderResourceView>	ShaderResourceView;
+	const uint Width;
+	const uint Height;
+	const uint Depth;
 
-protected:
-	TSharedPtr<FRHIShaderResourceView>	SRV;
+	FTextureBase(
+		uint InWidth,
+		uint InHeight,
+		uint InDepth,
+		const TSharedPtr<FRHIShaderResourceView>& InDSV
+		)
+		: Width(InWidth)
+		, Height(InHeight)
+		, Depth(InDepth)
+		, ShaderResourceView(InDSV)
+	{
+	}
 };
 
 class FTexture2D : public FTextureBase
 {
 public:
+	TSharedPtr<FRHITexture2D>		Texture2D;
 
-	FTexture2D()
+	FTexture2D(
+		uint InWidth,
+		uint InHeight,
+		uint InDepth,
+		const TSharedPtr<FRHIShaderResourceView>& InDSV,
+		const TSharedPtr<FRHITexture2D>& InTexture2D
+		)
+		: FTextureBase
+			( InWidth
+			, InHeight
+			, InDepth
+			, InDSV
+			)
+		, Texture2D(InTexture2D)
 	{
 	}
 
-protected:
-	TSharedPtr<FRHITexture2D>		Resource;
+	~FTexture2D()
+	{
+	}
 };
 
-extern FPixelFormatInfo GPixelFormats[];
+extern FPixelFormatInfo GPixelFormats[PF_MaxSize];
 
 #endif

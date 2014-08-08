@@ -29,6 +29,9 @@ public:
 #include "RHIMethods.h"
 
 private:
+	void InitPixelFormat();
+
+private:
 	ID3D11DeviceContext*					m_pd3dImmediateContext;
 	ID3D11Device*							m_pd3dDevice;
 

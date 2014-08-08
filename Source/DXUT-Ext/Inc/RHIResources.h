@@ -126,26 +126,36 @@ enum EPixelFormat
 	PF_Unknown,
 	PF_A32B32G32R32F,
 	PF_A8R8G8B8,
-	PF_G8,
-	PF_G16,
+	PF_R8,
 	PF_DXT1,
 	PF_DXT3,
 	PF_DXT5,
-	PF_UYVY,
-	PF_FloatRGB,			// A RGB FP format with platform-specific implementation, for use with render targets
-	PF_FloatRGBA,			// A RGBA FP format with platform-specific implementation, for use with render targets
-	PF_DepthStencil,		// A depth+stencil format with platform-specific implementation, for use with render targets
-	PF_ShadowDepth,			// A depth format with platform-specific implementation, for use with render targets
-	PF_FilteredShadowDepth, // A depth format with platform-specific implementation, that can be filtered by hardware
-	PF_R32F,
+	PF_DepthStencil,		
+	PF_ShadowDepth,			
 
+	PF_MaxSize
 };
 
 // 贴图的像素格式
 struct FPixelFormatInfo
 {
 	const TCHAR*		Name;
-	EPixelFormat		Format;
+	byte				Format;
+};
+
+// 创建贴图的用途，默认0是ShaderResource
+enum ETexCreate
+{
+	TC_DepthStencil		= 1 << 0,
+	TC_RenderTarget		= 1 << 1,
+};
+
+// RenderTarget的创建Flag
+enum ERenderSurfaceCreate
+{
+	RSC_RenderTarget	= 1 << 0,	// 只创建RT
+	RSC_DepthStencil	= 1 << 1,	// 只创建DepthStencil
+	RSC_All				= RSC_RenderTarget | RSC_DepthStencil // 两者都创建
 };
 
 #endif

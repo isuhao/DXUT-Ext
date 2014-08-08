@@ -62,7 +62,7 @@ protected:
 	// D3D×ÊÔ´
 
 	// G-Buffer
-	ID3D11DepthStencilState*	g_depthStencilStateDisableDepth;
+	//ID3D11DepthStencilState*	g_depthStencilStateDisableDepth = NULL;
 	ID3D11Texture2D*			g_pGBufferTexture[EGBT_MaxSize];
 	ID3D11RenderTargetView*		g_pGBufferTextureRT[EGBT_MaxSize];
 	ID3D11ShaderResourceView*	g_pGBufferTextureSRV[EGBT_MaxSize];
@@ -84,6 +84,8 @@ protected:
 	TSharedPtr<FConstantBuffer>				m_pcbGPass;
 	TSharedPtr<FConstantBuffer>				m_pcbDLPass;
 	TSharedPtr<FConstantBuffer>				m_pcbScenePass;
+
+	TSharedPtr<FTexture2D>					m_pDepthTex;
 };
 
 
