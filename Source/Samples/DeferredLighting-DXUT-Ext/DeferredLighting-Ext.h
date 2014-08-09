@@ -56,17 +56,9 @@ protected:
 	void RenderGPass();
 	void RenderDeferredLight();
 	void RenderScene();
-	void DLInitResource(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc);
 
 protected:
 	// D3D×ÊÔ´
-
-	// G-Buffer
-	//ID3D11DepthStencilState*	g_depthStencilStateDisableDepth = NULL;
-	//ID3D11Texture2D*			g_pGBufferTexture[EGBT_MaxSize];
-	//ID3D11RenderTargetView*		g_pGBufferTextureRT[EGBT_MaxSize];
-	//ID3D11ShaderResourceView*	g_pGBufferTextureSRV[EGBT_MaxSize];
-
 	TSharedPtr<FRHIBoundShaderState>		m_pGPassBST;
 	TSharedPtr<FRHIBoundShaderState>		m_pDLPassBST;
 	TSharedPtr<FRHIBoundShaderState>		m_pScenePassBST;
@@ -79,11 +71,8 @@ protected:
 	TSharedPtr<FConstantBuffer>				m_pcbDLPass;
 	TSharedPtr<FConstantBuffer>				m_pcbScenePass;
 
-	TSharedPtr<FTexture2D>					m_pDepthTex;
-
 	TSharedPtr<FFrameBuffer>				m_pfbGPass;
 	TSharedPtr<FFrameBuffer>				m_pfbDL;
-	TSharedPtr<FFrameBuffer>				m_pfbScene;
 };
 
 

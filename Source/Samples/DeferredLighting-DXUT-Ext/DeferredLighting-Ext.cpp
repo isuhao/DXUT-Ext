@@ -20,16 +20,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 DeferredLightingApp::DeferredLightingApp()
 {
-	m_pGPassBST.reset();
-	m_pDLPassBST.reset();
-	m_pScenePassBST.reset();
-	m_pCullBack.reset();
-	m_pColorWriteOn.reset();
-	m_pcbGPass		= MakeSharedPtr<FConstantBuffer>();
-	m_pcbDLPass		= MakeSharedPtr<FConstantBuffer>();
-	m_pcbScenePass	= MakeSharedPtr<FConstantBuffer>();
-	m_pDepthTex.reset();
-	m_pMesh			= TSharedPtr<FSDKMesh>(new FSDKMesh(L"Crypt\\Crypt.sdkmesh", false));
 }
 
 //--------------------------------------------------------------------------------------
@@ -39,13 +29,11 @@ DeferredLightingApp::DeferredLightingApp()
 
 HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc)
 {
-	//HRESULT hr;
-
-	// DL Init
-	DLInitResource(pd3dDevice, pBackBufferSurfaceDesc);
-
-	// 创建用来绘制Normal-Buffer的Depth
-	m_pDepthTex = RHI->CreateTexture2D(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_DepthStencil, TC_DepthStencil);
+	// 创建各种FrmaeBuffer
+	uint Width	= pBackBufferSurfaceDesc->Width;
+	uint Height = pBackBufferSurfaceDesc->Height;
+	m_pfbGPass	= RHI->CreateFrameBuffer(Width, Height, PF_A8R8G8B8);
+	m_pfbDL		= RHI->CreateFrameBuffer(Width, Height, PF_A8R8G8B8);
 
 	// 顶点声明工厂
 	FVertexDeclarationFactory_DL VDF;
@@ -85,6 +73,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	);
 
 	// 创建Mesh
+	m_pMesh = TSharedPtr<FSDKMesh>(new FSDKMesh(L"Crypt\\Crypt.sdkmesh", false));
 	m_pMesh->Init();
 
 	// 创建SamplerState
@@ -97,6 +86,10 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	m_pCullBack = RHI->CreateRasterizerState(FM_Solid, CM_CCW);
 
 	// 创建CB
+	m_pcbGPass	= MakeSharedPtr<FConstantBuffer>();
+	m_pcbDLPass = MakeSharedPtr<FConstantBuffer>();
+	m_pcbScenePass = MakeSharedPtr<FConstantBuffer>();
+
 	m_pcbGPass->CreateBuffer(sizeof(CB_GPass));
 	m_pcbDLPass->CreateBuffer(sizeof(CB_DLPass));
 	m_pcbScenePass->CreateBuffer(sizeof(CB_ScenePass));
@@ -120,16 +113,6 @@ void DeferredLightingApp::OnDestroy()
 }
 
 //--------------------------------------------------------------------------------------
-// 创建各种RT
-//--------------------------------------------------------------------------------------
-void DeferredLightingApp::DLInitResource(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc)
-{
-	m_pfbGPass	= RHI->CreateFrameBuffer(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_A8R8G8B8);
-	m_pfbDL		= RHI->CreateFrameBuffer(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_A8R8G8B8);
-	m_pfbScene	= RHI->CreateFrameBuffer(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_A8R8G8B8);
-}
-
-//--------------------------------------------------------------------------------------
 // Render the scene using the D3D11 device
 // 渲染更新
 //--------------------------------------------------------------------------------------
@@ -138,6 +121,7 @@ void DeferredLightingApp::OnRender(float fDeltaSeconds)
 	ID3D11Device* pd3dDevice = DXUTGetD3D11Device();
 	ID3D11DeviceContext* pd3dImmediateContext = DXUTGetD3D11DeviceContext();
 
+	// 先清空BackBuffer
 	RHI->SetDefaultBackBuffer();
 	RHI->Clear(true, FLinearColor(sqrt(0.25f), sqrt(0.25f), sqrt(0.5f)), true, 1, false, 0);
 
@@ -187,7 +171,7 @@ void DeferredLightingApp::RenderGPass()
 	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &pGP);
 	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &pGP);
 
-	RHI->SetRenderTarget(m_pfbGPass->RenderTarget, m_pfbGPass->DepthTarget);
+	RHI->SetFrameBuffer(m_pfbGPass);
 	RHI->Clear(true, FLinearColor::Black, true, 1, false, 0);
 
 	// Render State
