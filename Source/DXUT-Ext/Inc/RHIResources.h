@@ -7,6 +7,8 @@
 PRE_DECLARE_CLASS(FVertexDeclaration)
 PRE_DECLARE_CLASS(FRenderSurface)
 PRE_DECLARE_CLASS(FTexture2D)
+PRE_DECLARE_CLASS(FFrameBuffer)
+PRE_DECLARE_CLASS(FShader)
 
 // D3D×ÊÔ´
 typedef ID3D11SamplerState			FRHISamplerState;
@@ -27,15 +29,28 @@ typedef ID3D11GeometryShader		FRHIGeometryShader;
 typedef ID3D11ComputeShader			FRHIComputeShader;
 
 
+enum EShaderType
+{
+	ST_VertexShader,
+	ST_PixelShader,
+	ST_DomainShader,
+	ST_HullShader,
+	ST_GeometryShader,
+	ST_ComputeShader,
+
+	ST_NumShaderTypes
+};
+
+
 struct FRHIBoundShaderState
 {
-	TSharedPtr<ID3D11InputLayout>		InputLayouts;
-	TSharedPtr<ID3D11VertexShader>		VertexShader;
-	TSharedPtr<ID3D11PixelShader>		PixelShader;
-	TSharedPtr<ID3D11DomainShader>		DomainShader;
-	TSharedPtr<ID3D11HullShader>		HullShader;
-	TSharedPtr<ID3D11GeometryShader>	GeometryShader;
-	TSharedPtr<ID3D11ComputeShader>		ComputeShader;
+	TSharedPtr<FRHIInputLayout>			InputLayouts;
+	TSharedPtr<FRHIVertexShader>		VertexShader;
+	TSharedPtr<FRHIPixelShader>			PixelShader;
+	TSharedPtr<FRHIDomainShader>		DomainShader;
+	TSharedPtr<FRHIHullShader>			HullShader;
+	TSharedPtr<FRHIGeometryShader>		GeometryShader;
+	TSharedPtr<FRHIComputeShader>		ComputeShader;
 };
 
 enum ESamplerFilter

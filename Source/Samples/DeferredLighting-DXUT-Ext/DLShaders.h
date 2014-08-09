@@ -5,38 +5,38 @@
 
 class GPassVertexShader : public FShader
 {
-	DECLARE_SHADER(GPassVertexShader, L"GPass.hlsl", "VS_Main", "vs_5_0", EST_VertexShader)
+	DECLARE_SHADER(GPassVertexShader, L"GPass.hlsl", "VS_Main", "vs_5_0", ST_VertexShader)
 
 	void InitVertexDeclaration();
 };
 
 class GPassPixelShader : public FShader
 {
-	DECLARE_SHADER(GPassPixelShader, L"GPass.hlsl", "PS_Main", "ps_5_0", EST_PixelShader)
+	DECLARE_SHADER(GPassPixelShader, L"GPass.hlsl", "PS_Main", "ps_5_0", ST_PixelShader)
 };
 
 class DLVertexShader : public FShader
 {
-	DECLARE_SHADER(DLVertexShader, L"DeferredLight.hlsl", "VS_Main", "vs_5_0", EST_VertexShader)
+	DECLARE_SHADER(DLVertexShader, L"DeferredLight.hlsl", "VS_Main", "vs_5_0", ST_VertexShader)
 
 	void InitVertexDeclaration();
 };
 
 class DLPixelShader : public FShader
 {
-	DECLARE_SHADER(DLPixelShader, L"DeferredLight.hlsl", "PS_Main", "ps_5_0", EST_PixelShader)
+	DECLARE_SHADER(DLPixelShader, L"DeferredLight.hlsl", "PS_Main", "ps_5_0", ST_PixelShader)
 };
 
 class SceneVertexShader : public FShader
 {
-	DECLARE_SHADER(SceneVertexShader, L"ScenePass.hlsl", "RenderSceneVS", "vs_5_0", EST_VertexShader)
+	DECLARE_SHADER(SceneVertexShader, L"ScenePass.hlsl", "RenderSceneVS", "vs_5_0", ST_VertexShader)
 
 	void InitVertexDeclaration();
 };
 
 class ScenePixelShader : public FShader
 {
-	DECLARE_SHADER(ScenePixelShader, L"ScenePass.hlsl", "RenderScenePS", "ps_5_0", EST_PixelShader)
+	DECLARE_SHADER(ScenePixelShader, L"ScenePass.hlsl", "RenderScenePS", "ps_5_0", ST_PixelShader)
 };
 
 struct FVertexDeclarationFactory_DL : public FVertexDeclarationFactory

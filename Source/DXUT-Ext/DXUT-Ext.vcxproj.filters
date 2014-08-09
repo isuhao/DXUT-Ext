@@ -70,6 +70,9 @@
     <ClInclude Include="Inc\RHIRenderTarget.h">
       <Filter>RHI</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\SystemSetting.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GameApp.cpp">
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="Src\RHIRenderTarget.cpp">
       <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\Src\SystemSetting.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -114,20 +114,6 @@ TSharedPtr<FRHISamplerState> FDynamicRHI::CreateSamplerState(ESamplerFilter Filt
 	return NewSamplerState;
 }
 
-// PS set sampler
-void FDynamicRHI::PSSetSamplerState(int SamplerIndex, const TSharedPtr<FRHISamplerState>& SamplerState)
-{
-	FRHISamplerState* pSamp = SamplerState.get();
-	m_pd3dImmediateContext->PSSetSamplers(SamplerIndex, 1, &pSamp);
-}
-
-// VS set sampler
-void FDynamicRHI::VSSetSamplerState(int SamplerIndex, const TSharedPtr<FRHISamplerState>& SamplerState)
-{
-	FRHISamplerState* pSamp = SamplerState.get();
-	m_pd3dImmediateContext->VSSetSamplers(SamplerIndex, 1, &pSamp);
-}
-
 TSharedPtr<FRHIRasterState> FDynamicRHI::CreateRasterizerState(ERasterizerFillMode FillMode, ERasterizerCullMode CullMode, bool bAllowMSAA, bool bFrontCounterClockwise, INT DepthBias, float SlopeScaledDepthBias)
 {
 	D3D11_RASTERIZER_DESC	RasterizerDesc;
@@ -202,3 +188,4 @@ void FDynamicRHI::SetBlendState(const TSharedPtr<FRHIBlendState>& BlendState, FL
 //{
 //	return TSharedPtr<FRHIDepthStencilView>();
 //}
+

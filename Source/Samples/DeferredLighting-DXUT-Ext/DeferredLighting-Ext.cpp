@@ -39,29 +39,13 @@ DeferredLightingApp::DeferredLightingApp()
 
 HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc)
 {
-	HRESULT hr;
+	//HRESULT hr;
 
 	// DL Init
 	DLInitResource(pd3dDevice, pBackBufferSurfaceDesc);
 
 	// 创建用来绘制Normal-Buffer的Depth
 	m_pDepthTex = RHI->CreateTexture2D(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_DepthStencil, TC_DepthStencil);
-
-	// Create depth stencil view for shadowmap rendering
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	dsvDesc.Flags = 0;
-	dsvDesc.Texture2D.MipSlice = 0;
-	V(pd3dDevice->CreateDepthStencilView(m_pDepthTex->Texture2D.get(), &dsvDesc, &g_pDepthTextureDSV));
-
-	// Create shader resource view for shadowmap
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	V(pd3dDevice->CreateShaderResourceView(g_pDepthTexture, &srvDesc, &g_pDepthTextureSRV));
 
 	// 顶点声明工厂
 	FVertexDeclarationFactory_DL VDF;
@@ -70,32 +54,35 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 	CREATE_SHADER(GPassVertexShader, GPassVS);
 	CREATE_SHADER(GPassPixelShader, GPassPS);
 
-	m_pGPassBST = RHI->CreateBoundShaderState(
+	m_pGPassBST = RHI->CreateBoundShaderState
+	(
 		VDF.GetVertexDeclaration(),
 		GPassVS.GetCode(),
 		GPassVS.GetVertexShader(),
 		GPassPS.GetPixelShader()
-		);
+	);
 
 	// DL Shader
 	CREATE_SHADER(DLVertexShader, DLPassVS);
 	CREATE_SHADER(DLPixelShader, DLPassPS);
-	m_pDLPassBST = RHI->CreateBoundShaderState(
+	m_pDLPassBST = RHI->CreateBoundShaderState
+	(
 		VDF.GetVertexDeclaration(),
 		DLPassVS.GetCode(),
 		DLPassVS.GetVertexShader(),
 		DLPassPS.GetPixelShader()
-		);
+	);
 
 	// Scene Pass Shader
 	CREATE_SHADER(SceneVertexShader, ScenePassVS);
 	CREATE_SHADER(ScenePixelShader, ScenePassPS);
-	m_pScenePassBST = RHI->CreateBoundShaderState(
+	m_pScenePassBST = RHI->CreateBoundShaderState
+	(
 		VDF.GetVertexDeclaration(),
 		ScenePassVS.GetCode(),
 		ScenePassVS.GetVertexShader(),
 		ScenePassPS.GetPixelShader()
-		);
+	);
 
 	// 创建Mesh
 	m_pMesh->Init();
@@ -130,18 +117,6 @@ void DeferredLightingApp::OnTick(float DeltaSeconds)
 //--------------------------------------------------------------------------------------
 void DeferredLightingApp::OnDestroy()
 {
-	SAFE_RELEASE(g_pDepthTexture);
-	SAFE_RELEASE(g_pDepthTextureSRV);
-	SAFE_RELEASE(g_pDepthTextureDSV);
-	//SAFE_RELEASE(g_depthStencilStateDisableDepth);
-
-	// 先Release
-	for (INT RTType = EGBT_Normal; RTType < EGBT_MaxSize; ++RTType)
-	{
-		SAFE_RELEASE(g_pGBufferTexture[RTType]);
-		SAFE_RELEASE(g_pGBufferTextureRT[RTType]);
-		SAFE_RELEASE(g_pGBufferTextureSRV[RTType]);
-	}
 }
 
 //--------------------------------------------------------------------------------------
@@ -149,26 +124,9 @@ void DeferredLightingApp::OnDestroy()
 //--------------------------------------------------------------------------------------
 void DeferredLightingApp::DLInitResource(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc)
 {
-	D3D11_TEXTURE2D_DESC desc;
-	::ZeroMemory(&desc, sizeof (desc));
-	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	desc.Height = pBackBufferSurfaceDesc->Height;
-	desc.Width = pBackBufferSurfaceDesc->Width;
-	desc.ArraySize = 1;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
-	desc.SampleDesc.Count = pBackBufferSurfaceDesc->SampleDesc.Count;
-	desc.SampleDesc.Quality = pBackBufferSurfaceDesc->SampleDesc.Quality;
-	desc.MipLevels = 1;
-
-	for (INT RTType = EGBT_Normal; RTType < EGBT_MaxSize; ++RTType)
-	{
-		//g_pGBufferTexture[RTType] = RHI->CreateTexture2D(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_A8R8G8B8, TC_RenderTarget);
-		pd3dDevice->CreateTexture2D(&desc, 0, &g_pGBufferTexture[RTType]);
-		pd3dDevice->CreateRenderTargetView(g_pGBufferTexture[RTType], 0, &g_pGBufferTextureRT[RTType]);
-		pd3dDevice->CreateShaderResourceView(g_pGBufferTexture[RTType], 0, &g_pGBufferTextureSRV[RTType]);
-	}
+	m_pfbGPass	= RHI->CreateFrameBuffer(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_A8R8G8B8);
+	m_pfbDL		= RHI->CreateFrameBuffer(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_A8R8G8B8);
+	m_pfbScene	= RHI->CreateFrameBuffer(pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height, PF_A8R8G8B8);
 }
 
 //--------------------------------------------------------------------------------------
@@ -180,17 +138,13 @@ void DeferredLightingApp::OnRender(float fDeltaSeconds)
 	ID3D11Device* pd3dDevice = DXUTGetD3D11Device();
 	ID3D11DeviceContext* pd3dImmediateContext = DXUTGetD3D11DeviceContext();
 
-	ID3D11RenderTargetView* pRTV = DXUTGetD3D11RenderTargetView();
-	ID3D11DepthStencilView* pDSV = DXUTGetD3D11DepthStencilView();
-
-	float ClearColor[4] = { sqrt(0.25f), sqrt(0.25f), sqrt(0.5f), 0.0f };
-	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
-	pd3dImmediateContext->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0, 0);
+	RHI->SetDefaultBackBuffer();
+	RHI->Clear(true, FLinearColor(sqrt(0.25f), sqrt(0.25f), sqrt(0.5f)), true, 1, false, 0);
 
 	// 分3个Pass进行渲染
-	RenderGPass(pd3dDevice, pd3dImmediateContext);
-	RenderDeferredLight(pd3dDevice, pd3dImmediateContext);
-	RenderScene(pd3dDevice, pd3dImmediateContext);
+	RenderGPass();
+	RenderDeferredLight();
+	RenderScene();
 }
 
 //--------------------------------------------------------------------------------------
@@ -214,8 +168,9 @@ void DeferredLightingApp::OnInit()
 }
 
 
-void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext)
+void DeferredLightingApp::RenderGPass()
 {
+	ID3D11DeviceContext* pd3dImmediateContext = RHI->GetDeviceContext();
 	D3DXMATRIXA16 mWVP, mWorld;
 
 	mWVP = *m_Camera.GetWorldMatrix() * *m_Camera.GetViewMatrix() * *m_Camera.GetProjMatrix();
@@ -232,60 +187,51 @@ void DeferredLightingApp::RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &pGP);
 	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &pGP);
 
-	ID3D11RenderTargetView* pRTV = g_pGBufferTextureRT[EGBT_Normal];
-	ID3D11DepthStencilView* pDSV = g_pDepthTextureDSV;
-
-	pd3dImmediateContext->OMSetRenderTargets(1, &pRTV, pDSV);
-	float ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
-	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
-	pd3dImmediateContext->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0, 0);
-	//pd3dImmediateContext->OMSetDepthStencilState(g_depthStencilStateDisableDepth, 0);
+	RHI->SetRenderTarget(m_pfbGPass->RenderTarget, m_pfbGPass->DepthTarget);
+	RHI->Clear(true, FLinearColor::Black, true, 1, false, 0);
 
 	// Render State
 	RHI->SetBlendState(m_pColorWriteOn);
 	RHI->SetRasterizerState(m_pCullBack);
 	RHI->SetBoundShaderState(m_pGPassBST);
-	RHI->PSSetSamplerState(0, m_pSamplerState);
+
+	RHI->SetSamplerState(ST_PixelShader, 0, m_pSamplerState);
+
 
 	m_pMesh->Render(0);
 }
 
-void DeferredLightingApp::RenderDeferredLight(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext)
+void DeferredLightingApp::RenderDeferredLight()
 {
-	ID3D11RenderTargetView* pRTV = g_pGBufferTextureRT[EGBT_Diffuse];
-	ID3D11DepthStencilView* pDSV = 0;
-
-	pd3dImmediateContext->OMSetRenderTargets(1, &pRTV, pDSV);
-	float ClearColor[4] = { 0.f, 0.f, 0.f, 1.0f };
-	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
+	RHI->SetRenderTarget(m_pfbDL->RenderTarget, NULL);
+	RHI->ClearColor();
 
 	D3DXVECTOR3 LightVec = D3DXVECTOR3(1.0, 1.0, -1.0);
-
 	// 设置CB的值
 	CB_DLPass TempVal = { LightVec, 0 };
 	m_pcbDLPass->UpdateData((byte*)&TempVal, 0, sizeof(CB_DLPass));
 	m_pcbDLPass->CommitData();
 	FRHIBuffer* TempBuffer = m_pcbDLPass->GetBuffer().get();
 
-	pd3dImmediateContext->PSSetShaderResources(0, 1, &g_pGBufferTextureSRV[EGBT_Normal]);
-	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &TempBuffer);
-	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &TempBuffer);
+	FRHIShaderResourceView* pSRV = m_pfbGPass->RenderTarget->GetRawSRV();
+	RHI->GetDeviceContext()->PSSetShaderResources(0, 1, &pSRV);
+	RHI->GetDeviceContext()->VSSetConstantBuffers(0, 1, &TempBuffer);
+	RHI->GetDeviceContext()->PSSetConstantBuffers(0, 1, &TempBuffer);
 
 	RHI->SetBoundShaderState(m_pDLPassBST);
-	RHI->PSSetSamplerState(0, m_pSamplerState);
+	RHI->SetSamplerState(ST_PixelShader, 0, m_pSamplerState);
 
 	// 要用TriangleStrip
-	pd3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	pd3dImmediateContext->Draw(4, 0);
+	RHI->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	RHI->GetDeviceContext()->Draw(4, 0);
 }
 
-void DeferredLightingApp::RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext)
+void DeferredLightingApp::RenderScene()
 {
-	ID3D11RenderTargetView* pRTV = DXUTGetD3D11RenderTargetView();
-	ID3D11DepthStencilView* pDSV = DXUTGetD3D11DepthStencilView();
+	ID3D11DeviceContext* pd3dImmediateContext = RHI->GetDeviceContext();
 
 	// 把RT设为BackBuffer
-	pd3dImmediateContext->OMSetRenderTargets(1, &pRTV, pDSV);
+	RHI->SetDefaultBackBuffer();
 
 	D3DXMATRIXA16 mWVP;
 	mWVP = *m_Camera.GetWorldMatrix() * *m_Camera.GetViewMatrix() * *m_Camera.GetProjMatrix();
@@ -302,7 +248,9 @@ void DeferredLightingApp::RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	FRHIBuffer* TempBuffer = m_pcbScenePass->GetBuffer().get();
 
 	// 第一个坑被Mesh的贴图占了
-	pd3dImmediateContext->PSSetShaderResources(1, 1, &g_pGBufferTextureSRV[EGBT_Diffuse]);
+	//pd3dImmediateContext->PSSetShaderResources(1, 1, &g_pGBufferTextureSRV[EGBT_Diffuse]);
+	ID3D11ShaderResourceView* pSRV = m_pfbDL->RenderTarget->GetRawSRV();
+	pd3dImmediateContext->PSSetShaderResources(1, 1, &pSRV);
 	pd3dImmediateContext->VSSetConstantBuffers(0, 1, &TempBuffer);
 	pd3dImmediateContext->PSSetConstantBuffers(0, 1, &TempBuffer);
 
@@ -310,7 +258,7 @@ void DeferredLightingApp::RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceCont
 	RHI->SetBlendState(m_pColorWriteOn);
 	RHI->SetRasterizerState(m_pCullBack);
 	RHI->SetBoundShaderState(m_pScenePassBST);
-	RHI->PSSetSamplerState(0, m_pSamplerState);
+	RHI->SetSamplerState(ST_PixelShader, 0, m_pSamplerState);
 
 	m_pMesh->Render(0);
 }

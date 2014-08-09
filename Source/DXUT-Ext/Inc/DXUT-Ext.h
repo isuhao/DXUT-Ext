@@ -7,9 +7,11 @@
 
 #include "Core.h"
 #include "RHI.h"
+#include "SystemSetting.h"
 #include "ShaderManager.h"
 #include "Shader.h"
 #include "Mesh.h"
+#include "GameApp.h"
 
 #endif // #if
 

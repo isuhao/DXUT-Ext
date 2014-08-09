@@ -112,6 +112,7 @@ HRESULT CALLBACK FGameApp::__OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const
 	void* pUserContext)
 {
 	FDynamicRHI::InitRHI();
+	FNullRHI::InitRHI();
 
 	Check(g_pCurrGame);
 	return g_pCurrGame->OnD3D11CreateDevice(pd3dDevice, pBackBufferSurfaceDesc, pUserContext);
@@ -183,6 +184,7 @@ HRESULT FGameApp::OnResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* p
 
 void CALLBACK FGameApp::__OnD3D11DestroyDevice(void* pUserContext)
 {
+	FNullRHI::ReleaseRHI();
 	FDynamicRHI::ReleaseRHI();
 
 	if (g_pCurrGame)

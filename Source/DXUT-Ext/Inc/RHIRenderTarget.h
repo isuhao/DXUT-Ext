@@ -33,4 +33,20 @@ public:
 	FRHIShaderResourceView*		GetRawSRV() { return ShaderResourceView.get(); }
 };
 
+/** 
+ * ¶ÔRenderTarget¡¢DepthTargetµÄ·â×°
+ */
+class FFrameBuffer
+{
+public:
+	TSharedPtr<FRenderSurface>		RenderTarget;
+	TSharedPtr<FRenderSurface>		DepthTarget;
+
+	FFrameBuffer(const TSharedPtr<FRenderSurface>& InRT, const TSharedPtr<FRenderSurface>& InDT)
+		: RenderTarget(InRT)
+		, DepthTarget(InDT)
+	{
+	}
+};
+
 #endif

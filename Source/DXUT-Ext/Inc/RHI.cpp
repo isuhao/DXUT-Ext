@@ -57,3 +57,18 @@ void FDynamicRHI::InitPixelFormat()
 	GPixelFormats[PF_DepthStencil].Format = DXGI_FORMAT_R24G8_TYPELESS;
 	GPixelFormats[PF_ShadowDepth].Format = DXGI_FORMAT_R24G8_TYPELESS;
 }
+
+
+FNullRHI* NullRHI;
+
+void FNullRHI::InitRHI()
+{
+	Check(!NullRHI);
+	NullRHI = new FNullRHI();
+}
+
+void FNullRHI::ReleaseRHI()
+{
+	Check(NullRHI);
+	delete NullRHI;
+}

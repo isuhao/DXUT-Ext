@@ -32,14 +32,14 @@ public:
 class FTexture2D : public FTextureBase
 {
 public:
-	TSharedPtr<FRHITexture2D>		Texture2D;
+	TSharedPtr<FRHITexture2D>		Resource;
 
 	FTexture2D(
 		uint InWidth,
 		uint InHeight,
 		uint InDepth,
 		const TSharedPtr<FRHIShaderResourceView>& InDSV,
-		const TSharedPtr<FRHITexture2D>& InTexture2D
+		const TSharedPtr<FRHITexture2D>& InResource
 		)
 		: FTextureBase
 			( InWidth
@@ -47,7 +47,7 @@ public:
 			, InDepth
 			, InDSV
 			)
-		, Texture2D(InTexture2D)
+		, Resource(InResource)
 	{
 	}
 

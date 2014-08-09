@@ -31,14 +31,8 @@ DEFINE_RHIMETHOD(
 
 DEFINE_RHIMETHOD(
 	void,
-	PSSetSamplerState,
-	(int SamplerIndex, const TSharedPtr<FRHISamplerState>& SamplerState)
-	);
-
-DEFINE_RHIMETHOD(
-	void,
-	VSSetSamplerState,
-	(int SamplerIndex, const TSharedPtr<FRHISamplerState>& SamplerState)
+	SetSamplerState,
+	(EShaderType ShaderType, int SamplerIndex, const TSharedPtr<FRHISamplerState>& SamplerState)
 	);
 
 DEFINE_RHIMETHOD(
@@ -104,17 +98,79 @@ DEFINE_RHIMETHOD(
 DEFINE_RHIMETHOD(
 	void,
 	SetRenderTarget,
-	(const TSharedPtr<FRenderSurface>& RenderTarget, const TSharedPtr<FRenderSurface>& DepthStencil)
+	(const TSharedPtr<FRenderSurface>& RTSurface, const TSharedPtr<FRenderSurface>& DepthSurface)
 	);
 
 DEFINE_RHIMETHOD(
 	void,
 	SetMRTRenderTarget,
-	(const TSharedPtr<FRenderSurface>& RenderTarget, uint RenderTargetIndex)
+	(const TSharedPtr<FRenderSurface>& RenderTarget, uint RTIndex)
 	);
 
 DEFINE_RHIMETHOD(
 	TSharedPtr<FRenderSurface>,
 	CreateRenderSurface,
-	(uint Width, uint Height, EPixelFormat PixFormat, uint CreateFlag = RSC_All, TSharedPtr<FTexture2D> TextureToAttach = NULL)
+	(uint Width, uint Height, EPixelFormat PixFormat, TSharedPtr<FTexture2D> TextureToAttach = NULL)
 	);
+
+DEFINE_RHIMETHOD(
+	TSharedPtr<FRenderSurface>,
+	CreateDepthTargetSurface,
+	(uint Width, uint Height, TSharedPtr<FTexture2D> TextureToAttach = NULL)
+	);
+
+DEFINE_RHIMETHOD(
+	TSharedPtr<FRenderSurface>,
+	CreateRenderTargetSurface,
+	(uint Width, uint Height, EPixelFormat PixFormat, TSharedPtr<FTexture2D> TextureToAttach = NULL)
+	);
+
+DEFINE_RHIMETHOD(
+	TSharedPtr<FFrameBuffer>,
+	CreateFrameBuffer,
+	(uint Width, uint Height, EPixelFormat PixFormat)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	SetFrameBuffer,
+	(const TSharedPtr<FFrameBuffer>& FrameBuffer)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	SetMRTFrameBuffer,
+	(const TSharedPtr<FFrameBuffer>& FrameBuffer, uint RTIndex)
+	);
+
+
+DEFINE_RHIMETHOD(
+	void,
+	ClearColor,
+	(FLinearColor Color = FLinearColor::Black, uint RTIndex = 0)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	ClearDepth,
+	(float fDepth)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	ClearStencil,
+	(uint iStencil)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	Clear,
+	(bool bClearColor, FLinearColor Color, bool bClearDepth, float fDepth, bool bClearStencil, uint iStencil, bool bClearAllTargets = false)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	SetDefaultBackBuffer,
+	()
+	);
+

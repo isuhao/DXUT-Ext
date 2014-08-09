@@ -15,18 +15,6 @@ public: \
 	ShaderName.InitShader();
 
 
-enum EShaderType
-{
-	EST_VertexShader,
-	EST_PixelShader,
-	EST_DomainShader,
-	EST_HullShader,
-	EST_GeometryShader,
-	EST_ComputeShader,
-
-	EST_Max
-};
-
 class FShader 
 {
 public:

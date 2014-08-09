@@ -1,7 +1,9 @@
 #ifndef _GAME_APP_H_
 #define _GAME_APP_H_
 
-#include "DXUT-Ext.h"
+#include "Core.h"
+#include "RHI.h"
+#include "SystemSetting.h"
 
 // 引用一下这个库
 #if INCLUDE_LIB

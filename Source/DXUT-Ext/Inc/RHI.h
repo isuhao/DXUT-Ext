@@ -4,12 +4,16 @@
 #include "Core.h"
 #include "RHIResources.h"
 #include "RHITranslate.h"
-
 #include "RHIBuffer.h"
 #include "RHITexture.h"
+#include "RHIRenderTarget.h"
+
+#include "SystemSetting.h"
 
 // 最大的RT数量
 #define MAX_RT_COUNT	D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT
+
+class FNullRHI;
 
 /** 
  * Render hardware interface
@@ -40,5 +44,24 @@ private:
 };
 
 extern FDynamicRHI* RHI;
+
+
+class FNullRHI
+{
+public:
+	static void InitRHI();
+	static void ReleaseRHI();
+
+public:
+	// 以下是用来做类型识别的D3D资源空指针
+	TSharedPtr<FRHIVertexShader>		VertexShader;
+	TSharedPtr<FRHIPixelShader>			PixelShader;
+	TSharedPtr<FRHIDomainShader>		DomainShader;
+	TSharedPtr<FRHIHullShader>			HullShader;
+	TSharedPtr<FRHIGeometryShader>		GeometryShader;
+	TSharedPtr<FRHIComputeShader>		ComputeShader;
+};
+
+extern FNullRHI* NullRHI;
 
 #endif

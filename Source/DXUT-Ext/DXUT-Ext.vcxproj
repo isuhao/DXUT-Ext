@@ -86,6 +86,7 @@
     <ClInclude Include="Inc\Shader.h" />
     <ClInclude Include="Inc\ShaderManager.h" />
     <ClInclude Include="Inc\SmartPtr.h" />
+    <ClInclude Include="Inc\SystemSetting.h" />
     <ClInclude Include="Inc\Types.h" />
     <ClInclude Include="Inc\Util.h" />
     <ClInclude Include="Inc\VertexDelcaration.h" />
@@ -94,6 +95,7 @@
     <ClCompile Include="Inc\RHI.cpp" />
     <ClCompile Include="Inc\RHIMethods.h" />
     <ClCompile Include="Inc\RHITexture.h" />
+    <ClCompile Include="Inc\Src\SystemSetting.cpp" />
     <ClCompile Include="Src\Color.cpp" />
     <ClCompile Include="Src\GameApp.cpp" />
     <ClCompile Include="Src\Mesh.cpp" />

@@ -2,7 +2,7 @@
 #define _DEFERRED_LIGHTING_EXT_H_
 
 
-#include "GameApp.h"
+#include "DXUT-Ext.h"
 #include "DLShaders.h"
 
 
@@ -53,9 +53,9 @@ public:
 	void OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl) {}
 
 protected:
-	void RenderGPass(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext);
-	void RenderDeferredLight(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext);
-	void RenderScene(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext);
+	void RenderGPass();
+	void RenderDeferredLight();
+	void RenderScene();
 	void DLInitResource(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc);
 
 protected:
@@ -63,15 +63,9 @@ protected:
 
 	// G-Buffer
 	//ID3D11DepthStencilState*	g_depthStencilStateDisableDepth = NULL;
-	ID3D11Texture2D*			g_pGBufferTexture[EGBT_MaxSize];
-	ID3D11RenderTargetView*		g_pGBufferTextureRT[EGBT_MaxSize];
-	ID3D11ShaderResourceView*	g_pGBufferTextureSRV[EGBT_MaxSize];
-
-	// SM depth stencil texture data
-	ID3D11Texture2D*            g_pDepthTexture = NULL;
-	ID3D11ShaderResourceView*   g_pDepthTextureSRV = NULL; // SRV of the SM
-	ID3D11DepthStencilView*     g_pDepthTextureDSV = NULL; // depth stencil view of the SM
-
+	//ID3D11Texture2D*			g_pGBufferTexture[EGBT_MaxSize];
+	//ID3D11RenderTargetView*		g_pGBufferTextureRT[EGBT_MaxSize];
+	//ID3D11ShaderResourceView*	g_pGBufferTextureSRV[EGBT_MaxSize];
 
 	TSharedPtr<FRHIBoundShaderState>		m_pGPassBST;
 	TSharedPtr<FRHIBoundShaderState>		m_pDLPassBST;
@@ -86,6 +80,10 @@ protected:
 	TSharedPtr<FConstantBuffer>				m_pcbScenePass;
 
 	TSharedPtr<FTexture2D>					m_pDepthTex;
+
+	TSharedPtr<FFrameBuffer>				m_pfbGPass;
+	TSharedPtr<FFrameBuffer>				m_pfbDL;
+	TSharedPtr<FFrameBuffer>				m_pfbScene;
 };
 
 
