@@ -6,6 +6,7 @@
 // Ç°ÏòÉùÃ÷
 PRE_DECLARE_CLASS(FVertexDeclaration)
 PRE_DECLARE_CLASS(FRenderSurface)
+PRE_DECLARE_CLASS(FTextureBase)
 PRE_DECLARE_CLASS(FTexture2D)
 PRE_DECLARE_CLASS(FFrameBuffer)
 PRE_DECLARE_CLASS(FShader)

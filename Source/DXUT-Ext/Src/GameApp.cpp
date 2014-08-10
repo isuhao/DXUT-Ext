@@ -112,7 +112,6 @@ HRESULT CALLBACK FGameApp::__OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const
 	void* pUserContext)
 {
 	FDynamicRHI::InitRHI();
-	FNullRHI::InitRHI();
 
 	Check(g_pCurrGame);
 	return g_pCurrGame->OnD3D11CreateDevice(pd3dDevice, pBackBufferSurfaceDesc, pUserContext);
@@ -184,7 +183,6 @@ HRESULT FGameApp::OnResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* p
 
 void CALLBACK FGameApp::__OnD3D11DestroyDevice(void* pUserContext)
 {
-	FNullRHI::ReleaseRHI();
 	FDynamicRHI::ReleaseRHI();
 
 	if (g_pCurrGame)
@@ -234,7 +232,7 @@ int FGameApp::Run()
 {
 	HRESULT hr;
 	// @TODO: Aeron ???!!!! 资源搜索路径，要改改
-	V_RETURN(DXUTSetMediaSearchPath(L"..\\Source\\FXAA")); 
+	V_RETURN(DXUTSetMediaSearchPath(L"..\\Source\\Samples\\DeferredLighting-DXUT-Ext")); 
 	// Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);

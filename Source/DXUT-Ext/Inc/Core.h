@@ -45,6 +45,8 @@
 	#define Check(Expr) { assert(Expr); }
 #endif
 
+#define MakePair	std::make_pair
+
 // Ç°ÏòÉùÃ÷
 #define PRE_DECLARE_CLASS(ClassType) \
 	class ClassType;

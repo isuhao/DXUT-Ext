@@ -21,7 +21,7 @@ void FShader::InitShader()
 	CompileAndCreateShader();
 
 	// 绑定各种参数
-	BindParameters();
+	BindVariables();
 }
 
 void FShader::CompileAndCreateShader()
@@ -75,5 +75,65 @@ void FShader::CompileAndCreateShader()
 	
 	m_pCode.reset();
 	m_pCode = MakeCOMPtr<ID3DBlob>(pBlob);
+
+	// 根据编译好的代码生成ShaderVarMap
+	GenParamMapByD3DReflection(m_pCode, m_VariableMap);
 }
 
+void FShaderVarialbleMap::AddVariable(const String& VarName, uint BufferIndex, uint BindIndex, uint NumBytes)
+{
+	m_VarDescMap.insert(TPair<String, FShaderVariableDesc>(
+		VarName, 
+		FShaderVariableDesc(
+			BufferIndex, 
+			BindIndex, 
+			NumBytes
+			)
+		)
+	);
+}
+
+bool FShaderVarialbleMap::GetVariable(const String& VarName, uint& OutBufferIndex, uint& OutBindIndex, uint& OutNumBytes) const
+{
+	TMap<String, FShaderVariableDesc>::const_iterator MapItr = m_VarDescMap.find(VarName);
+
+	if (MapItr != m_VarDescMap.end())
+	{
+		OutBufferIndex	= MapItr->second.BufferIndex;
+		OutBindIndex	= MapItr->second.BindIndex;
+		OutNumBytes		= MapItr->second.NumBytes;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void FShaderVarialbleMap::Clear()
+{
+	m_VarDescMap.clear();
+}
+
+void FShaderConstantVarialble::Bind(const FShaderVarialbleMap& VariableMap, const String& VariableName)
+{
+	if (!VariableMap.GetVariable(VariableName, m_iBufferIndex, m_iBindIndex, m_iNumBytes))
+	{
+		// 获取失败，报错！
+		Check(0);
+	}
+}
+
+void FShaderResourceVariable::Bind(const FShaderVarialbleMap& VariableMap, const String& VariableName)
+{
+	uint DummyBufferIndex;
+	uint DummySize;
+
+	if (!VariableMap.GetVariable(VariableName, DummyBufferIndex, m_iBindIndex, DummySize))
+	{
+		// 获取失败，报错！
+		Check(0);
+	}
+}

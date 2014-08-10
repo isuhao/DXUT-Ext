@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="..\DeferredLighting-DXUT-Ext\DeferredLight.hlsl" />
-    <FxCompile Include="..\DeferredLighting-DXUT-Ext\GPass.hlsl" />
-    <FxCompile Include="..\DeferredLighting-DXUT-Ext\ScenePass.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DeferredLighting-DXUT-Ext\DeferredLighting-Ext.h" />
     <ClInclude Include="..\DeferredLighting-DXUT-Ext\DLShaders.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\..\Media\DeferredLightExt.hlsl" />
+    <FxCompile Include="..\..\..\Media\GPassExt.hlsl" />
+    <FxCompile Include="..\..\..\Media\ScenePassExt.hlsl" />
   </ItemGroup>
 </Project>

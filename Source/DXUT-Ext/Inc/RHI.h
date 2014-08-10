@@ -12,6 +12,10 @@
 
 // 最大的RT数量
 #define MAX_RT_COUNT	D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT
+// 最大的ShaderResource数量
+#define MAX_SR_COUNT	D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT 
+// 最大的CB数量
+#define MAX_CB_COUNT	D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT
 
 class FNullRHI;
 
@@ -41,27 +45,11 @@ private:
 
 	FRHIRenderTargetView*					m_pCurrRTVs[MAX_RT_COUNT];
 	FRHIDepthStencilView*					m_pCurrDSV;
+
+	TArray<FConstantBuffer>					m_ConstantBuffers[ST_NumShaderTypes];
 };
 
 extern FDynamicRHI* RHI;
 
-
-class FNullRHI
-{
-public:
-	static void InitRHI();
-	static void ReleaseRHI();
-
-public:
-	// 以下是用来做类型识别的D3D资源空指针
-	TSharedPtr<FRHIVertexShader>		VertexShader;
-	TSharedPtr<FRHIPixelShader>			PixelShader;
-	TSharedPtr<FRHIDomainShader>		DomainShader;
-	TSharedPtr<FRHIHullShader>			HullShader;
-	TSharedPtr<FRHIGeometryShader>		GeometryShader;
-	TSharedPtr<FRHIComputeShader>		ComputeShader;
-};
-
-extern FNullRHI* NullRHI;
 
 #endif

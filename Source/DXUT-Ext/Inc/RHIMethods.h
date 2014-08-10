@@ -174,3 +174,38 @@ DEFINE_RHIMETHOD(
 	()
 	);
 
+DEFINE_RHIMETHOD(
+	void,
+	SetShaderConstantVariable,
+	(EShaderType ShaderType, uint BufferIndex, uint BindIndex, uint NumBytes, byte* Data)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	SetShaderResourceVariable,
+	(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FRHISamplerState>& Sampler)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	SetShaderResourceVariable,
+	(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FTextureBase>& Texture)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	CommitConstantBuffer,
+	(void)
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	BeginRender,
+	()
+	);
+
+DEFINE_RHIMETHOD(
+	void,
+	EndRender,
+	()
+	);

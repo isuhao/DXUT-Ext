@@ -121,6 +121,8 @@ void DeferredLightingApp::OnRender(float fDeltaSeconds)
 	ID3D11Device* pd3dDevice = DXUTGetD3D11Device();
 	ID3D11DeviceContext* pd3dImmediateContext = DXUTGetD3D11DeviceContext();
 
+	RHI->BeginRender();
+
 	// ÏÈÇå¿ÕBackBuffer
 	RHI->SetDefaultBackBuffer();
 	RHI->Clear(true, FLinearColor(sqrt(0.25f), sqrt(0.25f), sqrt(0.5f)), true, 1, false, 0);
@@ -129,6 +131,8 @@ void DeferredLightingApp::OnRender(float fDeltaSeconds)
 	RenderGPass();
 	RenderDeferredLight();
 	RenderScene();
+
+	RHI->EndRender();
 }
 
 //--------------------------------------------------------------------------------------

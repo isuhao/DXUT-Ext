@@ -17,6 +17,19 @@ FPixelFormatInfo GPixelFormats[] =
 	{ TEXT("ShadowDepth"),		0 },
 };
 
+void FDynamicRHI::InitPixelFormat()
+{
+	GPixelFormats[PF_Unknown	  ].Format = DXGI_FORMAT_UNKNOWN;
+	GPixelFormats[PF_A32B32G32R32F].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	GPixelFormats[PF_A8R8G8B8	  ].Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	GPixelFormats[PF_R8			  ].Format = DXGI_FORMAT_R8_UNORM;
+	GPixelFormats[PF_DXT1		  ].Format = DXGI_FORMAT_BC1_UNORM;
+	GPixelFormats[PF_DXT3		  ].Format = DXGI_FORMAT_BC2_UNORM;
+	GPixelFormats[PF_DXT5		  ].Format = DXGI_FORMAT_BC3_UNORM;
+	GPixelFormats[PF_DepthStencil ].Format = DXGI_FORMAT_R24G8_TYPELESS;
+	GPixelFormats[PF_ShadowDepth  ].Format = DXGI_FORMAT_R24G8_TYPELESS;
+}
+
 static TSharedPtr<FTexture2D> CreateTexture2DExt(uint Width, uint Height, uint Depth, EPixelFormat PixFormat, bool bTextureArray, bool CubeTexture, uint CreateFlag, uint NumMips)
 {
 	DXGI_FORMAT DxFmt = (DXGI_FORMAT)GPixelFormats[PixFormat].Format;

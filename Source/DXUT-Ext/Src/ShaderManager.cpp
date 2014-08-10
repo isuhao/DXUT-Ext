@@ -32,3 +32,80 @@ HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szS
 
 	return S_OK;
 }
+
+bool GenParamMapByD3DReflection(TSharedPtr<ID3DBlob>& CompiledCode, FShaderVarialbleMap& VariableMap)
+{
+	HRESULT hr;
+	ID3D11ShaderReflection* Reflector = NULL;
+
+	Check(CompiledCode);
+	
+	V(D3DReflect(CompiledCode->GetBufferPointer(), CompiledCode->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&Reflector));
+
+	D3D11_SHADER_DESC ShaderDesc;
+	Reflector->GetDesc(&ShaderDesc);
+
+	for (UINT ResourceIndex = 0; ResourceIndex < ShaderDesc.BoundResources; ResourceIndex++)
+	{
+		D3D11_SHADER_INPUT_BIND_DESC BindDesc;
+		Reflector->GetResourceBindingDesc(ResourceIndex, &BindDesc);
+
+		// 如果是常量
+		if (BindDesc.Type == D3D10_SIT_CBUFFER)
+		{
+			const UINT CBIndex = BindDesc.BindPoint;
+			ID3D11ShaderReflectionConstantBuffer* ConstantBuffer = Reflector->GetConstantBufferByName(BindDesc.Name);
+			D3D11_SHADER_BUFFER_DESC CBDesc;
+			ConstantBuffer->GetDesc(&CBDesc);
+
+			// Track all of the variables in this constant buffer.
+			for (UINT ConstantIndex = 0; ConstantIndex < CBDesc.Variables; ConstantIndex++)
+			{
+				ID3D11ShaderReflectionVariable* Variable = ConstantBuffer->GetVariableByIndex(ConstantIndex);
+				D3D11_SHADER_VARIABLE_DESC VariableDesc;
+				Variable->GetDesc(&VariableDesc);
+				if (VariableDesc.uFlags & D3D10_SVF_USED)
+				{
+					// 增加一个常量
+					VariableMap.AddVariable(
+						VariableDesc.Name,
+						CBIndex,
+						VariableDesc.StartOffset,
+						VariableDesc.Size
+						);
+				}
+			}
+		}
+		else if (BindDesc.Type == D3D10_SIT_TEXTURE || BindDesc.Type == D3D10_SIT_SAMPLER)
+		{
+			VariableMap.AddVariable(
+				BindDesc.Name,
+				0, // BufferIndex这里不用
+				BindDesc.BindPoint,
+				BindDesc.BindCount
+				);
+		}
+	}
+
+	Reflector->Release();
+
+	return true;
+}
+
+void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FRHISamplerState>& InSampler)
+{
+	RHI->SetShaderResourceVariable(
+		ShaderType,
+		Variable.GetBindIndex(),
+		InSampler
+		);
+}
+
+void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FTextureBase>& InTexture2D)
+{
+	RHI->SetShaderResourceVariable(
+		ShaderType,
+		Variable.GetBindIndex(),
+		InTexture2D
+		);
+}

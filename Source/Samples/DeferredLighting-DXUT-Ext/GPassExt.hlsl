@@ -9,6 +9,14 @@ Texture2D   g_txDiffuse                     : register(t0);
 // Sampler
 SamplerState g_samLinearWrap                : register(s0);
 
+
+cbuffer DummyCB : register(b1)
+{
+	float4 DummyC[4];
+};
+
+float4 DummyColor[4];
+
 struct VSInput
 {
 	float4 Pos:			POSITION;
@@ -32,7 +40,7 @@ VSToPS VS_Main(VSInput In)
 {
 	VSToPS Out;
 
-	Out.Pos	= mul(In.Pos, g_mWVP);
+	Out.Pos = mul(In.Pos, g_mWVP);
 	Out.Normal = mul(In.Normal, (float3x3)g_mWorld);
 	Out.Normal = normalize(In.Normal);
 
