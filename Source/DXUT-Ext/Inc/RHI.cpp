@@ -47,6 +47,7 @@ ID3D11Device* FDynamicRHI::GetDevice()
 	return m_pd3dDevice;
 }
 
+
 void FDynamicRHI::InitConstantBuffers()
 {
 	for (byte ShaderType = ST_VertexShader; ShaderType < ST_NumShaderTypes; ++ShaderType)
@@ -55,6 +56,7 @@ void FDynamicRHI::InitConstantBuffers()
 		for (uint i = 0; i < MAX_CB_COUNT; ++i)
 		{
 			m_ConstantBuffers[ShaderType].Add(TSharedPtr<FConstantBuffer>(new FConstantBuffer()));
+			m_ConstantBuffers[ShaderType][i]->CreateBuffer(GSystemSettings.MaxConstantBufferSize);
 		}
 	}
 }

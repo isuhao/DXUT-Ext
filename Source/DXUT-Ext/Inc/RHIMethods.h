@@ -189,7 +189,7 @@ DEFINE_RHIMETHOD(
 DEFINE_RHIMETHOD(
 	void,
 	SetShaderResourceVariable,
-	(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FTextureBase>& Texture)
+	(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FRHIShaderResourceView>& SRV)
 	);
 
 DEFINE_RHIMETHOD(

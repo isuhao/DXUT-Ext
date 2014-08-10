@@ -13,9 +13,9 @@ void FDynamicRHI::SetIndexBuffer(int BufferIndex, const TSharedPtr<FRHIBuffer>& 
 	m_pd3dImmediateContext->IASetIndexBuffer(IndexBuffer.get(), Format, 0);
 }
 
+// @TODO: DrawIndexµÄ·â×°
 void FDynamicRHI::DrawIndexedPrimitive(const TSharedPtr<FRHIBuffer>& IndexBuffer, EPrimitiveType PrimitiveType)
 {
-
 }
 
 std::function<void(ID3D11DeviceContext*, UINT, UINT, ID3D11ShaderResourceView * const *)> ShaderSetShaderResourcesFuncs[ST_NumShaderTypes] =
@@ -66,10 +66,9 @@ void FDynamicRHI::SetShaderResourceVariable(EShaderType ShaderType, uint BindInd
 	SetSamplerState(ShaderType, BindIndex, Sampler);
 }
 
-void FDynamicRHI::SetShaderResourceVariable(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FTextureBase>& Texture)
+void FDynamicRHI::SetShaderResourceVariable(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FRHIShaderResourceView>& SRV)
 {
-	Check(Texture && Texture->ShaderResourceView);
-	FRHIShaderResourceView* pSRV = Texture->ShaderResourceView.get();
+	FRHIShaderResourceView* pSRV = SRV.get();
 	ShaderSetShaderResourcesFuncs[ShaderType](m_pd3dImmediateContext, BindIndex, 1, &pSRV);
 }
 

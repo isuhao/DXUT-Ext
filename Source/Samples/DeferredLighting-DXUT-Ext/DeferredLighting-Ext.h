@@ -73,6 +73,13 @@ protected:
 
 	TSharedPtr<FFrameBuffer>				m_pfbGPass;
 	TSharedPtr<FFrameBuffer>				m_pfbDL;
+
+	FGPassVertexShader						m_GPassVS;
+	FGPassPixelShader						m_GPassPS;
+	FDLVertexShader							m_DLPassVS;
+	FDLPixelShader							m_DLPassPS;
+	FSceneVertexShader						m_ScenePassVS;
+	FScenePixelShader						m_ScenePassPS;
 };
 
 

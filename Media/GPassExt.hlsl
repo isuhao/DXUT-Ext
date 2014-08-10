@@ -4,20 +4,6 @@ cbuffer C_B : register(b0)
 	matrix	g_mWorld;
 };
 
-cbuffer C_B2 : register(b1)
-{
-	matrix	g2_mWVP;
-	matrix	g2_mWorld;
-};
-
-// Texture
-Texture2D   g_txDiffuse                     : register(t0);
-// Sampler
-SamplerState g_samLinearWrap                : register(s0);
-
-float4 DummyColor[4];
-float4 DummyColor2[4];
-
 struct VSInput
 {
 	float4 Pos:			POSITION;
@@ -54,8 +40,6 @@ PSOutput PS_Main(VSToPS In)
 
 	//DummyColor[0] = float4(1.0, 1.0, 1.0, 1.0);
 	Out.Normal = float4(In.Normal, 1.0);
-	Out.Normal.r -= DummyColor[0].r;
-	Out.Normal.g -= DummyColor2[1].r;
 
 	return Out;
 }

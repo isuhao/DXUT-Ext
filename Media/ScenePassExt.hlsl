@@ -1,9 +1,8 @@
 cbuffer CB_ScenePass
 {
 	matrix	g_mWVP;
-	float3	g_AmbientColor;
-	float3	g_LightDiffuse;
-	float2	padding;
+	float4	g_AmbientColor;
+	float4	g_LightDiffuse;
 };
 
 // Texture
@@ -50,10 +49,10 @@ float4 RenderScenePS(VSToPS In) : SV_TARGET
 	projectTexCoord.y = -In.RealPos.y / In.RealPos.w / 2.0f + 0.5f;
 	
 	// N * L * LightDiffuse
-	float4 DiffuseColor = float4(g_txDiffuseAlbedo.Sample(g_samPointClamp, projectTexCoord).r * g_LightDiffuse, 1.0);
+	float4 DiffuseColor = g_txDiffuseAlbedo.Sample(g_samPointClamp, projectTexCoord).r * g_LightDiffuse;
 
 	// Get Ambient
-	float4 Color = float4(g_AmbientColor, 1.0) + DiffuseColor;
+	float4 Color = float4(g_AmbientColor) + DiffuseColor;
 
 	Color *= TexColor;
 

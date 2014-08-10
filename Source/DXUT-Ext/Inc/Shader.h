@@ -30,7 +30,7 @@ struct FShaderVariableDesc
 		uint InNumBytes
 		)
 		: BufferIndex(InBufferIndex)
-		, BindIndex(BindIndex)
+		, BindIndex(InBindIndex)
 		, NumBytes(InNumBytes)
 	{
 	}
@@ -79,6 +79,13 @@ public:
 	 */
 	virtual void SetVariables(void* VarContext) {}
 
+	/**
+	 * ªÒ»°VarialbleMap
+	 */
+	FShaderVarialbleMap* GetVariableMap()
+	{
+		return &m_VariableMap;
+	}
 
 	const TSharedPtr<ID3D11VertexShader>& GetVertexShader() { return m_pVertexShader;  }
 	const TSharedPtr<ID3D11PixelShader>& GetPixelShader() { return m_pPixelShader;  }

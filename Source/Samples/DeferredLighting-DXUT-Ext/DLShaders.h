@@ -3,40 +3,112 @@
 
 #include "Shader.h"
 
-class GPassVertexShader : public FShader
+class FGPassVertexShader : public FShader
 {
-	DECLARE_SHADER(GPassVertexShader, L"GPassExt.hlsl", "VS_Main", "vs_5_0", ST_VertexShader)
+	DECLARE_SHADER(FGPassVertexShader, L"GPassExt.hlsl", "VS_Main", "vs_5_0", ST_VertexShader)
 
-	void InitVertexDeclaration();
+	void BindVariables()
+	{
+		m_mWVP.Bind(m_VariableMap, "g_mWVP");
+		m_mWorld.Bind(m_VariableMap, "g_mWorld");
+	}
+
+	void SetVariables(float4x4& InWVP, float4x4& InWolrd)
+	{
+		SetShaderVariable(ST_VertexShader, m_mWVP, &InWVP);
+		SetShaderVariable(ST_VertexShader, m_mWorld, &InWolrd);
+	}
+
+private:
+	FShaderConstantVarialble	m_mWVP;
+	FShaderConstantVarialble	m_mWorld;
 };
 
-class GPassPixelShader : public FShader
+class FGPassPixelShader : public FShader
 {
-	DECLARE_SHADER(GPassPixelShader, L"GPassExt.hlsl", "PS_Main", "ps_5_0", ST_PixelShader)
+	DECLARE_SHADER(FGPassPixelShader, L"GPassExt.hlsl", "PS_Main", "ps_5_0", ST_PixelShader)
 };
 
-class DLVertexShader : public FShader
+class FDLVertexShader : public FShader
 {
-	DECLARE_SHADER(DLVertexShader, L"DeferredLightExt.hlsl", "VS_Main", "vs_5_0", ST_VertexShader)
-
-	void InitVertexDeclaration();
+	DECLARE_SHADER(FDLVertexShader, L"DeferredLightExt.hlsl", "VS_Main", "vs_5_0", ST_VertexShader)
 };
 
-class DLPixelShader : public FShader
+class FDLPixelShader : public FShader
 {
-	DECLARE_SHADER(DLPixelShader, L"DeferredLightExt.hlsl", "PS_Main", "ps_5_0", ST_PixelShader)
+	DECLARE_SHADER(FDLPixelShader, L"DeferredLightExt.hlsl", "PS_Main", "ps_5_0", ST_PixelShader)
+
+	void BindVariables()
+	{
+		m_vLightVec.Bind(m_VariableMap, "g_vLightDir");
+		m_txNormal.Bind(m_VariableMap, "g_txNormal");
+		m_Sampler.Bind(m_VariableMap, "g_samPointClamp");
+	}
+
+	void SetVariables(float3& LightVec)
+	{
+		SetShaderVariable(ST_PixelShader, m_vLightVec, &LightVec);
+	}
+
+	void SetTextureVariables(const TSharedPtr<FRenderSurface>& NormalTexSurf, const TSharedPtr<FRHISamplerState>& Sampler)
+	{
+		SetShaderVariable(ST_PixelShader, m_txNormal, NormalTexSurf->ShaderResourceView);
+		SetShaderVariable(ST_PixelShader, m_Sampler, Sampler);
+	}
+
+private:
+	FShaderConstantVarialble	m_vLightVec;
+	FShaderResourceVariable		m_txNormal;
+	FShaderResourceVariable		m_Sampler;
 };
 
-class SceneVertexShader : public FShader
+class FSceneVertexShader : public FShader
 {
-	DECLARE_SHADER(SceneVertexShader, L"ScenePassExt.hlsl", "RenderSceneVS", "vs_5_0", ST_VertexShader)
+	DECLARE_SHADER(FSceneVertexShader, L"ScenePassExt.hlsl", "RenderSceneVS", "vs_5_0", ST_VertexShader)
 
-	void InitVertexDeclaration();
+	void BindVariables()
+	{
+		m_mWVP.Bind(m_VariableMap, "g_mWVP");
+	}
+
+	void SetVariables(float4x4& WVP)
+	{
+		SetShaderVariable(ST_PixelShader, m_mWVP, &WVP);
+	}
+
+private:
+	FShaderConstantVarialble	m_mWVP;
 };
 
-class ScenePixelShader : public FShader
+class FScenePixelShader : public FShader
 {
-	DECLARE_SHADER(ScenePixelShader, L"ScenePassExt.hlsl", "RenderScenePS", "ps_5_0", ST_PixelShader)
+	DECLARE_SHADER(FScenePixelShader, L"ScenePassExt.hlsl", "RenderScenePS", "ps_5_0", ST_PixelShader)
+
+	void BindVariables()
+	{
+		m_AmbientColor.Bind(m_VariableMap, "g_AmbientColor");
+		m_LightDiffuse.Bind(m_VariableMap, "g_LightDiffuse");
+		m_txDiffuseAlbedo.Bind(m_VariableMap, "g_txDiffuseAlbedo");
+		m_samPointClamp.Bind(m_VariableMap, "g_samPointClamp");
+	}
+
+	void SetVariables(float4& AmbientColor, float4& Diffuse)
+	{
+		SetShaderVariable(ST_PixelShader, m_AmbientColor, &AmbientColor);
+		SetShaderVariable(ST_PixelShader, m_LightDiffuse, &Diffuse);
+	}
+
+	void SetTextureVariables(const TSharedPtr<FRenderSurface>& InSurf, const TSharedPtr<FRHISamplerState>& Sampler)
+	{
+		SetShaderVariable(ST_PixelShader, m_txDiffuseAlbedo, InSurf->ShaderResourceView);
+		SetShaderVariable(ST_PixelShader, m_samPointClamp, Sampler);
+	}
+
+private:
+	FShaderConstantVarialble	m_AmbientColor;
+	FShaderConstantVarialble	m_LightDiffuse;
+	FShaderResourceVariable		m_txDiffuseAlbedo;
+	FShaderResourceVariable		m_samPointClamp;
 };
 
 struct FVertexDeclarationFactory_DL : public FVertexDeclarationFactory

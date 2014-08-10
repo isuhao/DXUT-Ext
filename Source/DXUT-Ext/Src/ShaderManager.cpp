@@ -64,8 +64,14 @@ bool GenParamMapByD3DReflection(TSharedPtr<ID3DBlob>& CompiledCode, FShaderVaria
 				ID3D11ShaderReflectionVariable* Variable = ConstantBuffer->GetVariableByIndex(ConstantIndex);
 				D3D11_SHADER_VARIABLE_DESC VariableDesc;
 				Variable->GetDesc(&VariableDesc);
-				if (VariableDesc.uFlags & D3D10_SVF_USED)
+
+				// Aeron Begin
+				// @TODO: 这里有时候明明在Shader中有引用，为什么还是标记为0？
+				// Aeron End
+
+				//if (VariableDesc.uFlags & D3D10_SVF_USED)
 				{
+					uint StartSlot = VariableDesc.StartOffset;
 					// 增加一个常量
 					VariableMap.AddVariable(
 						VariableDesc.Name,
@@ -106,6 +112,15 @@ void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Va
 	RHI->SetShaderResourceVariable(
 		ShaderType,
 		Variable.GetBindIndex(),
-		InTexture2D
+		InTexture2D->ShaderResourceView
+		);
+}
+
+void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FRHIShaderResourceView>& InSRV)
+{
+	RHI->SetShaderResourceVariable(
+		ShaderType,
+		Variable.GetBindIndex(),
+		InSRV
 		);
 }

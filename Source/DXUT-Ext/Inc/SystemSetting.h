@@ -12,6 +12,7 @@ public:
 public:
 	uint MSAACount;
 	uint MSAAQuality;
+	uint MaxConstantBufferSize;
 };
 
 extern FSystemSettings GSystemSettings;

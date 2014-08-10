@@ -23,4 +23,9 @@ template< class T > inline T Min3(const T A, const T B, const T C)
 	return Min(Min(A, B), C);
 }
 
+template< class T > inline T Align(const T Ptr, INT Alignment)
+{
+	return (T)(((INT)Ptr + Alignment - 1) & ~(Alignment - 1));
+}
+
 #endif

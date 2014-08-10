@@ -39,13 +39,15 @@ void SetShaderVariable(EShaderType ShaderType, const FShaderConstantVarialble& V
 		Variable.GetBufferIndex(),
 		Variable.GetBindIndex(),
 		NumBytes,
-		(void*)(InValue)
+		(byte*)(InValue)
 		);
 }
 
 extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FRHISamplerState>& InSampler);
 
 extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FTextureBase>& InTexture2D);
+
+extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FRHIShaderResourceView>& InSRV);
 
 
 #endif
