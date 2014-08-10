@@ -56,9 +56,9 @@ void FDynamicRHI::SetSamplerState(EShaderType ShaderType, int SamplerIndex, cons
 
 void FDynamicRHI::SetShaderConstantVariable(EShaderType ShaderType, uint BufferIndex, uint BindIndex, uint NumBytes, byte* Data)
 {
-	TArray<FConstantBuffer>& CB = m_ConstantBuffers[ShaderType];
+	TArray<TSharedPtr<FConstantBuffer> >& CB = m_ConstantBuffers[ShaderType];
 	Check(BufferIndex < uint(CB.GetSize()));
-	CB[BufferIndex].UpdateData(Data, BindIndex, NumBytes);
+	CB[BufferIndex]->UpdateData(Data, BindIndex, NumBytes);
 }
 
 void FDynamicRHI::SetShaderResourceVariable(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FRHISamplerState>& Sampler)
@@ -77,7 +77,15 @@ void FDynamicRHI::CommitConstantBuffer()
 {
 	for (byte ShaderType = ST_VertexShader; ShaderType < ST_NumShaderTypes; ++ShaderType)
 	{
-		m_pd3dImmediateContext->VSSetConstantBuffers(0, 1, NULL);
+		TArray<TSharedPtr<FConstantBuffer> >& CB = m_ConstantBuffers[ShaderType];
+		for (int i = 0; i < CB.GetSize(); ++i)
+		{
+			if (CB[i]->CommitData())
+			{
+				FRHIBuffer* pBuffer = CB[i]->GetBuffer().get();
+				ShaderSetConstantBuffersFuncs[ShaderType](m_pd3dImmediateContext, i, 1, &pBuffer);
+			}
+		}
 	}
 }
 

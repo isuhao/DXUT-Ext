@@ -38,6 +38,7 @@ public:
 
 private:
 	void InitPixelFormat();
+	void InitConstantBuffers();
 
 private:
 	ID3D11DeviceContext*					m_pd3dImmediateContext;
@@ -46,7 +47,7 @@ private:
 	FRHIRenderTargetView*					m_pCurrRTVs[MAX_RT_COUNT];
 	FRHIDepthStencilView*					m_pCurrDSV;
 
-	TArray<FConstantBuffer>					m_ConstantBuffers[ST_NumShaderTypes];
+	TArray<TSharedPtr<FConstantBuffer> >	m_ConstantBuffers[ST_NumShaderTypes];
 };
 
 extern FDynamicRHI* RHI;

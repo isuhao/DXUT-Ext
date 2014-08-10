@@ -12,6 +12,7 @@ public:
 		: m_iMaxSize(0)
 		, m_iCurrUpdateSize(0)
 		, m_pRawData(NULL)
+		, m_bIsDirty(false)
 	{
 		m_pD3DBuffer.reset();
 	}
@@ -46,60 +47,72 @@ public:
 		Check(iOffset + iSize <= m_iMaxSize);
 		CopyMemory((byte*)m_pRawData + iOffset * sizeof(ElemType), (byte*)InData, sizeof(ElemType)* iSize);
 		m_iCurrUpdateSize = Max(m_iCurrUpdateSize, iOffset + iSize);
+		m_bIsDirty = true;
 	}
 
-	void CommitData()
+	bool CommitData()
 	{
 		if (!m_pD3DBuffer || m_iCurrUpdateSize <= 0)
 		{
-			return;
+			return false;
 		}
 
 		ID3D11DeviceContext* pd3dImmediateContext = DXUTGetD3D11DeviceContext();
 		if (!pd3dImmediateContext)
 		{
-			return;
+			return false;
 		}
 
-		D3D11_BUFFER_DESC TheBufferDesc;
-		m_pD3DBuffer->GetDesc(&TheBufferDesc);
+		if (m_bIsDirty)
+		{
+			D3D11_BUFFER_DESC TheBufferDesc;
+			m_pD3DBuffer->GetDesc(&TheBufferDesc);
 
-		if (TheBufferDesc.Usage == D3D11_USAGE_DEFAULT)
-		{
-			pd3dImmediateContext->UpdateSubresource(m_pD3DBuffer.get(), 0, 0, (void*)m_pRawData, 0, 0);
-		}
-		else if (TheBufferDesc.Usage == D3D11_USAGE_DYNAMIC)
-		{
-			D3D11_MAPPED_SUBRESOURCE MappedResource;
-			pd3dImmediateContext->Map(m_pD3DBuffer.get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
-			uint TotalUpdateSize = sizeof(ElemType)* m_iCurrUpdateSize;
-			if (MappedResource.pData != NULL)
+			if (TheBufferDesc.Usage == D3D11_USAGE_DEFAULT)
 			{
-				CopyMemory(MappedResource.pData, (byte*)m_pRawData, TotalUpdateSize);
+				pd3dImmediateContext->UpdateSubresource(m_pD3DBuffer.get(), 0, 0, (void*)m_pRawData, 0, 0);
 			}
-			pd3dImmediateContext->Unmap(m_pD3DBuffer.get(), 0);
+			else if (TheBufferDesc.Usage == D3D11_USAGE_DYNAMIC)
+			{
+				D3D11_MAPPED_SUBRESOURCE MappedResource;
+				pd3dImmediateContext->Map(m_pD3DBuffer.get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
+				uint TotalUpdateSize = sizeof(ElemType)* m_iCurrUpdateSize;
+				if (MappedResource.pData != NULL)
+				{
+					CopyMemory(MappedResource.pData, (byte*)m_pRawData, TotalUpdateSize);
+				}
+				pd3dImmediateContext->Unmap(m_pD3DBuffer.get(), 0);
+			}
+			else
+			{
+				HRESULT		hr;
+				FRHIBuffer* pNewBuffer;
+				ID3D11Device* pDevice = DXUTGetD3D11Device();
+				Check(pDevice);
+
+				D3D11_BUFFER_DESC NewBufferDesc;
+				ZeroMemory(&NewBufferDesc, sizeof(NewBufferDesc));
+				NewBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+				NewBufferDesc.ByteWidth = m_iMaxSize * sizeof(ElemType);
+
+				D3D11_SUBRESOURCE_DATA InitData;
+				InitData.pSysMem = m_pRawData;
+				InitData.SysMemPitch = 0;
+				InitData.SysMemSlicePitch = 0;
+
+				V(pDevice->CreateBuffer(&NewBufferDesc, &InitData, &pNewBuffer));
+				pd3dImmediateContext->CopyResource(m_pD3DBuffer.get(), pNewBuffer);
+
+				SAFE_RELEASE(pNewBuffer);
+			}
+
+			m_bIsDirty = false;
+
+			return true;
 		}
 		else
 		{
-			HRESULT		hr;
-			FRHIBuffer* pNewBuffer;
-			ID3D11Device* pDevice = DXUTGetD3D11Device();
-			Check(pDevice);
-
-			D3D11_BUFFER_DESC NewBufferDesc;
-			ZeroMemory(&NewBufferDesc, sizeof(NewBufferDesc));
-			NewBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-			NewBufferDesc.ByteWidth = m_iMaxSize * sizeof(ElemType);
-
-			D3D11_SUBRESOURCE_DATA InitData;
-			InitData.pSysMem = m_pRawData;
-			InitData.SysMemPitch = 0;
-			InitData.SysMemSlicePitch = 0;
-
-			V(pDevice->CreateBuffer(&NewBufferDesc, &InitData, &pNewBuffer));
-			pd3dImmediateContext->CopyResource(m_pD3DBuffer.get(), pNewBuffer);
-
-			SAFE_RELEASE(pNewBuffer);
+			return false;
 		}
 	}
 
@@ -155,6 +168,7 @@ protected:
 	ElemType*						m_pRawData;
 	uint							m_iCurrUpdateSize;
 	uint							m_iMaxSize;
+	bool							m_bIsDirty;
 };
 
 typedef TBuffer<byte> FBuffer;

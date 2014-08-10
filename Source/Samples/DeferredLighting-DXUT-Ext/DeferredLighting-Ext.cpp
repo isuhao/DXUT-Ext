@@ -40,7 +40,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 
 	// GPass Shader
 	CREATE_SHADER(GPassVertexShader, GPassVS);
-	CREATE_SHADER(GPassPixelShader, GPassPS);
+	CREATE_SHADER(GPassPixelShader,  GPassPS);
 
 	m_pGPassBST = RHI->CreateBoundShaderState
 	(
@@ -52,7 +52,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 
 	// DL Shader
 	CREATE_SHADER(DLVertexShader, DLPassVS);
-	CREATE_SHADER(DLPixelShader, DLPassPS);
+	CREATE_SHADER(DLPixelShader,  DLPassPS);
 	m_pDLPassBST = RHI->CreateBoundShaderState
 	(
 		VDF.GetVertexDeclaration(),
@@ -63,7 +63,7 @@ HRESULT DeferredLightingApp::OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI
 
 	// Scene Pass Shader
 	CREATE_SHADER(SceneVertexShader, ScenePassVS);
-	CREATE_SHADER(ScenePixelShader, ScenePassPS);
+	CREATE_SHADER(ScenePixelShader,  ScenePassPS);
 	m_pScenePassBST = RHI->CreateBoundShaderState
 	(
 		VDF.GetVertexDeclaration(),
@@ -184,7 +184,6 @@ void DeferredLightingApp::RenderGPass()
 	RHI->SetBoundShaderState(m_pGPassBST);
 
 	RHI->SetSamplerState(ST_PixelShader, 0, m_pSamplerState);
-
 
 	m_pMesh->Render(0);
 }

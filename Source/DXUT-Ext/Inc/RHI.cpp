@@ -27,6 +27,8 @@ FDynamicRHI::FDynamicRHI()
 	}
 
 	InitPixelFormat();
+
+	InitConstantBuffers();
 }
 
 FDynamicRHI::~FDynamicRHI()
@@ -43,4 +45,16 @@ ID3D11DeviceContext* FDynamicRHI::GetDeviceContext()
 ID3D11Device* FDynamicRHI::GetDevice()
 {
 	return m_pd3dDevice;
+}
+
+void FDynamicRHI::InitConstantBuffers()
+{
+	for (byte ShaderType = ST_VertexShader; ShaderType < ST_NumShaderTypes; ++ShaderType)
+	{
+		m_ConstantBuffers[ShaderType].Reset();
+		for (uint i = 0; i < MAX_CB_COUNT; ++i)
+		{
+			m_ConstantBuffers[ShaderType].Add(TSharedPtr<FConstantBuffer>(new FConstantBuffer()));
+		}
+	}
 }
