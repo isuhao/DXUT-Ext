@@ -52,10 +52,10 @@ void FD3D11Driver::InitConstantBuffers()
 {
 	for (byte ShaderType = ST_VertexShader; ShaderType < ST_NumShaderTypes; ++ShaderType)
 	{
-		m_ConstantBuffers[ShaderType].Reset();
+		m_ConstantBuffers[ShaderType].clear();
 		for (uint i = 0; i < MAX_CB_COUNT; ++i)
 		{
-			m_ConstantBuffers[ShaderType].Add(TSharedPtr<FConstantBuffer>(new FConstantBuffer()));
+			m_ConstantBuffers[ShaderType].push_back(TSharedPtr<FConstantBuffer>(new FConstantBuffer()));
 			m_ConstantBuffers[ShaderType][i]->CreateBuffer(GSystemSettings.MaxConstantBufferSize);
 		}
 	}

@@ -4,6 +4,9 @@
     <Filter Include="QuickMultiPass">
       <UniqueIdentifier>{9e4541e8-d547-4bd6-b778-20d8f0fb0933}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{11d3c827-9a5b-4d35-b807-c5cc623c9d7a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\QuickMultiPass.h">

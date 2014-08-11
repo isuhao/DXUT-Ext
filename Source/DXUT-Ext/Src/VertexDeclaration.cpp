@@ -3,7 +3,7 @@
 
 void FVertexDeclaration::Clear()
 {
-	m_Layouts.RemoveAll();
+	m_Layouts.clear();
 	m_nCurrOffset = 0;
 }
 
@@ -48,7 +48,7 @@ void FVertexDeclaration::AppendElement(UINT StreamIndex, UINT Offset, EVertexEle
 	D3DElement.InputSlotClass = bUseInstanceIndex ? D3D11_INPUT_PER_INSTANCE_DATA : D3D11_INPUT_PER_VERTEX_DATA;
 	D3DElement.InstanceDataStepRate = bUseInstanceIndex ? 1 : 0;
 
-	m_Layouts.Add(D3DElement);
+	m_Layouts.push_back(D3DElement);
 }
 
 /**

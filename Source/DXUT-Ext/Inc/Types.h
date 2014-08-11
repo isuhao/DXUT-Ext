@@ -22,7 +22,7 @@ typedef D3DXMATRIXA16	FMatrix;
 #define String	std::string
 
 // ¸÷ÖÖÈİÆ÷
-#define TArray	CGrowableArray
+#define TArray	std::vector
 #define TMap	std::map
 #define TSet	std::set	
 #define TPair	std::pair

@@ -7,7 +7,7 @@
 class FQuickMultiPass : public FAppFramework
 {
 public:
-	FQuickMultiPass(const WString& AppName = L"GameApp", const String& ResPath = L"")
+	FQuickMultiPass(const WString& AppName = L"GameApp", const WString& ResPath = L"")
 		: FAppFramework(AppName, ResPath)
 	{
 	}
@@ -16,7 +16,7 @@ public:
 	{
 	}
 
-
+	virtual void OnInitObjs() {}
 
 };
 

@@ -57,7 +57,7 @@ void FD3D11Driver::SetSamplerState(EShaderType ShaderType, int SamplerIndex, con
 void FD3D11Driver::SetShaderConstantVariable(EShaderType ShaderType, uint BufferIndex, uint BindIndex, uint NumBytes, byte* Data)
 {
 	TArray<TSharedPtr<FConstantBuffer> >& CB = m_ConstantBuffers[ShaderType];
-	Check(BufferIndex < uint(CB.GetSize()));
+	Check(BufferIndex < CB.size());
 	CB[BufferIndex]->UpdateData(Data, BindIndex, NumBytes);
 }
 
@@ -77,7 +77,7 @@ void FD3D11Driver::CommitConstantBuffer()
 	for (byte ShaderType = ST_VertexShader; ShaderType < ST_NumShaderTypes; ++ShaderType)
 	{
 		TArray<TSharedPtr<FConstantBuffer> >& CB = m_ConstantBuffers[ShaderType];
-		for (int i = 0; i < CB.GetSize(); ++i)
+		for (uint i = 0; i < CB.size(); ++i)
 		{
 			if (CB[i]->CommitData())
 			{

@@ -46,12 +46,12 @@ public:
 
 	D3D11_INPUT_ELEMENT_DESC* GetElements()
 	{
-		return &m_Layouts.GetAt(0);
+		return &m_Layouts[0];
 	}
 
 	UINT GetElementNum()
 	{
-		return m_Layouts.GetSize();
+		return m_Layouts.size();
 	}
 
 	void AppendElement(UINT StreamIndex, UINT Offset, EVertexElementType ElemType, EVertexElementUsage Usage, UINT UsageIndex,

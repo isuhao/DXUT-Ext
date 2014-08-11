@@ -235,8 +235,7 @@ void FGameApp::RenderText()
 int FGameApp::Run()
 {
 	HRESULT hr;
-	// @TODO: Aeron ???!!!! 资源搜索路径，要改改
-	//V_RETURN(DXUTSetMediaSearchPath(L"..\\Source\\Samples\\DeferredLighting-DXUT-Ext"));
+	// @TODO: 资源搜索路径，要改改
 	V_RETURN(DXUTSetMediaSearchPath(m_szResPath.c_str()));
 	// Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
