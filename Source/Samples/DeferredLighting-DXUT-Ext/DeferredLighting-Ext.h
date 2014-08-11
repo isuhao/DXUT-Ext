@@ -40,17 +40,18 @@ enum EGBufferType
 class DeferredLightingApp : public FGameApp
 {
 public:
-	DeferredLightingApp();
-	~DeferredLightingApp() {}
+	DeferredLightingApp(const WString& AppName = L"GameApp", const WString& ResPath = L"")
+		: FGameApp(AppName, ResPath)
+	{
+	}
+
+	~DeferredLightingApp() 
+	{
+	}
 
 	virtual void OnInit();
 	virtual void OnDestroy();
-	HRESULT OnCreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc);
-	HRESULT OnResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc) { return S_OK;  }
-	void OnTick(float DeltaSeconds);
 	void OnRender(float fDeltaSeconds);
-	void OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown) {}
-	void OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl) {}
 
 protected:
 	void RenderGPass();

@@ -11,9 +11,11 @@ CDXUTDialog                 g_HUD;
 CDXUTDialog                 g_SampleUI;
 
 // 构造
-FGameApp::FGameApp()
-: m_bShouldRenderText(false)
-{	
+FGameApp::FGameApp(const WString& AppName, const WString& ResPath)
+:	m_szAppName(AppName)
+,	m_szResPath(ResPath)
+,	m_bShouldRenderText(false)
+{
 	g_pCurrGame = this;
 }
 
@@ -28,14 +30,14 @@ FGameApp::~FGameApp()
 //--------------------------------------------------------------------------------------
 // Handle messages to the application
 //--------------------------------------------------------------------------------------
-LRESULT CALLBACK FGameApp::__MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing,
+LRESULT CALLBACK FGameApp::__MsgProc(HWND hWnd, uint uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing,
 	void* pUserContext)
 {
 	Check(g_pCurrGame);
 	return g_pCurrGame->MsgProc(hWnd, uMsg, wParam, lParam, pbNoFurtherProcessing, pUserContext);
 }
 
-LRESULT FGameApp::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing,
+LRESULT FGameApp::MsgProc(HWND hWnd, uint uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing,
 	void* pUserContext)
 {
 	// Pass messages to dialog resource manager calls so GUI state is updated correctly
@@ -68,7 +70,7 @@ LRESULT FGameApp::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
 //--------------------------------------------------------------------------------------
 // Handle key presses
 //--------------------------------------------------------------------------------------
-void CALLBACK FGameApp::__OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext)
+void CALLBACK FGameApp::__OnKeyboard(uint nChar, bool bKeyDown, bool bAltDown, void* pUserContext)
 {
 	if (g_pCurrGame)
 	{
@@ -79,7 +81,7 @@ void CALLBACK FGameApp::__OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, v
 //--------------------------------------------------------------------------------------
 // Handles the GUI events
 //--------------------------------------------------------------------------------------
-void CALLBACK FGameApp::__OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext)
+void CALLBACK FGameApp::__OnGUIEvent(uint nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext)
 {
 	if (g_pCurrGame)
 	{
@@ -126,7 +128,9 @@ HRESULT FGameApp::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFA
 	V_RETURN(g_DialogResourceManager.OnD3D11CreateDevice(pd3dDevice, pDeviceContext));
 	V_RETURN(g_SettingsDlg.OnD3D11CreateDevice(pd3dDevice));
 
-	return OnCreateDevice(pd3dDevice, pBackBufferSurfaceDesc);
+	OnInit();
+
+	return S_OK;
 }
 
 //--------------------------------------------------------------------------------------
@@ -232,7 +236,8 @@ int FGameApp::Run()
 {
 	HRESULT hr;
 	// @TODO: Aeron ???!!!! 资源搜索路径，要改改
-	V_RETURN(DXUTSetMediaSearchPath(L"..\\Source\\Samples\\DeferredLighting-DXUT-Ext")); 
+	//V_RETURN(DXUTSetMediaSearchPath(L"..\\Source\\Samples\\DeferredLighting-DXUT-Ext"));
+	V_RETURN(DXUTSetMediaSearchPath(m_szResPath.c_str()));
 	// Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -253,12 +258,12 @@ int FGameApp::Run()
 	DXUTSetCallbackD3D11DeviceDestroyed(__OnD3D11DestroyDevice);
 	DXUTSetCallbackD3D11FrameRender(__OnD3D11FrameRender);
 
-	// 初始化App
-	InitApp();
+	// 创建前预初始化App
+	PreInit();
 
 	DXUTInit(true, true, NULL); // Parse the command line, show msgboxes on error, no extra command line params
 	DXUTSetCursorSettings(true, true);
-	DXUTCreateWindow(L"GameApp");
+	DXUTCreateWindow(m_szAppName.c_str());
 
 	DXUTCreateDevice(D3D_FEATURE_LEVEL_11_0, true, 640, 480);
 
@@ -270,7 +275,7 @@ int FGameApp::Run()
 	return DXUTGetExitCode();
 }
 
-void FGameApp::InitApp()
+void FGameApp::PreInit()
 {
 	g_SettingsDlg.Init(&g_DialogResourceManager);
 	g_HUD.Init(&g_DialogResourceManager);
@@ -279,7 +284,7 @@ void FGameApp::InitApp()
 	g_HUD.SetCallback(__OnGUIEvent);
 	g_SampleUI.SetCallback(__OnGUIEvent);
 
-	OnInit();
+	InitCamera();
 }
 
 void FGameApp::DestroyApp()
@@ -292,4 +297,20 @@ void FGameApp::DestroyApp()
 	g_SettingsDlg.OnD3D11DestroyDevice();
 	DXUTGetGlobalResourceCache().OnDestroyDevice();
 	SAFE_DELETE(g_pTxtHelper);
+}
+
+void FGameApp::InitCamera()
+{
+	m_Camera.SetButtonMasks(MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_MIDDLE_BUTTON);
+	m_LightCamera.SetButtonMasks(MOUSE_RIGHT_BUTTON, 0, 0);
+
+	// Setup the camera's view parameters
+	D3DXVECTOR3 vecEye(7.0f, 7.0f, -7.0f);
+	D3DXVECTOR3 vecAt(0.0f, 0.0f, 0.0f);
+	m_Camera.SetViewParams(&vecEye, &vecAt);
+
+	// Setup light camera's view parameters
+	D3DXVECTOR3 vecEyeLight(9.0f, 15.0f, 9.0f);
+	D3DXVECTOR3 vecAtLight(0.0f, 0.0f, 0.0f);
+	m_LightCamera.SetViewParams(&vecEyeLight, &vecAtLight);
 }

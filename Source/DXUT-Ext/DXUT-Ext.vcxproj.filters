@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Inc\ShaderManager.h">
-      <Filter>Shader</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\DXUT-Ext.h" />
     <ClInclude Include="Inc\Core.h">
       <Filter>Core</Filter>
@@ -73,13 +70,13 @@
     <ClInclude Include="Inc\D3DTranslate.h">
       <Filter>D3D</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\ShaderHelper.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GameApp.cpp">
       <Filter>Application</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\ShaderManager.cpp">
-      <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="Src\Shader.cpp">
       <Filter>Shader</Filter>
@@ -119,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="Inc\D3DTexture.h">
       <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ShaderHelper.cpp">
+      <Filter>Shader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-#include "ShaderManager.h"
+#include "ShaderHelper.h"
 
 HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut)
 {
@@ -67,9 +67,8 @@ bool GenParamMapByD3DReflection(TSharedPtr<ID3DBlob>& CompiledCode, FShaderVaria
 
 				// Aeron Begin
 				// @TODO: 这里有时候明明在Shader中有引用，为什么还是标记为0？
-				// Aeron End
-
 				//if (VariableDesc.uFlags & D3D10_SVF_USED)
+				// Aeron End
 				{
 					uint StartSlot = VariableDesc.StartOffset;
 					// 增加一个常量

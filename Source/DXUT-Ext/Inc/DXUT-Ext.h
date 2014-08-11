@@ -8,7 +8,7 @@
 #include "Core.h"
 #include "D3DDriver.h"
 #include "SystemSetting.h"
-#include "ShaderManager.h"
+#include "ShaderHelper.h"
 #include "Shader.h"
 #include "Mesh.h"
 #include "GameApp.h"

@@ -69,8 +69,7 @@ public:
 	const TSharedPtr<ID3DBlob>& GetCode() { return m_pCode;  }
 
 	/** 
-	 * 绑定各种变量
-	 * @TODO: 实现ShaderParameterMap，然后根据Map绑定参数
+	 * 绑定Shader中各种资源变量（CB、Texture、Sampler）
 	 */
 	virtual void BindVariables() {}
 

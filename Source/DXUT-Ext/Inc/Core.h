@@ -65,9 +65,9 @@ class ClassType;
 
 // 一个很牛逼的宏，获取成员在Struct中的偏移量
 #ifdef __GNUC__
-#define STRUCT_OFFSET( struc, member )	( ( (PTRINT)&((struc*)0x1)->member ) - 0x1 )
+#define STRUCT_OFFSET( struc, member )	( ( (INT)&((struc*)0x1)->member ) - 0x1 )
 #else
-#define STRUCT_OFFSET( struc, member )	( (PTRINT)&((struc*)NULL)->member )
+#define STRUCT_OFFSET( struc, member )	( (INT)&((struc*)NULL)->member )
 #endif
 
 // 无效的索引

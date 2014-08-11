@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="QuickMultiPass">
+      <UniqueIdentifier>{9e4541e8-d547-4bd6-b778-20d8f0fb0933}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Inc\QuickMultiPass.h">
+      <Filter>QuickMultiPass</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\AppFramework.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\QuickMultiPass.cpp">
+      <Filter>QuickMultiPass</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
