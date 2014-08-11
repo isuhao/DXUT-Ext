@@ -897,7 +897,7 @@ CEffect::~CEffect()
     }
 }
 
-// AddRef all D3D object when cloning
+// AddRef all RHI object when cloning
 void CEffect::AddRefAllForCloning( CEffect* pEffectSource )
 {
     UINT  i;

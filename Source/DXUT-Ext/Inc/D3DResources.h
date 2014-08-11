@@ -1,5 +1,5 @@
-#ifndef _RHI_RESOURCES_H_
-#define _RHI_RESOURCES_H_
+#ifndef _D3D_RESOURCES_H_
+#define _D3D_RESOURCES_H_
 
 #include "Core.h"
 
@@ -12,23 +12,22 @@ PRE_DECLARE_CLASS(FFrameBuffer)
 PRE_DECLARE_CLASS(FShader)
 
 // D3D×ÊÔ´
-typedef ID3D11SamplerState			FRHISamplerState;
-typedef ID3D11RasterizerState		FRHIRasterState;
-typedef ID3D11BlendState			FRHIBlendState;
-typedef ID3D11InputLayout			FRHIInputLayout;
-typedef ID3D11Buffer				FRHIBuffer;
-typedef ID3D11DepthStencilView		FRHIDepthStencilView;
-typedef ID3D11RenderTargetView		FRHIRenderTargetView;
-typedef ID3D11ShaderResourceView	FRHIShaderResourceView;
-typedef ID3D11Texture2D				FRHITexture2D;
-typedef ID3D11Texture3D				FRHITexture3D;
-typedef ID3D11VertexShader			FRHIVertexShader;
-typedef ID3D11PixelShader			FRHIPixelShader;
-typedef ID3D11DomainShader			FRHIDomainShader;
-typedef ID3D11HullShader			FRHIHullShader;
-typedef ID3D11GeometryShader		FRHIGeometryShader;
-typedef ID3D11ComputeShader			FRHIComputeShader;
-
+typedef ID3D11SamplerState			FD3D11SamplerState;
+typedef ID3D11RasterizerState		FD3D11RasterState;
+typedef ID3D11BlendState			FD3D11BlendState;
+typedef ID3D11InputLayout			FD3D11InputLayout;
+typedef ID3D11Buffer				FD3D11Buffer;
+typedef ID3D11DepthStencilView		FD3D11DepthStencilView;
+typedef ID3D11RenderTargetView		FD3D11RenderTargetView;
+typedef ID3D11ShaderResourceView	FD3D11ShaderResourceView;
+typedef ID3D11Texture2D				FD3D11Texture2D;
+typedef ID3D11Texture3D				FD3D11Texture3D;
+typedef ID3D11VertexShader			FD3D11VertexShader;
+typedef ID3D11PixelShader			FD3D11PixelShader;
+typedef ID3D11DomainShader			FD3D11DomainShader;
+typedef ID3D11HullShader			FD3D11HullShader;
+typedef ID3D11GeometryShader		FD3D11GeometryShader;
+typedef ID3D11ComputeShader			FD3D11ComputeShader;
 
 enum EShaderType
 {
@@ -43,15 +42,15 @@ enum EShaderType
 };
 
 
-struct FRHIBoundShaderState
+struct FD3D11BoundShaderState
 {
-	TSharedPtr<FRHIInputLayout>			InputLayouts;
-	TSharedPtr<FRHIVertexShader>		VertexShader;
-	TSharedPtr<FRHIPixelShader>			PixelShader;
-	TSharedPtr<FRHIDomainShader>		DomainShader;
-	TSharedPtr<FRHIHullShader>			HullShader;
-	TSharedPtr<FRHIGeometryShader>		GeometryShader;
-	TSharedPtr<FRHIComputeShader>		ComputeShader;
+	TSharedPtr<FD3D11InputLayout>			InputLayouts;
+	TSharedPtr<FD3D11VertexShader>			VertexShader;
+	TSharedPtr<FD3D11PixelShader>			PixelShader;
+	TSharedPtr<FD3D11DomainShader>			DomainShader;
+	TSharedPtr<FD3D11HullShader>			HullShader;
+	TSharedPtr<FD3D11GeometryShader>		GeometryShader;
+	TSharedPtr<FD3D11ComputeShader>			ComputeShader;
 };
 
 enum ESamplerFilter

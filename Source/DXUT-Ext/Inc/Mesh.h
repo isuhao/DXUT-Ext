@@ -1,7 +1,7 @@
 #ifndef _MESH_H_
 #define _MESH_H_
 
-#include "RHI.h"
+#include "D3DDriver.h"
 
 #pragma comment(lib, "DXUTOptd.lib")
 

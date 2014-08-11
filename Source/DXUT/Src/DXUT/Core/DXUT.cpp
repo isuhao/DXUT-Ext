@@ -76,7 +76,7 @@ protected:
         IDirect3DDevice9*       m_D3D9Device;              // the D3D9 rendering device
         DXUTDeviceSettings*     m_CurrentDeviceSettings;   // current device settings
         D3DSURFACE_DESC         m_BackBufferSurfaceDesc9;  // D3D9 back buffer surface description
-        D3DCAPS9                m_Caps;                    // D3D caps for current device
+        D3DCAPS9                m_Caps;                    // RHI caps for current device
 
         // D3D11 specific
         IDXGIFactory1*           m_DXGIFactory;             // DXGI Factory object
@@ -2194,7 +2194,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
     if( pOldDeviceSettings )
         DXUTCleanup3DEnvironment( false );
 
-    // Create the D3D device and call the app's device callbacks
+    // Create the RHI device and call the app's device callbacks
     if( DXUTIsD3D9( pNewDeviceSettings ) ) {
         hr = DXUTCreate3DEnvironment9( pd3d9DeviceFromApp );
     }
@@ -2779,7 +2779,7 @@ HRESULT DXUTCreate3DEnvironment9( IDirect3DDevice9* pd3dDeviceFromApp )
     // Setup cursor based on current settings (window/fullscreen mode, show cursor state, clip cursor state)
     DXUTSetupCursor();
 
-    // Update GetDXUTState()'s copy of D3D caps 
+    // Update GetDXUTState()'s copy of RHI caps 
     D3DCAPS9* pd3dCaps = GetDXUTState().GetCaps();
     DXUTGetD3D9Device()->GetDeviceCaps( pd3dCaps );
 
@@ -3128,7 +3128,7 @@ void DXUTRender3DEnvironment9()
 // Cleans up the 3D environment by:
 //      - Calls the device lost callback 
 //      - Calls the device destroyed callback 
-//      - Releases the D3D device
+//      - Releases the RHI device
 //--------------------------------------------------------------------------------------
 void DXUTCleanup3DEnvironment9( bool bReleaseSettings )
 {
@@ -3157,7 +3157,7 @@ void DXUTCleanup3DEnvironment9( bool bReleaseSettings )
 
         GetDXUTState().SetInsideDeviceCallback( false );
 
-        // Release the D3D device and in debug configs, displays a message box if there 
+        // Release the RHI device and in debug configs, displays a message box if there 
         // are unrelease objects.
         if( pd3dDevice )
         {
@@ -3189,7 +3189,7 @@ void DXUTCleanup3DEnvironment9( bool bReleaseSettings )
 
 
 //--------------------------------------------------------------------------------------
-// Gives the D3D device a cursor with image and hotspot from hCursor.
+// Gives the RHI device a cursor with image and hotspot from hCursor.
 //--------------------------------------------------------------------------------------
 HRESULT DXUTSetD3D9DeviceCursor( IDirect3DDevice9* pd3dDevice, HCURSOR hCursor, bool bAddWatermark )
 {
@@ -3301,12 +3301,12 @@ HRESULT DXUTSetD3D9DeviceCursor( IDirect3DDevice9* pd3dDevice, HCURSOR hCursor, 
             else
                 pBitmap[dwWidth * y + x] = 0x00000000;
 
-            // It may be helpful to make the D3D cursor look slightly 
+            // It may be helpful to make the RHI cursor look slightly 
             // different from the Windows cursor so you can distinguish 
             // between the two when developing/testing code.  When
             // bAddWatermark is TRUE, the following code adds some
-            // small grey "D3D" characters to the upper-left corner of
-            // the D3D cursor image.
+            // small grey "RHI" characters to the upper-left corner of
+            // the RHI cursor image.
             if( bAddWatermark && x < 12 && y < 5 )
             {
                 // 11.. 11.. 11.. .... CCC0
@@ -4043,7 +4043,7 @@ void ClearD3D11DeviceContext( ID3D11DeviceContext* pd3dDeviceContext )
 // Cleans up the 3D environment by:
 //      - Calls the device lost callback 
 //      - Calls the device destroyed callback 
-//      - Releases the D3D device
+//      - Releases the RHI device
 //--------------------------------------------------------------------------------------
 void DXUTCleanup3DEnvironment11( bool bReleaseSettings )
 {
@@ -4117,7 +4117,7 @@ void DXUTCleanup3DEnvironment11( bool bReleaseSettings )
         GetDXUTState().SetDXGIOutputArray( NULL );
         GetDXUTState().SetDXGIOutputArraySize( 0 );
 
-        // Release the D3D adapter.
+        // Release the RHI adapter.
         IDXGIAdapter* pAdapter = GetDXUTState().GetDXGIAdapter();
         SAFE_RELEASE( pAdapter );
         GetDXUTState().SetDXGIAdapter( NULL );
@@ -4130,7 +4130,7 @@ void DXUTCleanup3DEnvironment11( bool bReleaseSettings )
         SAFE_RELEASE( pd3d11DeviceContext );
         GetDXUTState().SetD3D11DeviceContext( NULL );
 
-        // Release the D3D device and in debug configs, displays a message box if there 
+        // Release the RHI device and in debug configs, displays a message box if there 
         // are unrelease objects.
         if( pd3dDevice )
         {
@@ -4855,7 +4855,7 @@ void DXUTCheckForWindowSizeChange()
             ( UINT )rcCurrentClient.bottom != DXUTGetBackBufferHeightFromDS( &deviceSettings ) )
         {
             // A new window size will require a new backbuffer size size
-            // Tell DXUTChangeDevice and D3D to size according to the HWND's client rect
+            // Tell DXUTChangeDevice and RHI to size according to the HWND's client rect
             if( DXUTIsD3D9( &deviceSettings ) ) deviceSettings.d3d9.pp.BackBufferWidth = 0; else deviceSettings.d3d11.sd.BufferDesc.Width = 0; 
             if( DXUTIsD3D9( &deviceSettings ) ) deviceSettings.d3d9.pp.BackBufferHeight = 0; else deviceSettings.d3d11.sd.BufferDesc.Height = 0;
 

@@ -134,7 +134,7 @@ void CALLBACK OnD3D11ReleasingSwapChain(void* pUserContext)
 
 //--------------------------------------------------------------------------------------
 // Create any D3D11 resources that depend on the back buffer
-// 根据BackBuffer来创建D3D资源
+// 根据BackBuffer来创建RHI资源
 //--------------------------------------------------------------------------------------
 HRESULT CALLBACK OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain,
 	const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
@@ -162,7 +162,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChai
 
 //--------------------------------------------------------------------------------------
 // Create any D3D11 resources that aren't dependant on the back buffer
-// 初始化D3D资源
+// 初始化RHI资源
 //--------------------------------------------------------------------------------------
 HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc,
 	void* pUserContext)
@@ -311,7 +311,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 }
 
 //--------------------------------------------------------------------------------------
-// Handle updates to the scene.  This is called regardless of which D3D API is used
+// Handle updates to the scene.  This is called regardless of which RHI API is used
 // 相当于Tick
 //--------------------------------------------------------------------------------------
 void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)

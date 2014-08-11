@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------
 // File: DXUTDevice11.cpp
 //
-// Enumerates D3D adapters, devices, modes, etc.
+// Enumerates RHI adapters, devices, modes, etc.
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------

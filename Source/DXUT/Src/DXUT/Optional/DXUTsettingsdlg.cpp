@@ -313,7 +313,7 @@ HRESULT CD3DSettingsDlg::Refresh()
     {
         case DXUT_D3D9_DEVICE:
         {
-            // Show all D3D9-specific controls and hide controls for all other D3D versions.
+            // Show all D3D9-specific controls and hide controls for all other RHI versions.
             ShowControlSet( DXUT_D3D9_DEVICE );
 
             CD3D9Enumeration* pD3DEnum = DXUTGetD3D9Enumeration();
@@ -374,7 +374,7 @@ HRESULT CD3DSettingsDlg::Refresh()
         }
         case DXUT_D3D11_DEVICE:
         {
-            // Show all D3D11-specific controls and hide controls for all other D3D versions.
+            // Show all D3D11-specific controls and hide controls for all other RHI versions.
             ShowControlSet( DXUT_D3D11_DEVICE );
 
             CD3D11Enumeration* pD3DEnum = DXUTGetD3D11Enumeration();

@@ -264,7 +264,7 @@ void CEffect::ApplyShaderBlock(SShaderBlock *pBlock)
     (m_pContext->*(pVT->pSetShader))(pBlock->pD3DObject, ppClassInstances, Interfaces);
 }
 
-// Returns TRUE if the block D3D data was recreated
+// Returns TRUE if the block RHI data was recreated
 BOOL CEffect::ApplyRenderStateBlock(SBaseBlock *pBlock)
 {
     if( pBlock->IsUserManaged )

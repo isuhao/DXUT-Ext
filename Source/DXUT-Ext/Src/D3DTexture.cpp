@@ -1,6 +1,6 @@
-#include "RHITexture.h"
+#include "D3DTexture.h"
 #include "Core.h"
-#include "RHI.h"
+#include "D3DDriver.h"
 
 // PixelFormat
 // 照搬UE的,以后加一种格式都要在这里加上
@@ -17,7 +17,7 @@ FPixelFormatInfo GPixelFormats[] =
 	{ TEXT("ShadowDepth"),		0 },
 };
 
-void FDynamicRHI::InitPixelFormat()
+void FD3D11Driver::InitPixelFormat()
 {
 	GPixelFormats[PF_Unknown	  ].Format = DXGI_FORMAT_UNKNOWN;
 	GPixelFormats[PF_A32B32G32R32F].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -33,7 +33,7 @@ void FDynamicRHI::InitPixelFormat()
 static TSharedPtr<FTexture2D> CreateTexture2DExt(uint Width, uint Height, uint Depth, EPixelFormat PixFormat, bool bTextureArray, bool CubeTexture, uint CreateFlag, uint NumMips)
 {
 	DXGI_FORMAT DxFmt = (DXGI_FORMAT)GPixelFormats[PixFormat].Format;
-	FRHITexture2D* pTexture2D = NULL;
+	FD3D11Texture2D* pTexture2D = NULL;
 	HRESULT hr;
 
 	D3D11_TEXTURE2D_DESC TextureDesc;
@@ -65,16 +65,16 @@ static TSharedPtr<FTexture2D> CreateTexture2DExt(uint Width, uint Height, uint D
 		TextureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
 	}
 
-	V(RHI->GetDevice()->CreateTexture2D(
+	V(D3D->GetDevice()->CreateTexture2D(
 		&TextureDesc,
 		NULL,
 		&pTexture2D
 		));
-	TSharedPtr<FRHITexture2D> OutTexture2D = MakeCOMPtr<FRHITexture2D>(pTexture2D);
+	TSharedPtr<FD3D11Texture2D> OutTexture2D = MakeCOMPtr<FD3D11Texture2D>(pTexture2D);
 
 	// Create a shader resource view for the texture.
-	FRHIShaderResourceView* pSRV = NULL;
-	TSharedPtr<FRHIShaderResourceView> OutSRV;
+	FD3D11ShaderResourceView* pSRV = NULL;
+	TSharedPtr<FD3D11ShaderResourceView> OutSRV;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
 	ZeroMemory(&SRVDesc, sizeof(SRVDesc));
@@ -106,13 +106,13 @@ static TSharedPtr<FTexture2D> CreateTexture2DExt(uint Width, uint Height, uint D
 		SRVDesc.Texture2D.MipLevels = NumMips;
 	}
 
-	V(RHI->GetDevice()->CreateShaderResourceView(pTexture2D, &SRVDesc, &pSRV));
-	OutSRV = MakeCOMPtr<FRHIShaderResourceView>(pSRV);
+	V(D3D->GetDevice()->CreateShaderResourceView(pTexture2D, &SRVDesc, &pSRV));
+	OutSRV = MakeCOMPtr<FD3D11ShaderResourceView>(pSRV);
 
 	return TSharedPtr<FTexture2D>(new FTexture2D(Width, Height, Depth, OutSRV, OutTexture2D));
 }
 
-TSharedPtr<FTexture2D> FDynamicRHI::CreateTexture2D(uint Width, uint Height, EPixelFormat PixFormat, uint CreateFlag, uint NumMips)
+TSharedPtr<FTexture2D> FD3D11Driver::CreateTexture2D(uint Width, uint Height, EPixelFormat PixFormat, uint CreateFlag, uint NumMips)
 {
 	return CreateTexture2DExt(Width, Height, 1, PixFormat, false, false, CreateFlag, NumMips);
 }

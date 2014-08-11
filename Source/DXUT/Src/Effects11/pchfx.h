@@ -3,7 +3,7 @@
 //  Copyright (C) 2001 Microsoft Corporation.  All Rights Reserved.
 //
 //  File:       pchfx.h
-//  Content:    D3D shader effects precompiled header
+//  Content:    RHI shader effects precompiled header
 //
 //////////////////////////////////////////////////////////////////////////////
 

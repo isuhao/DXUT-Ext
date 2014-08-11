@@ -1,12 +1,12 @@
-#ifndef _RHI_H_
-#define _RHI_H_
+#ifndef _D3D_H_
+#define _D3D_H_
 
 #include "Core.h"
-#include "RHIResources.h"
-#include "RHITranslate.h"
-#include "RHIBuffer.h"
-#include "RHITexture.h"
-#include "RHIRenderTarget.h"
+#include "D3DResources.h"
+#include "D3DTranslate.h"
+#include "D3DBuffer.h"
+#include "D3DTexture.h"
+#include "D3DRenderTarget.h"
 
 #include "SystemSetting.h"
 
@@ -17,24 +17,23 @@
 // 最大的CB数量
 #define MAX_CB_COUNT	D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT
 
-class FNullRHI;
 
 /** 
  * Render hardware interface
  */
-class FDynamicRHI
+class FD3D11Driver
 {
 public:
-	FDynamicRHI();
-	~FDynamicRHI();
+	FD3D11Driver();
+	~FD3D11Driver();
 
-	static void InitRHI();
-	static void ReleaseRHI();
+	static void InitD3DDriver();
+	static void ReleaseD3DDriver();
 
 	ID3D11DeviceContext* GetDeviceContext();
 	ID3D11Device* GetDevice();
 
-#include "RHIMethods.h"
+#include "D3DMethods.h"
 
 private:
 	void InitPixelFormat();
@@ -44,13 +43,13 @@ private:
 	ID3D11DeviceContext*					m_pd3dImmediateContext;
 	ID3D11Device*							m_pd3dDevice;
 
-	FRHIRenderTargetView*					m_pCurrRTVs[MAX_RT_COUNT];
-	FRHIDepthStencilView*					m_pCurrDSV;
+	FD3D11RenderTargetView*					m_pCurrRTVs[MAX_RT_COUNT];
+	FD3D11DepthStencilView*					m_pCurrDSV;
 
 	TArray<TSharedPtr<FConstantBuffer> >	m_ConstantBuffers[ST_NumShaderTypes];
 };
 
-extern FDynamicRHI* RHI;
+extern FD3D11Driver* D3D;
 
 
 #endif

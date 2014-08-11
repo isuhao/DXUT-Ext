@@ -50,7 +50,7 @@ class FDLPixelShader : public FShader
 		SetShaderVariable(ST_PixelShader, m_vLightVec, &LightVec);
 	}
 
-	void SetTextureVariables(const TSharedPtr<FRenderSurface>& NormalTexSurf, const TSharedPtr<FRHISamplerState>& Sampler)
+	void SetTextureVariables(const TSharedPtr<FRenderSurface>& NormalTexSurf, const TSharedPtr<FD3D11SamplerState>& Sampler)
 	{
 		SetShaderVariable(ST_PixelShader, m_txNormal, NormalTexSurf->ShaderResourceView);
 		SetShaderVariable(ST_PixelShader, m_Sampler, Sampler);
@@ -98,7 +98,7 @@ class FScenePixelShader : public FShader
 		SetShaderVariable(ST_PixelShader, m_LightDiffuse, &Diffuse);
 	}
 
-	void SetTextureVariables(const TSharedPtr<FRenderSurface>& InSurf, const TSharedPtr<FRHISamplerState>& Sampler)
+	void SetTextureVariables(const TSharedPtr<FRenderSurface>& InSurf, const TSharedPtr<FD3D11SamplerState>& Sampler)
 	{
 		SetShaderVariable(ST_PixelShader, m_txDiffuseAlbedo, InSurf->ShaderResourceView);
 		SetShaderVariable(ST_PixelShader, m_samPointClamp, Sampler);

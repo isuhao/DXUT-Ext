@@ -6,7 +6,7 @@
 // Include¸÷ÖÖÄ£¿é
 
 #include "Core.h"
-#include "RHI.h"
+#include "D3DDriver.h"
 #include "SystemSetting.h"
 #include "ShaderManager.h"
 #include "Shader.h"

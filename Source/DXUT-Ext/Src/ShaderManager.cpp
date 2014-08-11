@@ -98,9 +98,9 @@ bool GenParamMapByD3DReflection(TSharedPtr<ID3DBlob>& CompiledCode, FShaderVaria
 	return true;
 }
 
-void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FRHISamplerState>& InSampler)
+void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FD3D11SamplerState>& InSampler)
 {
-	RHI->SetShaderResourceVariable(
+	D3D->SetShaderResourceVariable(
 		ShaderType,
 		Variable.GetBindIndex(),
 		InSampler
@@ -109,16 +109,16 @@ void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Va
 
 void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FTextureBase>& InTexture2D)
 {
-	RHI->SetShaderResourceVariable(
+	D3D->SetShaderResourceVariable(
 		ShaderType,
 		Variable.GetBindIndex(),
 		InTexture2D->ShaderResourceView
 		);
 }
 
-void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FRHIShaderResourceView>& InSRV)
+void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FD3D11ShaderResourceView>& InSRV)
 {
-	RHI->SetShaderResourceVariable(
+	D3D->SetShaderResourceVariable(
 		ShaderType,
 		Variable.GetBindIndex(),
 		InSRV

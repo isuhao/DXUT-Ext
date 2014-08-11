@@ -1,11 +1,11 @@
-#include "RHIRenderTarget.h"
-#include "RHI.h"
+#include "D3DRenderTarget.h"
+#include "D3DDriver.h"
 
 
-void FDynamicRHI::SetRenderTarget(const TSharedPtr<FRenderSurface>& NewRenderTarget, const TSharedPtr<FRenderSurface>& NewDepthStencil)
+void FD3D11Driver::SetRenderTarget(const TSharedPtr<FRenderSurface>& NewRenderTarget, const TSharedPtr<FRenderSurface>& NewDepthStencil)
 {
-	FRHIRenderTargetView* pNewRTV = NULL;
-	FRHIDepthStencilView* pNewDSV = NULL;
+	FD3D11RenderTargetView* pNewRTV = NULL;
+	FD3D11DepthStencilView* pNewDSV = NULL;
 
 	if (NewRenderTarget)
 	{
@@ -35,9 +35,9 @@ void FDynamicRHI::SetRenderTarget(const TSharedPtr<FRenderSurface>& NewRenderTar
 	}
 }
 
-void FDynamicRHI::SetMRTRenderTarget(const TSharedPtr<FRenderSurface>& NewRenderTarget, uint RenderTargetIndex)
+void FD3D11Driver::SetMRTRenderTarget(const TSharedPtr<FRenderSurface>& NewRenderTarget, uint RenderTargetIndex)
 {
-	FRHIRenderTargetView* pNewRTV = NULL;
+	FD3D11RenderTargetView* pNewRTV = NULL;
 	if (NewRenderTarget)
 	{
 		pNewRTV = NewRenderTarget->GetRawRTV();
@@ -51,7 +51,7 @@ void FDynamicRHI::SetMRTRenderTarget(const TSharedPtr<FRenderSurface>& NewRender
 	}
 }
 
-TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderSurface(uint Width, uint Height, EPixelFormat PixFormat, TSharedPtr<FTexture2D> TextureToAttach)
+TSharedPtr<FRenderSurface> FD3D11Driver::CreateRenderSurface(uint Width, uint Height, EPixelFormat PixFormat, TSharedPtr<FTexture2D> TextureToAttach)
 {
 	HRESULT hr;
 
@@ -64,19 +64,19 @@ TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderSurface(uint Width, uint Hei
 	D3D11_RTV_DIMENSION RenderTargetViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	D3D11_SRV_DIMENSION ShaderResourceViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 
-	TSharedPtr<FRHIRenderTargetView>	RTV;
-	TSharedPtr<FRHIDepthStencilView>	DSV;
-	TSharedPtr<FRHIShaderResourceView>	SRV;
+	TSharedPtr<FD3D11RenderTargetView>		RTV;
+	TSharedPtr<FD3D11DepthStencilView>		DSV;
+	TSharedPtr<FD3D11ShaderResourceView>	SRV;
 
 	// 如果有指定的Texture，就不创建新的了
-	TSharedPtr<FRHITexture2D> TextureResource;
+	TSharedPtr<FD3D11Texture2D> TextureResource;
 	if (TextureToAttach != NULL)
 	{
 		TextureResource = TextureToAttach->Resource;
 	}
 	else
 	{
-		FRHITexture2D* pNewTex = NULL;
+		FD3D11Texture2D* pNewTex = NULL;
 		D3D11_TEXTURE2D_DESC Desc;
 		::ZeroMemory(&Desc, sizeof (Desc));
 		Desc.Format = DxFmt;
@@ -91,10 +91,10 @@ TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderSurface(uint Width, uint Hei
 		Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | (bIsDepthBuffer ? D3D11_BIND_DEPTH_STENCIL: D3D11_BIND_RENDER_TARGET);
 
 		m_pd3dDevice->CreateTexture2D(&Desc, 0, &pNewTex);
-		TextureResource = MakeCOMPtr<FRHITexture2D>(pNewTex);
+		TextureResource = MakeCOMPtr<FD3D11Texture2D>(pNewTex);
 	}
 
-	FRHITexture2D* SurfaceRes = TextureResource.get();
+	FD3D11Texture2D* SurfaceRes = TextureResource.get();
 	// 一定要非空!
 	Check(SurfaceRes);
 
@@ -108,17 +108,17 @@ TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderSurface(uint Width, uint Hei
 			DepthViewFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		}
 
-		FRHIDepthStencilView* pDSV = NULL;
+		FD3D11DepthStencilView* pDSV = NULL;
 		D3D11_DEPTH_STENCIL_VIEW_DESC DSVDesc;
 		ZeroMemory(&DSVDesc, sizeof(DSVDesc));
 		DSVDesc.Format = DepthViewFormat;
 		DSVDesc.ViewDimension = DepthStencilViewDimension;
 		DSVDesc.Texture2D.MipSlice = 0;
 		V(m_pd3dDevice->CreateDepthStencilView(SurfaceRes, &DSVDesc, &pDSV));
-		DSV = MakeCOMPtr<FRHIDepthStencilView>(pDSV);
+		DSV = MakeCOMPtr<FD3D11DepthStencilView>(pDSV);
 
 		// Create a shader resource view for the depth buffer.
-		FRHIShaderResourceView* pSRV = NULL;
+		FD3D11ShaderResourceView* pSRV = NULL;
 		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
 		ZeroMemory(&SRVDesc, sizeof(SRVDesc));
 		SRVDesc.Format = DxFmt;
@@ -130,7 +130,7 @@ TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderSurface(uint Width, uint Hei
 		SRVDesc.ViewDimension = ShaderResourceViewDimension;
 		SRVDesc.Texture2D.MipLevels = 1;
 		V(m_pd3dDevice->CreateShaderResourceView(SurfaceRes, &SRVDesc, &pSRV));
-		SRV = MakeCOMPtr<FRHIShaderResourceView>(pSRV);
+		SRV = MakeCOMPtr<FD3D11ShaderResourceView>(pSRV);
 	}
 	// 创建RTV
 	else
@@ -138,17 +138,17 @@ TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderSurface(uint Width, uint Hei
 		D3D11_TEXTURE2D_DESC ResolveTargetDesc;
 		SurfaceRes->GetDesc(&ResolveTargetDesc);
 
-		FRHIRenderTargetView* pRTV = NULL;
+		FD3D11RenderTargetView* pRTV = NULL;
 		D3D11_RENDER_TARGET_VIEW_DESC RTVDesc;
 		ZeroMemory(&RTVDesc, sizeof(RTVDesc));
 		RTVDesc.Format = ResolveTargetDesc.Format;
 		RTVDesc.ViewDimension = RenderTargetViewDimension;
 		RTVDesc.Texture2D.MipSlice = 0;
 		V(m_pd3dDevice->CreateRenderTargetView(SurfaceRes, &RTVDesc, &pRTV));
-		RTV = MakeCOMPtr<FRHIRenderTargetView>(pRTV);
+		RTV = MakeCOMPtr<FD3D11RenderTargetView>(pRTV);
 
 		// Create a shader resource view for the render target.
-		FRHIShaderResourceView* pSRV = NULL;
+		FD3D11ShaderResourceView* pSRV = NULL;
 		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
 		ZeroMemory(&SRVDesc, sizeof(SRVDesc));
 		SRVDesc.Format = ResolveTargetDesc.Format;
@@ -156,23 +156,23 @@ TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderSurface(uint Width, uint Hei
 		// 是否在这个View中允许生成Mips
 		SRVDesc.Texture2D.MipLevels = 1;
 		V(m_pd3dDevice->CreateShaderResourceView(SurfaceRes, &SRVDesc, &pSRV));
-		SRV = MakeCOMPtr<FRHIShaderResourceView>(pSRV);
+		SRV = MakeCOMPtr<FD3D11ShaderResourceView>(pSRV);
 	}
 
 	return TSharedPtr<FRenderSurface>(new FRenderSurface(RTV, DSV, SRV, TextureResource));
 }
 
-TSharedPtr<FRenderSurface> FDynamicRHI::CreateDepthTargetSurface(uint Width, uint Height, TSharedPtr<FTexture2D> TextureToAttach)
+TSharedPtr<FRenderSurface> FD3D11Driver::CreateDepthTargetSurface(uint Width, uint Height, TSharedPtr<FTexture2D> TextureToAttach)
 {
 	return CreateRenderSurface(Width, Height, PF_DepthStencil, TextureToAttach);
 }
 
-TSharedPtr<FRenderSurface> FDynamicRHI::CreateRenderTargetSurface(uint Width, uint Height, EPixelFormat PixFormat, TSharedPtr<FTexture2D> TextureToAttach)
+TSharedPtr<FRenderSurface> FD3D11Driver::CreateRenderTargetSurface(uint Width, uint Height, EPixelFormat PixFormat, TSharedPtr<FTexture2D> TextureToAttach)
 {
 	return CreateRenderSurface(Width, Height, PixFormat, TextureToAttach);
 }
 
-TSharedPtr<FFrameBuffer> FDynamicRHI::CreateFrameBuffer(uint Width, uint Height, EPixelFormat PixFormat)
+TSharedPtr<FFrameBuffer> FD3D11Driver::CreateFrameBuffer(uint Width, uint Height, EPixelFormat PixFormat)
 {
 	return TSharedPtr<FFrameBuffer>(new FFrameBuffer(
 		CreateRenderSurface(Width, Height, PixFormat),
@@ -180,19 +180,19 @@ TSharedPtr<FFrameBuffer> FDynamicRHI::CreateFrameBuffer(uint Width, uint Height,
 		));
 }
 
-void FDynamicRHI::SetFrameBuffer(const TSharedPtr<FFrameBuffer>& FrameBuffer)
+void FD3D11Driver::SetFrameBuffer(const TSharedPtr<FFrameBuffer>& FrameBuffer)
 {
 	Check(FrameBuffer);
 	SetRenderTarget(FrameBuffer->RenderTarget, FrameBuffer->DepthTarget);
 }
 
-void FDynamicRHI::SetMRTFrameBuffer(const TSharedPtr<FFrameBuffer>& FrameBuffer, uint RTIndex)
+void FD3D11Driver::SetMRTFrameBuffer(const TSharedPtr<FFrameBuffer>& FrameBuffer, uint RTIndex)
 {
 	Check(FrameBuffer);
 	SetMRTRenderTarget(FrameBuffer->RenderTarget, RTIndex);
 }
 
-void FDynamicRHI::ClearColor(FLinearColor Color, uint RTIndex)
+void FD3D11Driver::ClearColor(FLinearColor Color, uint RTIndex)
 {
 	Check(RTIndex < MAX_RT_COUNT);
 
@@ -202,7 +202,7 @@ void FDynamicRHI::ClearColor(FLinearColor Color, uint RTIndex)
 	}
 }
 
-void FDynamicRHI::ClearDepth(float fDepth)
+void FD3D11Driver::ClearDepth(float fDepth)
 {
 	if (m_pCurrDSV)
 	{
@@ -210,7 +210,7 @@ void FDynamicRHI::ClearDepth(float fDepth)
 	}
 }
 
-void FDynamicRHI::ClearStencil(uint iStencil)
+void FD3D11Driver::ClearStencil(uint iStencil)
 {
 	if (m_pCurrDSV)
 	{
@@ -218,7 +218,7 @@ void FDynamicRHI::ClearStencil(uint iStencil)
 	}
 }
 
-void FDynamicRHI::Clear(bool bClearColor, FLinearColor Color, bool bClearDepth, float fDepth, bool bClearStencil, uint iStencil, bool bClearAllTargets)
+void FD3D11Driver::Clear(bool bClearColor, FLinearColor Color, bool bClearDepth, float fDepth, bool bClearStencil, uint iStencil, bool bClearAllTargets)
 {
 	if (bClearColor)
 	{
@@ -243,7 +243,7 @@ void FDynamicRHI::Clear(bool bClearColor, FLinearColor Color, bool bClearDepth, 
 	}
 }
 
-void FDynamicRHI::SetDefaultBackBuffer()
+void FD3D11Driver::SetDefaultBackBuffer()
 {
 	m_pCurrRTVs[0] = DXUTGetD3D11RenderTargetView();
 	m_pCurrDSV = DXUTGetD3D11DepthStencilView();

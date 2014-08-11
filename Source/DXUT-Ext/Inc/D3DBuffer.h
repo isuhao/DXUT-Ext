@@ -1,8 +1,8 @@
-#ifndef _RHI_BUFFER_H_
-#define _RHI_BUFFER_H_
+#ifndef _D3D_BUFFER_H_
+#define _D3D_BUFFER_H_
 
 #include "Core.h"
-#include "RHIResources.h"
+#include "D3DResources.h"
 
 template<typename ElemType>
 class TBuffer
@@ -37,7 +37,7 @@ public:
 		m_iCurrUpdateSize = m_iMaxSize = 0;
 	}
 
-	const TSharedPtr<FRHIBuffer>& GetBuffer()
+	const TSharedPtr<FD3D11Buffer>& GetBuffer()
 	{
 		return m_pD3DBuffer;
 	}
@@ -86,7 +86,7 @@ public:
 			else
 			{
 				HRESULT		hr;
-				FRHIBuffer* pNewBuffer;
+				FD3D11Buffer* pNewBuffer;
 				ID3D11Device* pDevice = DXUTGetD3D11Device();
 				Check(pDevice);
 
@@ -134,7 +134,7 @@ protected:
 
 	void CreateBufferInner(bool bIsDynamic, uint BindFlag = 0, uint MiscFlags = 0)
 	{
-		FRHIBuffer*			pBuffer = NULL;
+		FD3D11Buffer*			pBuffer = NULL;
 		D3D11_BUFFER_DESC	BufferDesc;
 		HRESULT				hr;
 
@@ -160,11 +160,11 @@ protected:
 		ID3D11Device* pDevice = DXUTGetD3D11Device();
 		V(pDevice->CreateBuffer(&BufferDesc, &InitData, &pBuffer));
 
-		m_pD3DBuffer = MakeCOMPtr<FRHIBuffer>(pBuffer);
+		m_pD3DBuffer = MakeCOMPtr<FD3D11Buffer>(pBuffer);
 	}
 
 protected:
-	TSharedPtr<FRHIBuffer>			m_pD3DBuffer;
+	TSharedPtr<FD3D11Buffer>			m_pD3DBuffer;
 	ElemType*						m_pRawData;
 	uint							m_iCurrUpdateSize;
 	uint							m_iMaxSize;

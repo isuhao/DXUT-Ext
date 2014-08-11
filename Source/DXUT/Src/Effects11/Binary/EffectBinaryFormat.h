@@ -60,7 +60,7 @@ enum ELhsType
     ELHS_DepthStencilBlock,
     ELHS_BlendBlock,
 
-    ELHS_GenerateMips,              // This is really a call to D3D::GenerateMips
+    ELHS_GenerateMips,              // This is really a call to RHI::GenerateMips
 
     // Various SAssignment.Value.*
 

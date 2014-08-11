@@ -7,9 +7,6 @@
     <Filter Include="Application">
       <UniqueIdentifier>{c8e32801-4563-42b7-8ec2-4bd00058fc25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RHI">
-      <UniqueIdentifier>{20f22e6b-bc4c-42d5-bdad-a39742fda462}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Util">
       <UniqueIdentifier>{8aaa2777-5edb-487f-95fb-a66880b75cf6}</UniqueIdentifier>
     </Filter>
@@ -18,6 +15,9 @@
     </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{a33efc03-f1cf-4fa3-893a-388caba19b25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D">
+      <UniqueIdentifier>{20f22e6b-bc4c-42d5-bdad-a39742fda462}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -37,12 +37,6 @@
     <ClInclude Include="Inc\Build.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\RHI.h">
-      <Filter>RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\RHIResources.h">
-      <Filter>RHI</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\VertexDelcaration.h">
       <Filter>Shader</Filter>
     </ClInclude>
@@ -58,20 +52,26 @@
     <ClInclude Include="Inc\Mesh.h">
       <Filter>Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\RHITranslate.h">
-      <Filter>RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\RHIBuffer.h">
-      <Filter>RHI</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Types.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\RHIRenderTarget.h">
-      <Filter>RHI</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\SystemSetting.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\D3DDriver.h">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\D3DBuffer.h">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\D3DRenderTarget.h">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\D3DResources.h">
+      <Filter>D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\D3DTranslate.h">
+      <Filter>D3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -84,41 +84,41 @@
     <ClCompile Include="Src\Shader.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\RHI.cpp">
-      <Filter>RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Inc\RHIMethods.h">
-      <Filter>RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\RHIStates.cpp">
-      <Filter>RHI</Filter>
-    </ClCompile>
     <ClCompile Include="Src\VertexDeclaration.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="Src\Color.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="Src\RHIMethods.cpp">
-      <Filter>RHI</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Mesh.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Src\RHIBuffer.cpp">
-      <Filter>RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Inc\RHITexture.h">
-      <Filter>RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\RHITexture.cpp">
-      <Filter>RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\RHIRenderTarget.cpp">
-      <Filter>RHI</Filter>
-    </ClCompile>
     <ClCompile Include="Inc\Src\SystemSetting.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\D3DDriver.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\D3DBuffer.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\D3DMethods.h">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\D3DMethods.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\D3DRenderTarget.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\D3DStates.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\D3DTexture.cpp">
+      <Filter>D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\D3DTexture.h">
+      <Filter>D3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

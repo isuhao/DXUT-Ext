@@ -1496,7 +1496,7 @@ DECLARE_INTERFACE_(ID3DX11Effect, IUnknown)
     
     STDMETHOD_(BOOL, IsValid)(THIS) PURE;
 
-    // Managing D3D Device
+    // Managing RHI Device
     STDMETHOD(GetDevice)(THIS_ ID3D11Device** ppDevice) PURE;
     
     // New Reflection APIs

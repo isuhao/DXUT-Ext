@@ -1,8 +1,8 @@
-#ifndef _RHI_TEXTURE_H_
-#define _RHI_TEXTURE_H_
+#ifndef _D3D_TEXTURE_H_
+#define _D3D_TEXTURE_H_
 
 #include "Core.h"
-#include "RHIResources.h"
+#include "D3DResources.h"
 
 /** 
  * ÌùÍ¼µÄ»ùÀà
@@ -10,7 +10,7 @@
 class FTextureBase
 {
 public:
-	TSharedPtr<FRHIShaderResourceView>	ShaderResourceView;
+	TSharedPtr<FD3D11ShaderResourceView>	ShaderResourceView;
 	const uint Width;
 	const uint Height;
 	const uint Depth;
@@ -19,7 +19,7 @@ public:
 		uint InWidth,
 		uint InHeight,
 		uint InDepth,
-		const TSharedPtr<FRHIShaderResourceView>& InDSV
+		const TSharedPtr<FD3D11ShaderResourceView>& InDSV
 		)
 		: Width(InWidth)
 		, Height(InHeight)
@@ -32,14 +32,14 @@ public:
 class FTexture2D : public FTextureBase
 {
 public:
-	TSharedPtr<FRHITexture2D>		Resource;
+	TSharedPtr<FD3D11Texture2D>		Resource;
 
 	FTexture2D(
 		uint InWidth,
 		uint InHeight,
 		uint InDepth,
-		const TSharedPtr<FRHIShaderResourceView>& InDSV,
-		const TSharedPtr<FRHITexture2D>& InResource
+		const TSharedPtr<FD3D11ShaderResourceView>& InDSV,
+		const TSharedPtr<FD3D11Texture2D>& InResource
 		)
 		: FTextureBase
 			( InWidth

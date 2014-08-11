@@ -1,5 +1,5 @@
-#ifndef _RHI_TRANSLATE_H_
-#define _RHI_TRANSLATE_H_
+#ifndef _D3D_TRANSLATE_H_
+#define _D3D_TRANSLATE_H_
 
 static D3D11_COMPARISON_FUNC TranslateCompareFunc(ECompareFunction CompareFunc)
 {

@@ -59,12 +59,12 @@ protected:
 
 protected:
 	// D3D×ÊÔ´
-	TSharedPtr<FRHIBoundShaderState>		m_pGPassBST;
-	TSharedPtr<FRHIBoundShaderState>		m_pDLPassBST;
-	TSharedPtr<FRHIBoundShaderState>		m_pScenePassBST;
-	TSharedPtr<FRHISamplerState>			m_pSamplerState;
-	TSharedPtr<FRHIRasterState>				m_pCullBack;
-	TSharedPtr<FRHIBlendState>				m_pColorWriteOn;
+	TSharedPtr<FD3D11BoundShaderState>		m_pGPassBST;
+	TSharedPtr<FD3D11BoundShaderState>		m_pDLPassBST;
+	TSharedPtr<FD3D11BoundShaderState>		m_pScenePassBST;
+	TSharedPtr<FD3D11SamplerState>			m_pSamplerState;
+	TSharedPtr<FD3D11RasterState>				m_pCullBack;
+	TSharedPtr<FD3D11BlendState>				m_pColorWriteOn;
 	TSharedPtr<FSDKMesh>					m_pMesh;
 
 	TSharedPtr<FConstantBuffer>				m_pcbGPass;

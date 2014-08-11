@@ -1,22 +1,22 @@
-#include "RHI.h"
+#include "D3DDriver.h"
 #include "Core.h"
 
 
-FDynamicRHI* RHI;
+FD3D11Driver* D3D;
 
-void FDynamicRHI::InitRHI()
+void FD3D11Driver::InitD3DDriver()
 {
-	Check(!RHI);
-	RHI = new FDynamicRHI();
+	Check(!D3D);
+	D3D = new FD3D11Driver();
 }
 
-void FDynamicRHI::ReleaseRHI()
+void FD3D11Driver::ReleaseD3DDriver()
 {
-	Check(RHI);
-	delete RHI;
+	Check(D3D);
+	delete D3D;
 }
 
-FDynamicRHI::FDynamicRHI()
+FD3D11Driver::FD3D11Driver()
 {
 	m_pd3dDevice = DXUTGetD3D11Device();
 	m_pd3dImmediateContext  = DXUTGetD3D11DeviceContext();
@@ -31,24 +31,24 @@ FDynamicRHI::FDynamicRHI()
 	InitConstantBuffers();
 }
 
-FDynamicRHI::~FDynamicRHI()
+FD3D11Driver::~FD3D11Driver()
 {
 	m_pd3dDevice = NULL;
 	m_pd3dImmediateContext = NULL;
 }
 
-ID3D11DeviceContext* FDynamicRHI::GetDeviceContext()
+ID3D11DeviceContext* FD3D11Driver::GetDeviceContext()
 {
 	return m_pd3dImmediateContext;
 }
 
-ID3D11Device* FDynamicRHI::GetDevice()
+ID3D11Device* FD3D11Driver::GetDevice()
 {
 	return m_pd3dDevice;
 }
 
 
-void FDynamicRHI::InitConstantBuffers()
+void FD3D11Driver::InitConstantBuffers()
 {
 	for (byte ShaderType = ST_VertexShader; ShaderType < ST_NumShaderTypes; ++ShaderType)
 	{

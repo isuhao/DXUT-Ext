@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------
 // File: DXUTDevice9.cpp
 //
-// Enumerates D3D adapters, devices, modes, etc.
+// Enumerates RHI adapters, devices, modes, etc.
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------
@@ -266,7 +266,7 @@ HRESULT CD3D9Enumeration::Enumerate( LPDXUTCALLBACKISD3D9DEVICEACCEPTABLE IsD3D9
 
 
 //--------------------------------------------------------------------------------------
-// Enumerates D3D devices for a particular adapter.
+// Enumerates RHI devices for a particular adapter.
 //--------------------------------------------------------------------------------------
 HRESULT CD3D9Enumeration::EnumerateDevices( CD3D9EnumAdapterInfo* pAdapterInfo,
                                             CGrowableArray <D3DFORMAT>* pAdapterFormatList )

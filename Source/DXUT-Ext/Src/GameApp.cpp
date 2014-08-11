@@ -111,7 +111,7 @@ void FGameApp::OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 HRESULT CALLBACK FGameApp::__OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc,
 	void* pUserContext)
 {
-	FDynamicRHI::InitRHI();
+	FD3D11Driver::InitD3DDriver();
 
 	Check(g_pCurrGame);
 	return g_pCurrGame->OnD3D11CreateDevice(pd3dDevice, pBackBufferSurfaceDesc, pUserContext);
@@ -183,7 +183,7 @@ HRESULT FGameApp::OnResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* p
 
 void CALLBACK FGameApp::__OnD3D11DestroyDevice(void* pUserContext)
 {
-	FDynamicRHI::ReleaseRHI();
+	FD3D11Driver::ReleaseD3DDriver();
 
 	if (g_pCurrGame)
 	{

@@ -533,7 +533,7 @@ template<class T, class D3DTYPE> struct SShaderDependency
     UINT    Count;
 
     T       *ppFXPointers;              // Array of ptrs to FX objects (CBs, SShaderResources, etc)
-    D3DTYPE *ppD3DObjects;              // Array of ptrs to matching D3D objects
+    D3DTYPE *ppD3DObjects;              // Array of ptrs to matching RHI objects
 
     SShaderDependency()
     {

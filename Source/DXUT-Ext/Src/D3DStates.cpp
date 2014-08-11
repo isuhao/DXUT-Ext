@@ -1,7 +1,7 @@
-#include "RHI.h"
+#include "D3DDriver.h"
 #include "Shader.h"
 
-void FDynamicRHI::SetBoundShaderState(TSharedPtr<FRHIBoundShaderState> BoundShaderState)
+void FD3D11Driver::SetBoundShaderState(TSharedPtr<FD3D11BoundShaderState> BoundShaderState)
 {
 	m_pd3dImmediateContext->IASetInputLayout(BoundShaderState->InputLayouts.get());
 	m_pd3dImmediateContext->VSSetShader(BoundShaderState->VertexShader.get(), NULL, 0);
@@ -12,12 +12,12 @@ void FDynamicRHI::SetBoundShaderState(TSharedPtr<FRHIBoundShaderState> BoundShad
 	m_pd3dImmediateContext->CSSetShader(BoundShaderState->ComputeShader.get(), NULL, 0);
 }
 
-TSharedPtr<FRHIBoundShaderState> FDynamicRHI::CreateBoundShaderState(TSharedPtr<FVertexDeclaration> VertexDeclaration, TSharedPtr<ID3DBlob> BindCode, TSharedPtr<ID3D11VertexShader> VS,
+TSharedPtr<FD3D11BoundShaderState> FD3D11Driver::CreateBoundShaderState(TSharedPtr<FVertexDeclaration> VertexDeclaration, TSharedPtr<ID3DBlob> BindCode, TSharedPtr<ID3D11VertexShader> VS,
 	TSharedPtr<ID3D11PixelShader> PS, TSharedPtr<ID3D11DomainShader> DS, TSharedPtr<ID3D11HullShader> HS, TSharedPtr<ID3D11GeometryShader> GS, TSharedPtr<ID3D11ComputeShader> CS)
 {
 	HRESULT hr;
 
-	TSharedPtr<FRHIBoundShaderState> BoundState = TSharedPtr<FRHIBoundShaderState>(new FRHIBoundShaderState);
+	TSharedPtr<FD3D11BoundShaderState> BoundState = TSharedPtr<FD3D11BoundShaderState>(new FD3D11BoundShaderState);
 	BoundState->VertexShader = VS;
 	BoundState->PixelShader = PS;
 	BoundState->DomainShader = DS;
@@ -39,12 +39,12 @@ TSharedPtr<FRHIBoundShaderState> FDynamicRHI::CreateBoundShaderState(TSharedPtr<
 }
 
 // VS & PS only
-TSharedPtr<FRHIBoundShaderState> FDynamicRHI::CreateBoundShaderState(TSharedPtr<FVertexDeclaration> VertexDeclaration, TSharedPtr<ID3DBlob> BindCode, TSharedPtr<ID3D11VertexShader> VS,
+TSharedPtr<FD3D11BoundShaderState> FD3D11Driver::CreateBoundShaderState(TSharedPtr<FVertexDeclaration> VertexDeclaration, TSharedPtr<ID3DBlob> BindCode, TSharedPtr<ID3D11VertexShader> VS,
 	TSharedPtr<ID3D11PixelShader> PS)
 {
 	HRESULT hr;
 
-	TSharedPtr<FRHIBoundShaderState> BoundState = TSharedPtr<FRHIBoundShaderState>(new FRHIBoundShaderState);
+	TSharedPtr<FD3D11BoundShaderState> BoundState = TSharedPtr<FD3D11BoundShaderState>(new FD3D11BoundShaderState);
 	BoundState->VertexShader = VS;
 	BoundState->PixelShader = PS;
 	BoundState->DomainShader = NULL;
@@ -65,7 +65,7 @@ TSharedPtr<FRHIBoundShaderState> FDynamicRHI::CreateBoundShaderState(TSharedPtr<
 	return BoundState;
 }
 
-TSharedPtr<FRHISamplerState> FDynamicRHI::CreateSamplerState(ESamplerFilter Filter, ESamplerAddressMode AddressU, ESamplerAddressMode AddressV, ESamplerAddressMode AddressW,
+TSharedPtr<FD3D11SamplerState> FD3D11Driver::CreateSamplerState(ESamplerFilter Filter, ESamplerAddressMode AddressU, ESamplerAddressMode AddressV, ESamplerAddressMode AddressW,
 	float MipBias, UINT MaxAnisotropy, FLinearColor BorderColor, ECompareFunction CompareFunc)
 {
 	ID3D11SamplerState*		pSamplerState = NULL;
@@ -109,12 +109,12 @@ TSharedPtr<FRHISamplerState> FDynamicRHI::CreateSamplerState(ESamplerFilter Filt
 
 	V(m_pd3dDevice->CreateSamplerState(&SamplerDesc, &pSamplerState));
 
-	TSharedPtr<FRHISamplerState> NewSamplerState = MakeCOMPtr<ID3D11SamplerState>(pSamplerState);
+	TSharedPtr<FD3D11SamplerState> NewSamplerState = MakeCOMPtr<ID3D11SamplerState>(pSamplerState);
 
 	return NewSamplerState;
 }
 
-TSharedPtr<FRHIRasterState> FDynamicRHI::CreateRasterizerState(ERasterizerFillMode FillMode, ERasterizerCullMode CullMode, bool bAllowMSAA, bool bFrontCounterClockwise, INT DepthBias, float SlopeScaledDepthBias)
+TSharedPtr<FD3D11RasterState> FD3D11Driver::CreateRasterizerState(ERasterizerFillMode FillMode, ERasterizerCullMode CullMode, bool bAllowMSAA, bool bFrontCounterClockwise, INT DepthBias, float SlopeScaledDepthBias)
 {
 	D3D11_RASTERIZER_DESC	RasterizerDesc;
 	ID3D11RasterizerState*	pRasterizer;
@@ -132,21 +132,21 @@ TSharedPtr<FRHIRasterState> FDynamicRHI::CreateRasterizerState(ERasterizerFillMo
 
 	V(m_pd3dDevice->CreateRasterizerState(&RasterizerDesc, &pRasterizer));
 
-	return MakeCOMPtr<FRHIRasterState>(pRasterizer);
+	return MakeCOMPtr<FD3D11RasterState>(pRasterizer);
 }
 
-void FDynamicRHI::SetRasterizerState(const TSharedPtr<FRHIRasterState>& RasterizerState)
+void FD3D11Driver::SetRasterizerState(const TSharedPtr<FD3D11RasterState>& RasterizerState)
 {
 	m_pd3dImmediateContext->RSSetState(RasterizerState.get());
 }
 
 bool g_bIndependentBlendEnable = true;
 
-TSharedPtr<FRHIBlendState> FDynamicRHI::CreateBlendState(EBlendOperation ColorBlendOp, EBlendFactor ColorSrcBlend, EBlendFactor ColorDstBlend, EBlendOperation AlphaBlendOp,
+TSharedPtr<FD3D11BlendState> FD3D11Driver::CreateBlendState(EBlendOperation ColorBlendOp, EBlendFactor ColorSrcBlend, EBlendFactor ColorDstBlend, EBlendOperation AlphaBlendOp,
 	EBlendFactor AlphaSrcBlend, EBlendFactor AlphaDstBlend, EBlendColorWriteEnable ColorWriteEnable)
 {
 	D3D11_BLEND_DESC	BlendDesc;
-	FRHIBlendState*		pBlendState;
+	FD3D11BlendState*		pBlendState;
 	HRESULT				hr;
 
 	ZeroMemory(&BlendDesc, sizeof(D3D11_BLEND_DESC));
@@ -175,17 +175,17 @@ TSharedPtr<FRHIBlendState> FDynamicRHI::CreateBlendState(EBlendOperation ColorBl
 
 	V(m_pd3dDevice->CreateBlendState(&BlendDesc, &pBlendState));
 
-	return MakeCOMPtr<FRHIBlendState>(pBlendState);
+	return MakeCOMPtr<FD3D11BlendState>(pBlendState);
 }
 
 
-void FDynamicRHI::SetBlendState(const TSharedPtr<FRHIBlendState>& BlendState, FLinearColor Color, UINT SimpleMask)
+void FD3D11Driver::SetBlendState(const TSharedPtr<FD3D11BlendState>& BlendState, FLinearColor Color, UINT SimpleMask)
 {
 	m_pd3dImmediateContext->OMSetBlendState(BlendState.get(), &Color.R, SimpleMask);
 }
 
-//TSharedPtr<FRHIDepthStencilView> FDynamicRHI::CreateDepthStencilView()
+//TSharedPtr<FD3D11DepthStencilView> FD3D11Driver::CreateDepthStencilView()
 //{
-//	return TSharedPtr<FRHIDepthStencilView>();
+//	return TSharedPtr<FD3D11DepthStencilView>();
 //}
 

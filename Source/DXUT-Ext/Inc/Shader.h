@@ -2,7 +2,7 @@
 #define _SHADER_H_
 
 #include "Core.h"
-#include "RHI.h"
+#include "D3DDriver.h"
 #include "VertexDelcaration.h"
 
 #define DECLARE_SHADER(ShaderClass, FileName, EntryPoint, ShaderModel, ShaderType) \

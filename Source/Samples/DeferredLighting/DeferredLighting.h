@@ -42,7 +42,7 @@ struct CB_ScenePass
 	D3DXVECTOR2	Padding;
 };
 
-// D3D资源
+// RHI资源
 ID3D11Buffer*				g_pcbGPass = NULL;
 ID3D11Buffer*				g_pcbDLPass = NULL;
 ID3D11Buffer*				g_pcbScenePass = NULL;

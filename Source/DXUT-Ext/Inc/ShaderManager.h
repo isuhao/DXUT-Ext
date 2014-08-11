@@ -20,7 +20,7 @@ void SetShaderVariable(EShaderType ShaderType, const FShaderConstantVarialble& V
 {
 	uint NumBytes = Min(sizeof(ValueType), Variable.GetNumBytes());
 
-	RHI->SetShaderConstantVariable(
+	D3D->SetShaderConstantVariable(
 		ShaderType,
 		Variable.GetBufferIndex(),
 		Variable.GetBindIndex(),
@@ -34,7 +34,7 @@ void SetShaderVariable(EShaderType ShaderType, const FShaderConstantVarialble& V
 {
 	uint NumBytes = Min(sizeof(ValueType), Variable.GetNumBytes());
 
-	RHI->SetShaderConstantVariable(
+	D3D->SetShaderConstantVariable(
 		ShaderType,
 		Variable.GetBufferIndex(),
 		Variable.GetBindIndex(),
@@ -43,11 +43,11 @@ void SetShaderVariable(EShaderType ShaderType, const FShaderConstantVarialble& V
 		);
 }
 
-extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FRHISamplerState>& InSampler);
+extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FD3D11SamplerState>& InSampler);
 
 extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FTextureBase>& InTexture2D);
 
-extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FRHIShaderResourceView>& InSRV);
+extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FD3D11ShaderResourceView>& InSRV);
 
 
 #endif

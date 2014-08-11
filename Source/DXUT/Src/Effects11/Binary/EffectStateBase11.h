@@ -3,7 +3,7 @@
 //  Copyright (C) 2009 Microsoft Corporation.  All Rights Reserved.
 //
 //  File:       EffectStateBase11.h
-//  Content:    D3D@11 Effects States Header
+//  Content:    RHI@11 Effects States Header
 //
 //////////////////////////////////////////////////////////////////////////////
 

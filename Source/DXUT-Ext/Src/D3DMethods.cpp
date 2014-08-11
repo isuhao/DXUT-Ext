@@ -1,20 +1,20 @@
-#include "RHI.h"
+#include "D3DDriver.h"
 #include <functional>
 
-void FDynamicRHI::SetVertexBuffer(int BufferIndex, const TSharedPtr<FRHIBuffer>& VertexBuffer, UINT Stride)
+void FD3D11Driver::SetVertexBuffer(int BufferIndex, const TSharedPtr<FD3D11Buffer>& VertexBuffer, UINT Stride)
 {
 	ID3D11Buffer* pVB = VertexBuffer.get();
 	UINT Offset = 0;
 	m_pd3dImmediateContext->IASetVertexBuffers(BufferIndex, 1, &pVB, &Stride, &Offset);
 }
 
-void FDynamicRHI::SetIndexBuffer(int BufferIndex, const TSharedPtr<FRHIBuffer>& IndexBuffer, DXGI_FORMAT Format)
+void FD3D11Driver::SetIndexBuffer(int BufferIndex, const TSharedPtr<FD3D11Buffer>& IndexBuffer, DXGI_FORMAT Format)
 {
 	m_pd3dImmediateContext->IASetIndexBuffer(IndexBuffer.get(), Format, 0);
 }
 
 // @TODO: DrawIndex的封装
-void FDynamicRHI::DrawIndexedPrimitive(const TSharedPtr<FRHIBuffer>& IndexBuffer, EPrimitiveType PrimitiveType)
+void FD3D11Driver::DrawIndexedPrimitive(const TSharedPtr<FD3D11Buffer>& IndexBuffer, EPrimitiveType PrimitiveType)
 {
 }
 
@@ -48,31 +48,31 @@ std::function<void(ID3D11DeviceContext*, UINT, UINT, ID3D11Buffer * const *)> Sh
 	std::mem_fn(&ID3D11DeviceContext::CSSetConstantBuffers),
 };
 
-void FDynamicRHI::SetSamplerState(EShaderType ShaderType, int SamplerIndex, const TSharedPtr<FRHISamplerState>& SamplerState)
+void FD3D11Driver::SetSamplerState(EShaderType ShaderType, int SamplerIndex, const TSharedPtr<FD3D11SamplerState>& SamplerState)
 {
-	FRHISamplerState* pSamp = SamplerState.get();
+	FD3D11SamplerState* pSamp = SamplerState.get();
 	ShaderSetSamplersFuncs[ShaderType](m_pd3dImmediateContext, SamplerIndex, 1, &pSamp);
 }
 
-void FDynamicRHI::SetShaderConstantVariable(EShaderType ShaderType, uint BufferIndex, uint BindIndex, uint NumBytes, byte* Data)
+void FD3D11Driver::SetShaderConstantVariable(EShaderType ShaderType, uint BufferIndex, uint BindIndex, uint NumBytes, byte* Data)
 {
 	TArray<TSharedPtr<FConstantBuffer> >& CB = m_ConstantBuffers[ShaderType];
 	Check(BufferIndex < uint(CB.GetSize()));
 	CB[BufferIndex]->UpdateData(Data, BindIndex, NumBytes);
 }
 
-void FDynamicRHI::SetShaderResourceVariable(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FRHISamplerState>& Sampler)
+void FD3D11Driver::SetShaderResourceVariable(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FD3D11SamplerState>& Sampler)
 {
 	SetSamplerState(ShaderType, BindIndex, Sampler);
 }
 
-void FDynamicRHI::SetShaderResourceVariable(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FRHIShaderResourceView>& SRV)
+void FD3D11Driver::SetShaderResourceVariable(EShaderType ShaderType, uint BindIndex, const TSharedPtr<FD3D11ShaderResourceView>& SRV)
 {
-	FRHIShaderResourceView* pSRV = SRV.get();
+	FD3D11ShaderResourceView* pSRV = SRV.get();
 	ShaderSetShaderResourcesFuncs[ShaderType](m_pd3dImmediateContext, BindIndex, 1, &pSRV);
 }
 
-void FDynamicRHI::CommitConstantBuffer()
+void FD3D11Driver::CommitConstantBuffer()
 {
 	for (byte ShaderType = ST_VertexShader; ShaderType < ST_NumShaderTypes; ++ShaderType)
 	{
@@ -81,7 +81,7 @@ void FDynamicRHI::CommitConstantBuffer()
 		{
 			if (CB[i]->CommitData())
 			{
-				FRHIBuffer* pBuffer = CB[i]->GetBuffer().get();
+				FD3D11Buffer* pBuffer = CB[i]->GetBuffer().get();
 				ShaderSetConstantBuffersFuncs[ShaderType](m_pd3dImmediateContext, i, 1, &pBuffer);
 			}
 		}
@@ -89,12 +89,12 @@ void FDynamicRHI::CommitConstantBuffer()
 }
 
 // 开始渲染，做一些初始化工作
-void FDynamicRHI::BeginRender()
+void FD3D11Driver::BeginRender()
 {
 }
 
 // 结束渲染，清空所有渲染状态
-void FDynamicRHI::EndRender()
+void FD3D11Driver::EndRender()
 {
 	// 清空RTV和DSV
 	for (uint i = 0; i < MAX_RT_COUNT; ++i)
@@ -109,14 +109,14 @@ void FDynamicRHI::EndRender()
 	for (byte ShaderType = ST_VertexShader; ShaderType < ST_NumShaderTypes; ++ShaderType)
 	{
 		// 清空所有CB
-		FRHIBuffer* NullBuffer = NULL;
+		FD3D11Buffer* NullBuffer = NULL;
 		for (uint i = 0; i < MAX_CB_COUNT; ++i)
 		{
 			ShaderSetConstantBuffersFuncs[ShaderType](m_pd3dImmediateContext, i, 1, &NullBuffer);
 		}
 	
 		// 清空所有SRV
-		FRHIShaderResourceView* NullSRV = NULL;
+		FD3D11ShaderResourceView* NullSRV = NULL;
 		for (uint i = 0; i < MAX_SR_COUNT; ++i)
 		{
 			ShaderSetShaderResourcesFuncs[ShaderType](m_pd3dImmediateContext, i, 1, &NullSRV);
@@ -134,7 +134,7 @@ void FDynamicRHI::EndRender()
 	// 清空VB
 	for (uint StreamIndex = 0; StreamIndex < 16; StreamIndex++)
 	{
-		FRHIBuffer* NullBuffer = NULL;
+		FD3D11Buffer* NullBuffer = NULL;
 		uint Strides = 0;
 		uint Offsets = 0;
 		m_pd3dImmediateContext->IASetVertexBuffers(StreamIndex, 1, &NullBuffer, &Strides, &Offsets);
