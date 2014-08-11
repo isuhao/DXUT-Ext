@@ -14,7 +14,7 @@ FQuickMultiPassTest::FQuickMultiPassTest()
 {
 }
 
-void FQuickMultiPassTest::OnInitObjs()
+void FQuickMultiPassTest::RegisterResources()
 {
 
 }

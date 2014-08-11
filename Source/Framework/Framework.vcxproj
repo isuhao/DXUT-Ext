@@ -12,10 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\AppFramework.h" />
-    <ClInclude Include="Inc\QuickMultiPass.h" />
+    <ClInclude Include="Inc\MultiPassRenderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\QuickMultiPass.cpp" />
+    <ClCompile Include="Src\MultiPassRenderer.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4E0F0E4B-8FC2-40B5-9E72-DE8BC29C6BC1}</ProjectGuid>
