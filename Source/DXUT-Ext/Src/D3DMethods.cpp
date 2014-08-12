@@ -142,3 +142,10 @@ void FD3D11Driver::EndRender()
 	// Çå¿ÕIB
 	m_pd3dImmediateContext->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
 }
+
+void FD3D11Driver::GetBackBufferDesc(uint& OutWidth, uint OutHeight)
+{
+	const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc = DXUTGetDXGIBackBufferSurfaceDesc();
+	OutWidth  = pBackBufferSurfaceDesc->Width;
+	OutHeight = pBackBufferSurfaceDesc->Height;
+}

@@ -1,7 +1,7 @@
 #include "Shader.h"
 #include "DXUT-Ext.h"
 
-FShader::FShader(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, EShaderType ShaderType)
+FShader::FShader(const WString& szFileName, const String& szEntryPoint, const String& szShaderModel, EShaderType ShaderType)
 :	m_szFileName	(szFileName)
 ,	m_szEntryPoint	(szEntryPoint)
 ,	m_szShaderModel	(szShaderModel)

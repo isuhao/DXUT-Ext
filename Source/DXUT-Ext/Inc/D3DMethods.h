@@ -209,3 +209,9 @@ DEFINE_D3DMETHOD(
 	EndRender,
 	()
 	);
+
+DEFINE_D3DMETHOD(
+	void,
+	GetBackBufferDesc,
+	(uint& OutWidth, uint OutHeight)
+	);

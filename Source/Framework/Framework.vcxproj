@@ -12,9 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\AppFramework.h" />
+    <ClInclude Include="Inc\MultiPassBase.h" />
     <ClInclude Include="Inc\MultiPassRenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\MultiPassBase.cpp" />
     <ClCompile Include="Src\MultiPassRenderer.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

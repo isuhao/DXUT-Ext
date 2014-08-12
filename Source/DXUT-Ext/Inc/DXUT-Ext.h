@@ -11,6 +11,7 @@
 #include "ShaderHelper.h"
 #include "Shader.h"
 #include "Mesh.h"
+#include "SimplePrimitive.h"
 #include "GameApp.h"
 
 #endif // #if

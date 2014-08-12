@@ -1,60 +1,11 @@
 #ifndef _QUICK_MULTI_PASS_H_
 #define _QUICK_MULTI_PASS_H_
 
-#include "AppFramework.h"
+#include "MultiPassBase.h"
 
 
-enum EPassDrawType
-{
-	PDT_Geometry,	// 画几何体
-	PDT_Buffer,		// 画Buffer
-};
-
-
-///**
-// * 单个Pass的描述
-// */
-//struct FSinglePassDesc
-//{
-//	// 绘制类型
-//	EPassDrawType	DrawType;
-//	// 如果是几何体，使用哪些顶点集合
-//	TArray<uint>	VertexSetSlots;
-//	// 如果是Buffer，使用哪些RenderTexture（读取RT的Texture）
-//	TArray<uint>	RenderTextureSlots;
-//	// 指定绘制哪些RT
-//	TArray<uint>	RenderTargetSlots;
-//	// 指定使用哪些Texture
-//	TArray<uint>	TextureSlots;
-//	// 指定使用哪些采样器
-//	TArray<uint>	SamplerSlots;
-//
-//	FSinglePassDesc(
-//		EPassDrawType InDrawType,
-//		const TArray<uint>& InVertexSetSlots,
-//		const TArray<uint>& InRenderTextureSlots,
-//		const TArray<uint>& InRenderTargetSlots,
-//		const TArray<uint>& InTextureSlots,
-//		const TArray<uint>& InSamplerSlots
-//		)
-//		: DrawType(InDrawType)
-//		, VertexSetSlots(InVertexSetSlots)
-//		, RenderTextureSlots(InRenderTextureSlots)
-//		, RenderTargetSlots(InRenderTargetSlots)
-//		, TextureSlots(InTextureSlots)
-//		, SamplerSlots(InSamplerSlots)
-//	{
-//	}
-//};
-
-/**
- * 关于Model的上下文
- */
-struct FPassModelContext
-{
-	String	Name;
-	FMesh	Mesh;
-};
+#define RENDER_PASS_BEGIN	{ RenderPassBegin(); }
+#define RENDER_PASS_END		{ RenderPassEnd(); }
 
 /**
  * 多个Pass的渲染器
@@ -76,15 +27,17 @@ public:
 
 	virtual void OnInit();
 	virtual void OnRender(float fDeltaSeconds);
+	virtual void OnGUIEvent(uint nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext);
 
 	/**
 	 * 注册资源
 	 */
 	virtual void RegisterResources() {}
+	virtual void RenderPasses() {}
 
-	void BeginRenderPass() {}
-	void EndRenderPass() {}
-
+	void PostRegiester();
+	void RenderPassBegin();
+	void RenderPassEnd();
 
 	/** 
 	 * 渲染一个带有Model的Pass
@@ -92,7 +45,10 @@ public:
 	 */
 	void RenderPassWithModel(const String& RegisterModel, RenderModelPassType ActualPassFunc);
 
+	void InitInputLayouts();
+
 	// SinglePass Begin
+
 	// 1.顶点
 	/**
 	 * 绑定模型（VB、IB、TexCoord等）
@@ -101,18 +57,24 @@ public:
 
 	// 2. 贴图
 	/**
-	 * 设置贴图
+	 * 设置普通2D贴图
 	 * @param ShaderVarName		Shader中对应的变量名
 	 * @param RegisterTexture	已经注册的Texture名
 	 */
-	void PassSetTexture(const String& ShaderVarName, const String& RegisterTexture);
+	void PassSetTexture2D(const String& ShaderVarName, const String& RegisterTexture);
 
 	/**
-	 * 设置RT(Surface)的贴图
+	 * 设置RenderTarget贴图
 	 * @param ShaderVarName		Shader中对应的变量名
-	 * @param RegisterTexture	已经注册的Texture名
+	 * @param RegisterTexture	已经注册的FrameBuffer名
 	 */
-	void PassSetSurfaceTexture(const String& ShaderVarName, const String& RegisterTexture);
+	void PassSetRenderTexture(const String& ShaderVarName, const String& RegisterName);
+	/**
+	 * 设置RenderTarget贴图
+	 * @param ShaderVarName		Shader中对应的变量名
+	 * @param RegisterTexture	已经注册的FrameBuffer名
+	 */
+	void PassSetDepthTexture(const String& ShaderVarName, const String& RegisterName);
 
 	// 3. Sampler
 	/**
@@ -124,29 +86,101 @@ public:
 
 	// 4. ConstantValue
 	template <typename ValueType>
-	void PassSetConstantValue(const String& ShaderVarName, ValueType& Value);
+	void PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, ValueType& Value);
 	template <typename ValueType>
-	void PassSetConstantValue(const String& ShaderVarName, ValueType* Value);
+	void PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, uint NumBytes, ValueType* Value);
+	// 使用已经注册好的常量来设置Constant
+	void PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, const String& RegisterName);
+
+	// 5. Shader
+	void PassSetShader(const String& RegisterName);
+
+	// 6. 设置MRT
+	void PassSetTarget(const String& RegisterName, uint RTIndex = 0);
 
 	// SinglePass End
 
-	// 0.InputLayout
-	void InitInputLayouts();
+protected:
+
+	// Register Begin
+
+	// 注册Shader
+	void RegisterShader(const String& RegisterName, const WString& FileName, const String& EntryPoint, const String& ShaderModel, EShaderType ShaderType);
+	// 注册一个Pass要用到的Shader
+	void RegisterPassShader(const String& RegisterName, EShaderType ShaderType, const WString& FileName, const String& EntryPoint, const String& ShaderModel);
+
+	// 注册常量
+	template <typename ValueType>
+	void RegisterConstant(const String& RegisterName, ValueType& Value);
+	template <typename ValueType>
+	void RegisterConstant(const String& RegisterName, ValueType* Value, uint NumBytes);
+
+	// 注册Model, 目前只有Mesh
+	void RegisterModel(const String& RegisterName, const TSharedPtr<FMesh>& InMesh);
+	void RegisterModel(const String& RegisterName, ESimplePrimitiveType PrimType);
+
+	// 注册FrameBuffer
+	// 如果没指定宽和高，则使用与BackBuffer一样的大小
+	void RegisterFrameBuffer(const String& RegisterName, uint Width, uint Height, EPixelFormat PixFormat);
+	void RegisterFrameBuffer(const String& RegisterName);
+
+	// Register End
 
 protected:
+
+	TMap<String, TSharedPtr<FD3D11BoundShaderState> >	m_RegisterBoundShaders;
+	TMap<String, TSharedPtr<FMultiPassShader> >			m_RegisterShaders;							// 已经注册的Shader
+	String												m_CurrRunningShaders[ST_NumShaderTypes];	// 目前生效的Shader
+
+	TMap<String, TSharedPtr<FPassConstantContext> >		m_RegisterConstants;
+	TMap<String, FShaderResourceVariable>				m_RegisterSamplers;
+	TMap<String, FShaderResourceVariable>				m_RegisterTextures;
+	TMap<String, TSharedPtr<FFrameBuffer> >				m_RegisterFrameBuffers;
+	TMap<String, TSharedPtr<FMesh> >					m_RegisterModels;
+
+	TSharedPtr<FVertexDeclaration>						m_pVertexDeclaration;
 };
 
 
 template <typename ValueType>
-void FMultiPassRenderer::PassSetConstantValue(const String& ShaderVarName, ValueType& Value)
+void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, ValueType& Value)
 {
-
+	PassSetConstantValue(ShaderType, ShaderVarName, sizeof(ValueType), &Value);
 }
 
 template <typename ValueType>
-void FMultiPassRenderer::PassSetConstantValue(const String& ShaderVarName, ValueType* Value)
+void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, uint NumBytes, ValueType* Value)
 {
+	const String& ShaderName = m_CurrRunningShaders[ShaderType];
+	if (ShaderName != "")
+	{
+		TMap<String, TSharedPtr<FMultiPassShader> >::iterator Itr = m_RegisterShaders.find(ShaderName);
+		if (Itr != m_RegisterShaders.end())
+		{
+			TSharedPtr<FMultiPassShader>& FoundShader = Itr->second;
+			if (FoundShader)
+			{
+				FoundShader->SetConstantVariables(ShaderVarName, NumBytes, Value);
+			}
+		}
+	}
 
+	// @TODO: 打印错误信息
+	Check(0);
+}
+
+// 常量好像不用注册啊！
+template <typename ValueType>
+void FMultiPassRenderer::RegisterConstant(const String& RegisterName, ValueType& Value)
+{
+	RegisterConstant(RegisterName, &Value, sizeof(ValueType));
+}
+
+template <typename ValueType>
+void FMultiPassRenderer::RegisterConstant(const String& RegisterName, ValueType* Value, uint NumBytes)
+{
+	TSharedPtr<FPassConstantContext> NewConst = TSharedPtr<FPassConstantContext>(new FPassConstantContext(NumBytes, Value));
+	m_RegisterConstants[RegisterName] = NewConst;
 }
 
 

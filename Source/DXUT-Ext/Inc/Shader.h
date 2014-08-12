@@ -55,7 +55,7 @@ class FShaderVarialbleMap;
 class FShader 
 {
 public:
-	FShader(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, EShaderType ShaderType);
+	FShader(const WString& szFileName, const String& szEntryPoint, const String& szShaderModel, EShaderType ShaderType);
 	~FShader() {}
 
 	/**

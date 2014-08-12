@@ -19,6 +19,9 @@
     <Filter Include="D3D">
       <UniqueIdentifier>{20f22e6b-bc4c-42d5-bdad-a39742fda462}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Primitive">
+      <UniqueIdentifier>{a4250532-1d72-4fda-a860-1f459ec50062}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\DXUT-Ext.h" />
@@ -73,6 +76,9 @@
     <ClInclude Include="Inc\ShaderHelper.h">
       <Filter>Shader</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\SimplePrimitive.h">
+      <Filter>Primitive</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\GameApp.cpp">
@@ -119,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="Src\ShaderHelper.cpp">
       <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SimplePrimitive.cpp">
+      <Filter>Primitive</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

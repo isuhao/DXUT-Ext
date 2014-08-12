@@ -83,6 +83,7 @@
     <ClInclude Include="Inc\D3DRenderTarget.h" />
     <ClInclude Include="Inc\D3DTranslate.h" />
     <ClInclude Include="Inc\D3DResources.h" />
+    <ClInclude Include="Inc\SimplePrimitive.h" />
     <ClInclude Include="Inc\Shader.h" />
     <ClInclude Include="Inc\ShaderHelper.h" />
     <ClInclude Include="Inc\SmartPtr.h" />
@@ -106,6 +107,7 @@
     <ClCompile Include="Src\D3DTexture.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\ShaderHelper.cpp" />
+    <ClCompile Include="Src\SimplePrimitive.cpp" />
     <ClCompile Include="Src\VertexDeclaration.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

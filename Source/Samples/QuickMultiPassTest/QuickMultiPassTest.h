@@ -9,6 +9,8 @@ public:
 	FQuickMultiPassTest();
 
 	virtual void RegisterResources();
+
+	virtual void RenderPasses();
 };
 
 #endif

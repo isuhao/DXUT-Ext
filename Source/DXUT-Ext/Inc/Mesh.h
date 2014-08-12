@@ -8,7 +8,7 @@
 class FMesh 
 {
 public:
-	FMesh(WCHAR* MeshName);
+	FMesh(WCHAR* MeshName = L"Mesh");
 
 	virtual void Init() {}
 

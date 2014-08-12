@@ -41,7 +41,6 @@ enum EShaderType
 	ST_NumShaderTypes
 };
 
-
 struct FD3D11BoundShaderState
 {
 	TSharedPtr<FD3D11InputLayout>			InputLayouts;

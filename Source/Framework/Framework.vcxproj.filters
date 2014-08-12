@@ -13,9 +13,15 @@
     <ClInclude Include="Inc\MultiPassRenderer.h">
       <Filter>MultiPassRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\MultiPassBase.h">
+      <Filter>MultiPassRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\MultiPassRenderer.cpp">
+      <Filter>MultiPassRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MultiPassBase.cpp">
       <Filter>MultiPassRenderer</Filter>
     </ClCompile>
   </ItemGroup>
