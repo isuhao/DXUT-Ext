@@ -16,8 +16,8 @@ FQuickMultiPassTest::FQuickMultiPassTest()
 
 void FQuickMultiPassTest::RegisterResources()
 {
-	RegisterShader("Pass0", L"Pass0.hlsl", "VS_Main", "vs_5_0", ST_VertexShader);
-	RegisterShader("Pass0", L"Pass0.hlsl", "PS_Main", "ps_5_0", ST_PixelShader);
+	RegisterShader("Pass0", ST_VertexShader, L"Pass0.hlsl", "VS_Main", "vs_5_0");
+	RegisterShader("Pass0", ST_PixelShader,  L"Pass0.hlsl", "PS_Main", "ps_5_0");
 }
 
 void FQuickMultiPassTest::RenderPasses()

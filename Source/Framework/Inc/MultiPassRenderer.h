@@ -35,10 +35,6 @@ public:
 	virtual void RegisterResources() {}
 	virtual void RenderPasses() {}
 
-	void PostRegiester();
-	void RenderPassBegin();
-	void RenderPassEnd();
-
 	/** 
 	 * 渲染一个带有Model的Pass
 	 * @param ActualPassFunc 真正渲染的回调函数
@@ -53,7 +49,7 @@ public:
 	/**
 	 * 绑定模型（VB、IB、TexCoord等）
 	 */
-	void PassSetModel(const String& RegisterModel);
+	void PassSetModel(const String& RegisterName);
 
 	// 2. 贴图
 	/**
@@ -102,12 +98,17 @@ public:
 
 protected:
 
+	void RegisterPresetConstants();
+	void PassSetPresetConstants();
+
+	void PostRegiester();
+	void RenderPassBegin();
+	void RenderPassEnd();
+
 	// Register Begin
 
-	// 注册Shader
-	void RegisterShader(const String& RegisterName, const WString& FileName, const String& EntryPoint, const String& ShaderModel, EShaderType ShaderType);
 	// 注册一个Pass要用到的Shader
-	void RegisterPassShader(const String& RegisterName, EShaderType ShaderType, const WString& FileName, const String& EntryPoint, const String& ShaderModel);
+	void RegisterShader(const String& RegisterName, EShaderType ShaderType, const WString& FileName, const String& EntryPoint, const String& ShaderModel);
 
 	// 注册常量
 	template <typename ValueType>
@@ -129,8 +130,8 @@ protected:
 protected:
 
 	TMap<String, TSharedPtr<FD3D11BoundShaderState> >	m_RegisterBoundShaders;
-	TMap<String, TSharedPtr<FMultiPassShader> >			m_RegisterShaders;							// 已经注册的Shader
-	String												m_CurrRunningShaders[ST_NumShaderTypes];	// 目前生效的Shader
+	TMap<String, TSharedPtr<FMultiPassShader> >			m_RegisterShaders;		// 已经注册的Shader
+	String												m_CurrBoundShader;		// 目前生效的Shader
 
 	TMap<String, TSharedPtr<FPassConstantContext> >		m_RegisterConstants;
 	TMap<String, FShaderResourceVariable>				m_RegisterSamplers;
@@ -151,19 +152,22 @@ void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const Stri
 template <typename ValueType>
 void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, uint NumBytes, ValueType* Value)
 {
-	const String& ShaderName = m_CurrRunningShaders[ShaderType];
-	if (ShaderName != "")
-	{
-		TMap<String, TSharedPtr<FMultiPassShader> >::iterator Itr = m_RegisterShaders.find(ShaderName);
-		if (Itr != m_RegisterShaders.end())
-		{
-			TSharedPtr<FMultiPassShader>& FoundShader = Itr->second;
-			if (FoundShader)
-			{
-				FoundShader->SetConstantVariables(ShaderVarName, NumBytes, Value);
-			}
-		}
-	}
+	// @TODO: 这个要重新写了！！！
+	// !!!!!!!!!!!!!!!!!!<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//const String& ShaderName = m_CurrRunningShaders[ShaderType];
+	//if (ShaderName != "")
+	//{
+	//	TMap<String, TSharedPtr<FMultiPassShader> >::iterator Itr = m_RegisterShaders.find(ShaderName);
+	//	if (Itr != m_RegisterShaders.end())
+	//	{
+	//		TSharedPtr<FMultiPassShader>& FoundShader = Itr->second;
+	//		if (FoundShader)
+	//		{
+	//			FoundShader->SetConstantVariables(ShaderVarName, NumBytes, Value);
+	//		}
+	//	}
+	//}
 
 	// @TODO: 打印错误信息
 	Check(0);

@@ -8,6 +8,9 @@ void FMultiPassRenderer::OnInit()
 	// 先注册资源
 	RegisterResources();
 
+	// 注册预置的常量
+	RegisterPresetConstants();
+
 	// 注册资源之后的操作
 	PostRegiester();
 }
@@ -17,13 +20,34 @@ void FMultiPassRenderer::PostRegiester()
 
 }
 
+void FMultiPassRenderer::RegisterPresetConstants()
+{
+
+}
+
+void FMultiPassRenderer::PassSetPresetConstants()
+{
+
+}
+
 void FMultiPassRenderer::RenderPassBegin()
 {
 	D3D->SetDefaultBackBuffer();
+
+
 }
 
 void FMultiPassRenderer::RenderPassEnd()
 {
+	// 设置一下预置的常量
+	PassSetPresetConstants();
+
+	// 调用Mesh->Render
+	for (auto Itr = m_RegisterModels.begin(); Itr != m_RegisterModels.end(); ++Itr)
+	{
+		TSharedPtr<FMesh> Mesh = Itr->second;
+		Mesh->Render();
+	}
 }
 
 void FMultiPassRenderer::OnRender(float fDeltaSeconds)
@@ -77,14 +101,7 @@ void FMultiPassRenderer::RegisterFrameBuffer(const String& RegisterName)
 	RegisterFrameBuffer(RegisterName, Width, Height, PF_A8R8G8B8);
 }
 
-
-void FMultiPassRenderer::RegisterShader(const String& RegisterName, const WString& FileName, const String& EntryPoint, const String& ShaderModel, EShaderType ShaderType)
-{
-	TSharedPtr<FMultiPassShader> NewShader = TSharedPtr<FMultiPassShader>(new FMultiPassShader(FileName, EntryPoint, ShaderModel, ShaderType) );
-	m_RegisterShaders[RegisterName] = NewShader;
-}
-
-void FMultiPassRenderer::RegisterPassShader(const String& RegisterName, EShaderType ShaderType, const WString& FileName, const String& EntryPoint, const String& ShaderModel)
+void FMultiPassRenderer::RegisterShader(const String& RegisterName, EShaderType ShaderType, const WString& FileName, const String& EntryPoint, const String& ShaderModel)
 {
 	// 先在Registers中找
 	TSharedPtr<FD3D11BoundShaderState> FoundBoundShader;
@@ -159,6 +176,9 @@ void FMultiPassRenderer::PassSetShader(const String& RegisterName)
 		// Shader不正确
 		Check(0);
 	}
+
+	// 设置当前的
+	m_CurrBoundShader = RegisterName;
 }
 
 void FMultiPassRenderer::PassSetTarget(const String& RegisterName, uint RTIndex /* = 0 */)
