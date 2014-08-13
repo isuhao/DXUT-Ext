@@ -94,8 +94,10 @@ public:
 	// 6. 设置MRT
 	void PassSetTarget(const String& RegisterName, uint RTIndex = 0);
 
-	// 7. 设置RenderStates
+	// 7. 设置RasterizeState
 	void PassSetRasterizeState(const String& RegisterName);
+
+	// 8. 设置BlendState
 	void PassSetBlendState(const String& RegisterName);
 
 	// SinglePass End
