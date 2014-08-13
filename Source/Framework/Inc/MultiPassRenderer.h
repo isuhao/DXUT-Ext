@@ -94,12 +94,20 @@ public:
 	// 6. 设置MRT
 	void PassSetTarget(const String& RegisterName, uint RTIndex = 0);
 
+	// 7. 设置RenderStates
+	void PassSetRasterizeState(const String& RegisterName);
+	void PassSetBlendState(const String& RegisterName);
+
 	// SinglePass End
 
 protected:
 
-	void RegisterPresetConstants();
-	void PassSetPresetConstants();
+	// 默认的状态
+	void RegisterDefaultStates();
+	void PassSetDefaultStates();
+	// 默认的常量
+	void RegisterDefaultConstants();
+	void PassSetDefaultConstants();
 
 	void PostRegiester();
 	void RenderPassBegin();
@@ -125,9 +133,17 @@ protected:
 	void RegisterFrameBuffer(const String& RegisterName, uint Width, uint Height, EPixelFormat PixFormat);
 	void RegisterFrameBuffer(const String& RegisterName);
 
+	void RegisterRasterizeState(const String& RegisterName, ERasterizerFillMode FillMode = FM_Solid, ERasterizerCullMode CullMode = CM_CCW, bool bAllowMSAA = true,
+		bool bFrontCounterClockwise = false, INT DepthBias = 0, float SlopeScaledDepthBias = 0);
+	void RegisterBlendState(const String& RegisterName, EBlendOperation ColorBlendOp = BO_Add, EBlendFactor ColorSrcBlend = BF_One, EBlendFactor ColorDstBlend = BF_Zero,
+		EBlendOperation AlphaBlendOp = BO_Add, EBlendFactor AlphaSrcBlend = BF_One, EBlendFactor AlphaDstBlend = BF_Zero, EBlendColorWriteEnable ColorWriteEnable = CWE_All);
+
 	// Register End
 
 protected:
+
+	TMap<String, TSharedPtr<FD3D11RasterState> >		m_RegisterRasterizeStates;
+	TMap<String, TSharedPtr<FD3D11BlendState> >			m_RegisterBlendStates;
 
 	TMap<String, TSharedPtr<FD3D11BoundShaderState> >	m_RegisterBoundShaders;
 	TMap<String, TSharedPtr<FMultiPassShader> >			m_RegisterShaders;		// 已经注册的Shader

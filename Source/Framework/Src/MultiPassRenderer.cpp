@@ -5,11 +5,14 @@ void FMultiPassRenderer::OnInit()
 	// 绑定顶点声明
 	InitInputLayouts();
 
-	// 先注册资源
+	// 先注册资源, Shader/ShaderVariables等等
 	RegisterResources();
 
-	// 注册预置的常量
-	RegisterPresetConstants();
+	// 注册默认的常量
+	RegisterDefaultConstants();
+
+	// 注册默认的States
+	RegisterDefaultStates();
 
 	// 注册资源之后的操作
 	PostRegiester();
@@ -20,14 +23,43 @@ void FMultiPassRenderer::PostRegiester()
 
 }
 
-void FMultiPassRenderer::RegisterPresetConstants()
+void FMultiPassRenderer::RegisterDefaultConstants()
 {
 
 }
 
-void FMultiPassRenderer::PassSetPresetConstants()
+void FMultiPassRenderer::PassSetDefaultConstants()
 {
 
+}
+
+// 注册默认的States
+void FMultiPassRenderer::RegisterDefaultStates()
+{
+	RegisterRasterizeState(FDefaultRegisteredToken::DefaultRasterizeState);
+	RegisterBlendState(FDefaultRegisteredToken::DefaultBlendState);
+}
+
+// 设置默认的States
+void FMultiPassRenderer::PassSetDefaultStates()
+{
+	
+}
+
+void FMultiPassRenderer::PassSetRasterizeState(const String& RegisterName)
+{
+	if (m_RegisterRasterizeStates.find(RegisterName) != m_RegisterRasterizeStates.end())
+	{
+		D3D->SetRasterizerState(m_RegisterRasterizeStates[RegisterName]);
+	}
+}
+
+void FMultiPassRenderer::PassSetBlendState(const String& RegisterName)
+{
+	if (m_RegisterBlendStates.find(RegisterName) != m_RegisterBlendStates.end())
+	{
+		D3D->SetBlendState(m_RegisterBlendStates[RegisterName]);
+	}
 }
 
 void FMultiPassRenderer::RenderPassBegin()
@@ -39,8 +71,8 @@ void FMultiPassRenderer::RenderPassBegin()
 
 void FMultiPassRenderer::RenderPassEnd()
 {
-	// 设置一下预置的常量
-	PassSetPresetConstants();
+	// 设置一下默认的常量
+	PassSetDefaultConstants();
 
 	// 调用Mesh->Render
 	for (auto Itr = m_RegisterModels.begin(); Itr != m_RegisterModels.end(); ++Itr)
@@ -184,4 +216,25 @@ void FMultiPassRenderer::PassSetShader(const String& RegisterName)
 void FMultiPassRenderer::PassSetTarget(const String& RegisterName, uint RTIndex /* = 0 */)
 {
 	
+}
+
+void FMultiPassRenderer::RegisterRasterizeState(const String& RegisterName, ERasterizerFillMode FillMode /* = FM_Solid */, ERasterizerCullMode CullMode /* = CM_CCW */,
+	bool bAllowMSAA /* = true */, bool bFrontCounterClockwise /* = false */, INT DepthBias /* = 0 */, float SlopeScaledDepthBias /* = 0 */)
+{
+	if (m_RegisterRasterizeStates.find(RegisterName) == m_RegisterRasterizeStates.end())
+	{
+		TSharedPtr<FD3D11RasterState> RasterizeState = D3D->CreateRasterizerState(FillMode, CullMode, bAllowMSAA, bFrontCounterClockwise, DepthBias, SlopeScaledDepthBias);
+		m_RegisterRasterizeStates[RegisterName] = RasterizeState;
+	}
+}
+
+void FMultiPassRenderer::RegisterBlendState(const String& RegisterName, EBlendOperation ColorBlendOp /* = BO_Add */, EBlendFactor ColorSrcBlend /* = BF_One */,
+	EBlendFactor ColorDstBlend /* = BF_Zero */, EBlendOperation AlphaBlendOp /* = BO_Add */, EBlendFactor AlphaSrcBlend /* = BF_One */, EBlendFactor AlphaDstBlend /* = BF_Zero */,
+	EBlendColorWriteEnable ColorWriteEnable /* = CWE_All */)
+{
+	if (m_RegisterBlendStates.find(RegisterName) == m_RegisterBlendStates.end())
+	{
+		TSharedPtr<FD3D11BlendState> BlendState = D3D->CreateBlendState(ColorBlendOp, ColorSrcBlend, ColorDstBlend, AlphaBlendOp, AlphaSrcBlend, AlphaDstBlend, ColorWriteEnable);
+		m_RegisterBlendStates[RegisterName] = BlendState;
+	}
 }

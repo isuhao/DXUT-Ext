@@ -49,9 +49,14 @@ struct FPassConstantContext
 	}
 };
 
-struct FPassRegisterToken
+// Ä¬ÈÏµÄTOKEN
+struct FDefaultRegisteredToken
 {
 	static const String Default;
+
+	// Ä¬ÈÏStates
+	static const String DefaultRasterizeState;
+	static const String DefaultBlendState;
 };
 
 #endif
