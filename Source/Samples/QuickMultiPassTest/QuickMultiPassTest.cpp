@@ -34,6 +34,7 @@ void FQuickMultiPassTest::RenderPasses()
 		PassSetShader(R_PASS0);
 		PassSetModel(R_HOUSE);
 	}
-	RENDER_PASS_END
+	//RENDER_PASS_END
+	RenderPassEnd();
 }
 

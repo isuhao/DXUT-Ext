@@ -25,12 +25,22 @@ void FMultiPassRenderer::PostRegister()
 
 void FMultiPassRenderer::RegisterDefaultConstants()
 {
-
+	RegisterConstant<float4x4>(FRegisteredVariable::MatWorld);
+	RegisterConstant<float4x4>(FRegisteredVariable::MatWorldViewProjection);
 }
 
 void FMultiPassRenderer::PassSetDefaultConstants()
 {
+	// Matrix
+	float4x4 mWVP, mWorld;
+	mWVP = *m_Camera.GetWorldMatrix() * *m_Camera.GetViewMatrix() * *m_Camera.GetProjMatrix();
+	D3DXMatrixTranspose(&mWVP, &mWVP);
+	mWorld = *m_Camera.GetWorldMatrix();
+	D3DXMatrixTranspose(&mWorld, &mWorld);
 
+	// @TODO: 以后改成对所有Shader都器作用！
+	PassSetConstantValue(ST_VertexShader, FRegisteredVariable::MatWorld, mWorld);
+	PassSetConstantValue(ST_VertexShader, FRegisteredVariable::MatWorldViewProjection, mWVP);
 }
 
 // 注册默认的States
@@ -78,21 +88,17 @@ void FMultiPassRenderer::RenderPassBegin()
 	D3D->SetDefaultBackBuffer();
 	D3D->Clear(true, FLinearColor::Black, true, 1, false, 0);
 
-	// 设置一下默认的常量
-	PassSetDefaultConstants();
-
 	// 设置一下默认的状态
 	PassSetDefaultStates();
 }
 
 void FMultiPassRenderer::RenderPassEnd()
 {
-	// 调用Mesh->Render
-	//for (auto Itr = m_RegisterModels.begin(); Itr != m_RegisterModels.end(); ++Itr)
-	//{
-	//	TSharedPtr<FMesh> Mesh = Itr->second;
-	//	Mesh->Render();
-	//}
+	// 设置一下默认的常量
+	// 因为需要用到CurrShader，所以还是要放在后面设置
+	PassSetDefaultConstants();
+	// 提交CB
+	D3D->CommitConstantBuffer();
 
 	auto MeshPtr = m_RegisterModels.find(m_CurrRenderingMesh);
 	if (MeshPtr != m_RegisterModels.end())
@@ -118,7 +124,7 @@ void FMultiPassRenderer::OnGUIEvent(uint nEvent, int nControlID, CDXUTControl* p
 
 void FMultiPassRenderer::InitInputLayouts()
 {
-
+	m_pVertexDeclaration = FMultiPassRendererVDF().GetVertexDeclaration();
 }
 
 void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, const String& RegisterName)
@@ -179,6 +185,8 @@ void FMultiPassRenderer::RegisterShader(const String& RegisterName, EShaderType 
 	TSharedPtr<FMultiPassShader> NewShader = TSharedPtr<FMultiPassShader>(new FMultiPassShader(FileName, EntryPoint, ShaderModel, ShaderType));
 	// 先初始化
 	NewShader->InitShader();
+	// 放进RegisterShaders中
+	m_RegisterShaders[RegisterName + ShaderType2String(ShaderType)] = NewShader;
 
 	switch (ShaderType)
 	{

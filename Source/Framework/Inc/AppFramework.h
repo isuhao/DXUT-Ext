@@ -4,7 +4,7 @@
 #include "DXUT-Ext.h"
 
 #if INCLUDE_LIB
-#pragma comment(lib, "Framework.lib")
+//#pragma comment(lib, "Framework.lib")
 #endif
 
 /**

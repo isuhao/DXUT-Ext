@@ -134,7 +134,7 @@ void DeferredLightingApp::RenderGPass()
 
 	D3D->SetSamplerState(ST_PixelShader, 0, m_pSamplerState);
 
-	m_pMesh->Render(0);
+	m_pMesh->Render();
 }
 
 void DeferredLightingApp::RenderDeferredLight()
@@ -181,5 +181,5 @@ void DeferredLightingApp::RenderScene()
 	// 设置贴图和采样器
 	m_ScenePassPS.SetTextureVariables(m_pfbDL->RenderTarget, m_pSamplerState);
 
-	m_pMesh->Render(0);
+	m_pMesh->Render();
 }

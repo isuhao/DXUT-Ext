@@ -128,9 +128,7 @@ protected:
 
 	// 注册常量
 	template <typename ValueType>
-	void RegisterConstant(const String& RegisterName, ValueType& Value);
-	template <typename ValueType>
-	void RegisterConstant(const String& RegisterName, ValueType* Value, uint NumBytes);
+	void RegisterConstant(const String& RegisterName);
 
 	// 注册Model, 目前只有Mesh
 	void RegisterModel(const String& RegisterName, const TSharedPtr<FMesh>& InMesh);
@@ -179,38 +177,19 @@ void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const Stri
 template <typename ValueType>
 void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, uint NumBytes, ValueType* Value)
 {
-	// @TODO: 这个要重新写了！！！
-	// !!!!!!!!!!!!!!!!!!<<<<<<<<<<<<<<<<<<<<<<<<<
+	String CurrShaderName = m_CurrBoundShader + ShaderType2String(ShaderType);
 
-	//const String& ShaderName = m_CurrRunningShaders[ShaderType];
-	//if (ShaderName != "")
-	//{
-	//	TMap<String, TSharedPtr<FMultiPassShader> >::iterator Itr = m_RegisterShaders.find(ShaderName);
-	//	if (Itr != m_RegisterShaders.end())
-	//	{
-	//		TSharedPtr<FMultiPassShader>& FoundShader = Itr->second;
-	//		if (FoundShader)
-	//		{
-	//			FoundShader->SetConstantVariables(ShaderVarName, NumBytes, Value);
-	//		}
-	//	}
-	//}
-
-	// @TODO: 打印错误信息
-	Check(0);
-}
-
-// 常量好像不用注册啊！
-template <typename ValueType>
-void FMultiPassRenderer::RegisterConstant(const String& RegisterName, ValueType& Value)
-{
-	RegisterConstant(RegisterName, &Value, sizeof(ValueType));
+	auto ShaderPtr = m_RegisterShaders.find(CurrShaderName);
+	if (ShaderPtr != m_RegisterShaders.end())
+	{
+		ShaderPtr->second->SetConstantVariables(ShaderVarName, NumBytes, (byte*)Value);
+	}
 }
 
 template <typename ValueType>
-void FMultiPassRenderer::RegisterConstant(const String& RegisterName, ValueType* Value, uint NumBytes)
+void FMultiPassRenderer::RegisterConstant(const String& RegisterName)
 {
-	TSharedPtr<FPassConstantContext> NewConst = TSharedPtr<FPassConstantContext>(new FPassConstantContext(NumBytes, Value));
+	TSharedPtr<FPassConstantContext> NewConst = TSharedPtr<FPassConstantContext>(new FPassConstantContext(sizeof(ValueType)) );
 	m_RegisterConstants[RegisterName] = NewConst;
 }
 

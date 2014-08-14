@@ -50,4 +50,6 @@ extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVaria
 extern void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Variable, const TSharedPtr<FD3D11ShaderResourceView>& InSRV);
 
 
+extern String ShaderType2String(EShaderType Type);
+
 #endif

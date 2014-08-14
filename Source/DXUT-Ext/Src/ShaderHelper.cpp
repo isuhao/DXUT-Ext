@@ -123,3 +123,24 @@ void SetShaderVariable(EShaderType ShaderType, const FShaderResourceVariable& Va
 		InSRV
 		);
 }
+
+String ShaderType2String(EShaderType Type)
+{
+	switch (Type)
+	{
+	case ST_VertexShader:
+		return "VertexShader";
+	case ST_PixelShader:
+		return "PixelShader";
+	case ST_DomainShader:
+		return "DomainShader";
+	case ST_HullShader:
+		return "HullShader";
+	case ST_GeometryShader:
+		return "GeometryShader";
+	case ST_ComputeShader:
+		return "ComputeShader";
+	default:
+		return "";
+	}
+}

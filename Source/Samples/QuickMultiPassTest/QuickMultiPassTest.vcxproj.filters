@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <FxCompile Include="Pass0.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="QuickMultiPassTest.cpp" />
+    <ClCompile Include="..\..\Framework\Src\MultiPassBase.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Framework\Src\MultiPassRenderer.cpp">
+      <Filter>Lib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="QuickMultiPassTest.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{02aa62e9-957e-4217-a918-4763909ad2e8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

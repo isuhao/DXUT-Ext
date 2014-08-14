@@ -42,10 +42,22 @@ struct FPassConstantContext
 {
 	TArray<byte> RawData;
 
-	FPassConstantContext(uint iSize, byte* Src)
+	FPassConstantContext(uint iSize)
+		: RawData(iSize)
 	{
-		RawData.reserve(iSize);
-		CopyMemory(&RawData[0], Src, iSize);
+	}
+};
+
+class FMultiPassRendererVDF : public FVertexDeclarationFactory
+{
+public:
+	FMultiPassRendererVDF()
+	{
+		VertexDecls = TSharedPtr<FVertexDeclaration>(new FVertexDeclaration());
+
+		VertexDecls->AppendElementFast(0, VET_Float3, VEU_Position, 0);
+		VertexDecls->AppendElementFast(0, VET_Float3, VEU_Normal, 0);
+		VertexDecls->AppendElementFast(0, VET_Float2, VEU_TextureCoordinate, 0);
 	}
 };
 
@@ -58,6 +70,10 @@ struct FRegisteredVariable
 	static const String DefaultRasterizeState;
 	static const String DefaultBlendState;
 	static const String DefaultDepthStencilState;
+
+	// Ä¬ÈÏConstant
+	static const String MatWorld;
+	static const String MatWorldViewProjection;
 };
 
 
