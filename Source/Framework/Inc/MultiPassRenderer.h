@@ -4,6 +4,9 @@
 #include "MultiPassBase.h"
 
 
+#define DECLARE_VAR_NAME(Name, Str) \
+	static const String Name = #Str;
+
 #define RENDER_PASS_BEGIN	{ RenderPassBegin(); }
 #define RENDER_PASS_END		{ RenderPassEnd(); }
 
@@ -100,6 +103,9 @@ public:
 	// 8. 设置BlendState
 	void PassSetBlendState(const String& RegisterName);
 
+	// 9. 设置DepthStencil
+	void PassSetDepthStencilState(const String& RegisterName);
+
 	// SinglePass End
 
 protected:
@@ -111,7 +117,7 @@ protected:
 	void RegisterDefaultConstants();
 	void PassSetDefaultConstants();
 
-	void PostRegiester();
+	void PostRegister();
 	void RenderPassBegin();
 	void RenderPassEnd();
 
@@ -139,6 +145,7 @@ protected:
 		bool bFrontCounterClockwise = false, INT DepthBias = 0, float SlopeScaledDepthBias = 0);
 	void RegisterBlendState(const String& RegisterName, EBlendOperation ColorBlendOp = BO_Add, EBlendFactor ColorSrcBlend = BF_One, EBlendFactor ColorDstBlend = BF_Zero,
 		EBlendOperation AlphaBlendOp = BO_Add, EBlendFactor AlphaSrcBlend = BF_One, EBlendFactor AlphaDstBlend = BF_Zero, EBlendColorWriteEnable ColorWriteEnable = CWE_All);
+	void RegisterDepthStencilState(const String& RegisterName, bool DepthEnable = true);
 
 	// Register End
 
@@ -146,10 +153,12 @@ protected:
 
 	TMap<String, TSharedPtr<FD3D11RasterState> >		m_RegisterRasterizeStates;
 	TMap<String, TSharedPtr<FD3D11BlendState> >			m_RegisterBlendStates;
+	TMap<String, TSharedPtr<FD3D11DepthStencilState> >	m_RegisterDepthStencilStates;
 
 	TMap<String, TSharedPtr<FD3D11BoundShaderState> >	m_RegisterBoundShaders;
 	TMap<String, TSharedPtr<FMultiPassShader> >			m_RegisterShaders;		// 已经注册的Shader
 	String												m_CurrBoundShader;		// 目前生效的Shader
+	String												m_CurrRenderingMesh;
 
 	TMap<String, TSharedPtr<FPassConstantContext> >		m_RegisterConstants;
 	TMap<String, FShaderResourceVariable>				m_RegisterSamplers;

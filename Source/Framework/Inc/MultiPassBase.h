@@ -49,14 +49,16 @@ struct FPassConstantContext
 	}
 };
 
-// 默认的TOKEN
-struct FDefaultRegisteredToken
+// 默认的变量
+struct FRegisteredVariable
 {
 	static const String Default;
 
 	// 默认States
 	static const String DefaultRasterizeState;
 	static const String DefaultBlendState;
+	static const String DefaultDepthStencilState;
 };
+
 
 #endif

@@ -15,6 +15,7 @@ PRE_DECLARE_CLASS(FShader)
 typedef ID3D11SamplerState			FD3D11SamplerState;
 typedef ID3D11RasterizerState		FD3D11RasterState;
 typedef ID3D11BlendState			FD3D11BlendState;
+typedef ID3D11DepthStencilState		FD3D11DepthStencilState;
 typedef ID3D11InputLayout			FD3D11InputLayout;
 typedef ID3D11Buffer				FD3D11Buffer;
 typedef ID3D11DepthStencilView		FD3D11DepthStencilView;

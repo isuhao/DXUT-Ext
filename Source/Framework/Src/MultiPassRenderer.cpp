@@ -15,10 +15,10 @@ void FMultiPassRenderer::OnInit()
 	RegisterDefaultStates();
 
 	// 注册资源之后的操作
-	PostRegiester();
+	PostRegister();
 }
 
-void FMultiPassRenderer::PostRegiester()
+void FMultiPassRenderer::PostRegister()
 {
 
 }
@@ -36,14 +36,17 @@ void FMultiPassRenderer::PassSetDefaultConstants()
 // 注册默认的States
 void FMultiPassRenderer::RegisterDefaultStates()
 {
-	RegisterRasterizeState(FDefaultRegisteredToken::DefaultRasterizeState);
-	RegisterBlendState(FDefaultRegisteredToken::DefaultBlendState);
+	RegisterRasterizeState(FRegisteredVariable::DefaultRasterizeState);
+	RegisterBlendState(FRegisteredVariable::DefaultBlendState);
+	RegisterDepthStencilState(FRegisteredVariable::DefaultDepthStencilState);
 }
 
 // 设置默认的States
 void FMultiPassRenderer::PassSetDefaultStates()
 {
-	
+	PassSetRasterizeState(FRegisteredVariable::DefaultRasterizeState);
+	PassSetBlendState(FRegisteredVariable::DefaultBlendState);
+	PassSetDepthStencilState(FRegisteredVariable::DefaultDepthStencilState);
 }
 
 void FMultiPassRenderer::PassSetRasterizeState(const String& RegisterName)
@@ -62,23 +65,39 @@ void FMultiPassRenderer::PassSetBlendState(const String& RegisterName)
 	}
 }
 
+void FMultiPassRenderer::PassSetDepthStencilState(const String& RegisterName)
+{
+	if (m_RegisterDepthStencilStates.find(RegisterName) == m_RegisterDepthStencilStates.end())
+	{
+		D3D->SetDepthStencilState(m_RegisterDepthStencilStates[RegisterName]);
+	}
+}
+
 void FMultiPassRenderer::RenderPassBegin()
 {
 	D3D->SetDefaultBackBuffer();
+	D3D->Clear(true, FLinearColor::Black, true, 1, false, 0);
 
+	// 设置一下默认的常量
+	PassSetDefaultConstants();
 
+	// 设置一下默认的状态
+	PassSetDefaultStates();
 }
 
 void FMultiPassRenderer::RenderPassEnd()
 {
-	// 设置一下默认的常量
-	PassSetDefaultConstants();
-
 	// 调用Mesh->Render
-	for (auto Itr = m_RegisterModels.begin(); Itr != m_RegisterModels.end(); ++Itr)
+	//for (auto Itr = m_RegisterModels.begin(); Itr != m_RegisterModels.end(); ++Itr)
+	//{
+	//	TSharedPtr<FMesh> Mesh = Itr->second;
+	//	Mesh->Render();
+	//}
+
+	auto MeshPtr = m_RegisterModels.find(m_CurrRenderingMesh);
+	if (MeshPtr != m_RegisterModels.end())
 	{
-		TSharedPtr<FMesh> Mesh = Itr->second;
-		Mesh->Render();
+		MeshPtr->second->Render();
 	}
 }
 
@@ -116,6 +135,11 @@ void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const Stri
 	}
 
 	Check(0);
+}
+
+void FMultiPassRenderer::PassSetModel(const String& RegisterName)
+{
+	m_CurrRenderingMesh = RegisterName;
 }
 
 void FMultiPassRenderer::RegisterFrameBuffer(const String& RegisterName, uint Width, uint Height, EPixelFormat PixFormat)
@@ -236,5 +260,41 @@ void FMultiPassRenderer::RegisterBlendState(const String& RegisterName, EBlendOp
 	{
 		TSharedPtr<FD3D11BlendState> BlendState = D3D->CreateBlendState(ColorBlendOp, ColorSrcBlend, ColorDstBlend, AlphaBlendOp, AlphaSrcBlend, AlphaDstBlend, ColorWriteEnable);
 		m_RegisterBlendStates[RegisterName] = BlendState;
+	}
+}
+
+void FMultiPassRenderer::RegisterDepthStencilState(const String& RegisterName, bool DepthEnable)
+{
+	if (m_RegisterDepthStencilStates.find(RegisterName) == m_RegisterDepthStencilStates.end())
+	{
+		TSharedPtr<FD3D11DepthStencilState> DepthStencilState = D3D->CreateDepthStencilState(DepthEnable);
+		m_RegisterDepthStencilStates[RegisterName] = DepthStencilState;
+	}
+}
+
+// Mesh
+void FMultiPassRenderer::RegisterModel(const String& RegisterName, const TSharedPtr<FMesh>& InMesh)
+{
+	// 如果还没初始化，先初始化吧
+	if (!InMesh->IsInitialized())
+	{
+		InMesh->Init();
+	}
+
+	if (m_RegisterModels.find(RegisterName) == m_RegisterModels.end())
+	{
+		m_RegisterModels[RegisterName] = InMesh;
+	}
+}
+
+void FMultiPassRenderer::RegisterModel(const String& RegisterName, ESimplePrimitiveType PrimType)
+{
+	switch (PrimType)
+	{
+	case SPT_Quad:
+		RegisterModel(RegisterName, FQuad::Create());
+		break;
+	default:
+		break;
 	}
 }

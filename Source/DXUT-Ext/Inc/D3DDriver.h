@@ -19,6 +19,8 @@
 // 最大的MRT数量
 #define MAX_MRT_SLOT_COUNT	16
 
+// 检查D3DDriver是否已经被创建
+#define CHECK_D3D_VALID	 Check(D3D);
 
 /** 
  * Render hardware interface

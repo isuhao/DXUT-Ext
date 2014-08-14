@@ -215,3 +215,15 @@ DEFINE_D3DMETHOD(
 	GetBackBufferDesc,
 	(uint& OutWidth, uint OutHeight)
 	);
+
+DEFINE_D3DMETHOD(
+	TSharedPtr<FD3D11DepthStencilState>,
+	CreateDepthStencilState,
+	(bool DepthEnable = true, ECompareFunction DepthFunc = CF_Less)
+	);
+
+DEFINE_D3DMETHOD(
+	void,
+	SetDepthStencilState,
+	(const TSharedPtr<FD3D11DepthStencilState>& DepthStencilState, uint StencilRef = 0)
+	);

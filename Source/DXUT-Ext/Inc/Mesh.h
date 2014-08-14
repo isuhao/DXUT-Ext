@@ -8,27 +8,32 @@
 class FMesh 
 {
 public:
-	FMesh(WCHAR* MeshName = L"Mesh");
+	FMesh(const WString& MeshName = L"Mesh");
+	void Init();
 
-	virtual void Init() {}
-
+	virtual void OnInit() {}
 	virtual void Render() {}
+
+	bool IsInitialized() const { return m_bInitialized; }
 
 protected:
 	WString					m_szMeshName;
+	bool					m_bInitialized;
 };
 
 class FSDKMesh : public FMesh, public CDXUTSDKMesh
 {
 public:
 
-	FSDKMesh(WCHAR* MeshName, bool bCreateAdjIndices = false);
+	FSDKMesh(const WString& MeshName, bool bCreateAdjIndices = false);
 
 	~FSDKMesh() { Destroy(); }
 
-	virtual void Init();
+	virtual void OnInit();
 
-	virtual void Render(UINT iDiffuseSlot = 0, UINT iNormalSlot = INVALID_SAMPLER_SLOT, UINT iSpecularSlot = INVALID_SAMPLER_SLOT);
+	virtual void Render(/*UINT iDiffuseSlot = 0, UINT iNormalSlot = INVALID_SAMPLER_SLOT, UINT iSpecularSlot = INVALID_SAMPLER_SLOT*/);
+
+	static TSharedPtr<FSDKMesh> CreateNew(const WString& MeshName);
 
 protected:
 	bool						m_bCreateAdjIndices;

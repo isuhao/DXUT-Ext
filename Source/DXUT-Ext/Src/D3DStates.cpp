@@ -184,8 +184,22 @@ void FD3D11Driver::SetBlendState(const TSharedPtr<FD3D11BlendState>& BlendState,
 	m_pd3dImmediateContext->OMSetBlendState(BlendState.get(), &Color.R, SimpleMask);
 }
 
-//TSharedPtr<FD3D11DepthStencilView> FD3D11Driver::CreateDepthStencilView()
-//{
-//	return TSharedPtr<FD3D11DepthStencilView>();
-//}
+TSharedPtr<FD3D11DepthStencilState> FD3D11Driver::CreateDepthStencilState(bool DepthEnable, ECompareFunction DepthFunc)
+{
+	D3D11_DEPTH_STENCIL_DESC Desc;
 
+	ZeroMemory(&Desc, sizeof(Desc));
+	Desc.DepthEnable = DepthEnable;
+	Desc.DepthWriteMask = DepthEnable ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
+	Desc.DepthFunc = TranslateCompareFunc(DepthFunc);
+
+	FD3D11DepthStencilState* pDepthStencil = NULL;
+	m_pd3dDevice->CreateDepthStencilState(&Desc, &pDepthStencil);
+
+	return MakeCOMPtr<FD3D11DepthStencilState>(pDepthStencil);
+}
+
+void FD3D11Driver::SetDepthStencilState(const TSharedPtr<FD3D11DepthStencilState>& DepthStencilState, uint StencilRef)
+{
+	m_pd3dImmediateContext->OMSetDepthStencilState(DepthStencilState.get(), StencilRef);
+}

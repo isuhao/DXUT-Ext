@@ -51,6 +51,7 @@ void FMultiPassShader::SetResourceVariables(const String& ShaderVarName, const T
 		);
 }
 
-const String FDefaultRegisteredToken::Default					= "Default";
-const String FDefaultRegisteredToken::DefaultRasterizeState		= "DefaultRasterizeState";
-const String FDefaultRegisteredToken::DefaultBlendState			= "DefaultBlendState";
+const String FRegisteredVariable::Default					= "Default";
+const String FRegisteredVariable::DefaultRasterizeState		= "DefaultRasterizeState";
+const String FRegisteredVariable::DefaultBlendState			= "DefaultBlendState";
+const String FRegisteredVariable::DefaultDepthStencilState	= "DefaultDepthStencilState";
