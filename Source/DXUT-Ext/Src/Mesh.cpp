@@ -35,7 +35,8 @@ void FSDKMesh::Render()
 {
 	ID3D11DeviceContext* pDeviceContext = DXUTGetD3D11DeviceContext();
 	Check(pDeviceContext);
-	CDXUTSDKMesh::Render(pDeviceContext, 0, 0, 0);
+	// @TODO: Mesh这一块以后再来扩展
+	CDXUTSDKMesh::Render(pDeviceContext, 0);
 }
 
 TSharedPtr<FSDKMesh> FSDKMesh::CreateNew(const WString& MeshName)

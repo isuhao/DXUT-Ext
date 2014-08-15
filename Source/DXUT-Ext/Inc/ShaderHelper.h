@@ -30,7 +30,7 @@ void SetShaderVariable(EShaderType ShaderType, const FShaderConstantVarialble& V
 }
 
 template <typename ValueType>
-void SetShaderVariable(EShaderType ShaderType, const FShaderConstantVarialble& Variable, ValueType* InValue)
+void SetShaderVariable(EShaderType ShaderType, const FShaderConstantVarialble& Variable, ValueType* InValue, uint NumElements = 1)
 {
 	uint NumBytes = Min(sizeof(ValueType), Variable.GetNumBytes());
 
@@ -38,7 +38,7 @@ void SetShaderVariable(EShaderType ShaderType, const FShaderConstantVarialble& V
 		ShaderType,
 		Variable.GetBufferIndex(),
 		Variable.GetBindIndex(),
-		NumBytes,
+		NumBytes * NumElements,
 		(byte*)(InValue)
 		);
 }

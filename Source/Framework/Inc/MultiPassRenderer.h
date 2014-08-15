@@ -3,8 +3,10 @@
 
 #include "MultiPassBase.h"
 
+#define DECLARE_VAR_NAME(Name) \
+	static const String Name = #Name;
 
-#define DECLARE_VAR_NAME(Name, Str) \
+#define DECLARE_VAR_NAME2(Name, Str) \
 	static const String Name = #Str;
 
 #define RENDER_PASS_BEGIN	{ RenderPassBegin(); }
@@ -43,8 +45,10 @@ public:
 	 * @param ActualPassFunc 真正渲染的回调函数
 	 */
 	void RenderPassWithModel(const String& RegisterModel, RenderModelPassType ActualPassFunc);
-
 	void InitInputLayouts();
+
+	// 获取当前的Shader名
+	String GetCurrShaderName(EShaderType ShaderType) { return m_CurrBoundShader + ShaderType2String(ShaderType); }
 
 	// SinglePass Begin
 
@@ -81,13 +85,14 @@ public:
 	 * @param ShaderVarName		Shader中对应的变量名
 	 * @param RegisterSampler	已经注册的Sampler名
 	 */
-	void PassSetSampler(const String& ShaderVarName, const String& RegisterSampler);
+	// @TODO: ShaderType去掉（遍历所有Shader）
+	void PassSetSampler(EShaderType ShaderType, const String& ShaderVarName, const String& RegisterSampler);
 
 	// 4. ConstantValue
 	template <typename ValueType>
 	void PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, ValueType& Value);
 	template <typename ValueType>
-	void PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, uint NumBytes, ValueType* Value);
+	void PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, ValueType* Value, uint NumElements);
 	// 使用已经注册好的常量来设置Constant
 	void PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, const String& RegisterName);
 
@@ -145,6 +150,10 @@ protected:
 		EBlendOperation AlphaBlendOp = BO_Add, EBlendFactor AlphaSrcBlend = BF_One, EBlendFactor AlphaDstBlend = BF_Zero, EBlendColorWriteEnable ColorWriteEnable = CWE_All);
 	void RegisterDepthStencilState(const String& RegisterName, bool DepthEnable = true);
 
+	// 注册SamplerState
+	void RegisterSampler(const String& RegisterName, ESamplerFilter Filter, ESamplerAddressMode	AddressU = AM_Warp, ESamplerAddressMode AddressV = AM_Warp,
+		ESamplerAddressMode AddressW = AM_Warp, float MipBias = 0.f, UINT MaxAnisotropy = 0, FLinearColor BorderColor = FLinearColor(), ECompareFunction CompareFunc = CF_Never);
+
 	// Register End
 
 protected:
@@ -159,8 +168,8 @@ protected:
 	String												m_CurrRenderingMesh;
 
 	TMap<String, TSharedPtr<FPassConstantContext> >		m_RegisterConstants;
-	TMap<String, FShaderResourceVariable>				m_RegisterSamplers;
-	TMap<String, FShaderResourceVariable>				m_RegisterTextures;
+	TMap<String, TSharedPtr<FD3D11SamplerState> >		m_RegisterSamplers;
+	TMap<String, TSharedPtr<FD3D11ShaderResourceView> >	m_RegisterTextures;
 	TMap<String, TSharedPtr<FFrameBuffer> >				m_RegisterFrameBuffers;
 	TMap<String, TSharedPtr<FMesh> >					m_RegisterModels;
 
@@ -171,13 +180,15 @@ protected:
 template <typename ValueType>
 void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, ValueType& Value)
 {
-	PassSetConstantValue(ShaderType, ShaderVarName, sizeof(ValueType), &Value);
+	PassSetConstantValue(ShaderType, ShaderVarName, &Value, 1);
 }
 
 template <typename ValueType>
-void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, uint NumBytes, ValueType* Value)
+void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const String& ShaderVarName, ValueType* Value, uint NumElements)
 {
 	String CurrShaderName = m_CurrBoundShader + ShaderType2String(ShaderType);
+	// @TODO: 倍数不是16的情况
+	uint NumBytes = sizeof(ValueType)* NumElements;
 
 	auto ShaderPtr = m_RegisterShaders.find(CurrShaderName);
 	if (ShaderPtr != m_RegisterShaders.end())

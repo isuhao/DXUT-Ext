@@ -6,6 +6,19 @@ void FMultiPassShader::SetConstantVariables(const String& ShaderVarName, uint Nu
 	uint BindIndex = 0;
 	uint OutNumBytes = 0;
 
+	float M[4][4];
+	float4x4* pGetData = reinterpret_cast<float4x4*>(RawData);
+	if (pGetData != NULL)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				M[i][j] = pGetData->m[i][j];
+			}
+		}
+	}
+
 	// 如果有这个变量才设进去
 	if (m_VariableMap.GetVariable(ShaderVarName, BufferIndex, BindIndex, OutNumBytes))
 	{

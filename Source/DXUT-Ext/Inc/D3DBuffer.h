@@ -164,7 +164,7 @@ protected:
 	}
 
 protected:
-	TSharedPtr<FD3D11Buffer>			m_pD3DBuffer;
+	TSharedPtr<FD3D11Buffer>		m_pD3DBuffer;
 	ElemType*						m_pRawData;
 	uint							m_iCurrUpdateSize;
 	uint							m_iMaxSize;

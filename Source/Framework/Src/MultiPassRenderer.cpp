@@ -135,7 +135,7 @@ void FMultiPassRenderer::PassSetConstantValue(EShaderType ShaderType, const Stri
 		TSharedPtr<FPassConstantContext>& ConstPtr = Itr->second;
 		if (ConstPtr)
 		{
-			PassSetConstantValue<byte>(ShaderType, ShaderVarName, ConstPtr->RawData.size(), &(ConstPtr->RawData[0]));
+			PassSetConstantValue<byte>(ShaderType, ShaderVarName, &(ConstPtr->RawData[0]), ConstPtr->RawData.size());
 			return;
 		}
 	}
@@ -280,6 +280,16 @@ void FMultiPassRenderer::RegisterDepthStencilState(const String& RegisterName, b
 	}
 }
 
+void FMultiPassRenderer::RegisterSampler(const String& RegisterName, ESamplerFilter Filter, ESamplerAddressMode AddressU /* = AM_Warp */, ESamplerAddressMode AddressV /* = AM_Warp */,
+	ESamplerAddressMode AddressW /* = AM_Warp */, float MipBias /* = 0.f */, UINT MaxAnisotropy /* = 0 */, FLinearColor BorderColor /* = FLinearColor() */, ECompareFunction CompareFunc /* = CF_Never */)
+{
+	if (m_RegisterSamplers.find(RegisterName) == m_RegisterSamplers.end())
+	{
+		TSharedPtr<FD3D11SamplerState> SamplerState = D3D->CreateSamplerState(Filter, AddressU, AddressV, AddressW, MipBias, MaxAnisotropy, BorderColor, CompareFunc);
+		m_RegisterSamplers[RegisterName] = SamplerState;
+	}
+}
+
 // Mesh
 void FMultiPassRenderer::RegisterModel(const String& RegisterName, const TSharedPtr<FMesh>& InMesh)
 {
@@ -304,5 +314,18 @@ void FMultiPassRenderer::RegisterModel(const String& RegisterName, ESimplePrimit
 		break;
 	default:
 		break;
+	}
+}
+
+void FMultiPassRenderer::PassSetSampler(EShaderType ShaderType, const String& ShaderVarName, const String& RegisterSampler)
+{
+	auto SamplerPtr = m_RegisterSamplers.find(RegisterSampler);
+	if (SamplerPtr != m_RegisterSamplers.end())
+	{
+		auto ShaderPtr = m_RegisterShaders.find(GetCurrShaderName(ShaderType));
+		if (ShaderPtr != m_RegisterShaders.end())
+		{
+			ShaderPtr->second->SetResourceVariables(ShaderVarName, SamplerPtr->second);
+		}
 	}
 }

@@ -42,8 +42,14 @@ struct FPassConstantContext
 {
 	TArray<byte> RawData;
 
-	FPassConstantContext(uint iSize)
-		: RawData(iSize)
+	FPassConstantContext(uint NumBytes, byte* InitData)
+	{
+		RawData.reserve(NumBytes);
+		CopyMemory(&RawData[0], InitData, NumBytes);
+	}
+
+	FPassConstantContext(uint NumBytes)
+		: RawData(NumBytes)
 	{
 	}
 };
